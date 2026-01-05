@@ -61,6 +61,15 @@ export type Scalars = {
   JSON: { input: any; output: any };
 };
 
+export type AddStockLotInput = {
+  costPrice: Scalars["Float"]["input"];
+  notes?: InputMaybe<Scalars["String"]["input"]>;
+  productId: Scalars["String"]["input"];
+  purchasedAt?: InputMaybe<Scalars["DateTime"]["input"]>;
+  quantity: Scalars["Int"]["input"];
+  supplier?: InputMaybe<Scalars["String"]["input"]>;
+};
+
 export type AdminOrganization = {
   __typename?: "AdminOrganization";
   createdAt?: Maybe<Scalars["DateTime"]["output"]>;
@@ -104,6 +113,14 @@ export type BillingPlan = {
   priceYearly?: Maybe<Scalars["Int"]["output"]>;
 };
 
+export type Category = {
+  __typename?: "Category";
+  createdAt?: Maybe<Scalars["DateTime"]["output"]>;
+  id?: Maybe<Scalars["ID"]["output"]>;
+  name?: Maybe<Scalars["String"]["output"]>;
+  organizationId?: Maybe<Scalars["String"]["output"]>;
+};
+
 export type CheckoutResult = {
   __typename?: "CheckoutResult";
   /** Stripe checkout session ID */
@@ -112,9 +129,32 @@ export type CheckoutResult = {
   url?: Maybe<Scalars["String"]["output"]>;
 };
 
+export type CreateCategoryInput = {
+  name: Scalars["String"]["input"];
+};
+
+export type CreateProductInput = {
+  barcode?: InputMaybe<Scalars["String"]["input"]>;
+  categoryId?: InputMaybe<Scalars["String"]["input"]>;
+  name: Scalars["String"]["input"];
+  sellingPrice: Scalars["Float"]["input"];
+};
+
 export type CreateProjectInput = {
   description?: InputMaybe<Scalars["String"]["input"]>;
   name: Scalars["String"]["input"];
+};
+
+export type CreateSaleInput = {
+  items: Array<CreateSaleItemInput>;
+  notes?: InputMaybe<Scalars["String"]["input"]>;
+  paymentMethod: Scalars["String"]["input"];
+};
+
+export type CreateSaleItemInput = {
+  productId: Scalars["String"]["input"];
+  quantity: Scalars["Int"]["input"];
+  unitPrice: Scalars["Float"]["input"];
 };
 
 export type CreateTaskInput = {
@@ -217,73 +257,6 @@ export type HealthStatus = {
   stripe?: Maybe<ServiceHealth>;
 };
 
-export type League = {
-  __typename?: "League";
-  country?: Maybe<Scalars["String"]["output"]>;
-  createdAt?: Maybe<Scalars["DateTime"]["output"]>;
-  fbrefId?: Maybe<Scalars["String"]["output"]>;
-  fbrefPath?: Maybe<Scalars["String"]["output"]>;
-  id?: Maybe<Scalars["ID"]["output"]>;
-  name?: Maybe<Scalars["String"]["output"]>;
-  tier?: Maybe<Scalars["Int"]["output"]>;
-  updatedAt?: Maybe<Scalars["DateTime"]["output"]>;
-};
-
-export type Match = {
-  __typename?: "Match";
-  awayAerialsWon?: Maybe<Scalars["Int"]["output"]>;
-  awayClearances?: Maybe<Scalars["Int"]["output"]>;
-  awayCorners?: Maybe<Scalars["Int"]["output"]>;
-  awayCrosses?: Maybe<Scalars["Int"]["output"]>;
-  awayFouls?: Maybe<Scalars["Int"]["output"]>;
-  awayGoals?: Maybe<Scalars["Int"]["output"]>;
-  awayHalfTimeGoals?: Maybe<Scalars["Int"]["output"]>;
-  awayInterceptions?: Maybe<Scalars["Int"]["output"]>;
-  awayOffsides?: Maybe<Scalars["Int"]["output"]>;
-  awayPassesAttempted?: Maybe<Scalars["Int"]["output"]>;
-  awayPassesCompleted?: Maybe<Scalars["Int"]["output"]>;
-  awayPossession?: Maybe<Scalars["Int"]["output"]>;
-  awayRedCards?: Maybe<Scalars["Int"]["output"]>;
-  awayShots?: Maybe<Scalars["Int"]["output"]>;
-  awayShotsOnTarget?: Maybe<Scalars["Int"]["output"]>;
-  awayTackles?: Maybe<Scalars["Int"]["output"]>;
-  awayTeam?: Maybe<Team>;
-  awayTeamId?: Maybe<Scalars["String"]["output"]>;
-  awayXg?: Maybe<Scalars["Float"]["output"]>;
-  awayYellowCards?: Maybe<Scalars["Int"]["output"]>;
-  createdAt?: Maybe<Scalars["DateTime"]["output"]>;
-  dataSource?: Maybe<Scalars["String"]["output"]>;
-  date?: Maybe<Scalars["DateTime"]["output"]>;
-  fbrefMatchId?: Maybe<Scalars["String"]["output"]>;
-  homeAerialsWon?: Maybe<Scalars["Int"]["output"]>;
-  homeClearances?: Maybe<Scalars["Int"]["output"]>;
-  homeCorners?: Maybe<Scalars["Int"]["output"]>;
-  homeCrosses?: Maybe<Scalars["Int"]["output"]>;
-  homeFouls?: Maybe<Scalars["Int"]["output"]>;
-  homeGoals?: Maybe<Scalars["Int"]["output"]>;
-  homeHalfTimeGoals?: Maybe<Scalars["Int"]["output"]>;
-  homeInterceptions?: Maybe<Scalars["Int"]["output"]>;
-  homeOffsides?: Maybe<Scalars["Int"]["output"]>;
-  homePassesAttempted?: Maybe<Scalars["Int"]["output"]>;
-  homePassesCompleted?: Maybe<Scalars["Int"]["output"]>;
-  homePossession?: Maybe<Scalars["Int"]["output"]>;
-  homeRedCards?: Maybe<Scalars["Int"]["output"]>;
-  homeShots?: Maybe<Scalars["Int"]["output"]>;
-  homeShotsOnTarget?: Maybe<Scalars["Int"]["output"]>;
-  homeTackles?: Maybe<Scalars["Int"]["output"]>;
-  homeTeam?: Maybe<Team>;
-  homeTeamId?: Maybe<Scalars["String"]["output"]>;
-  homeXg?: Maybe<Scalars["Float"]["output"]>;
-  homeYellowCards?: Maybe<Scalars["Int"]["output"]>;
-  id?: Maybe<Scalars["ID"]["output"]>;
-  round?: Maybe<Scalars["Int"]["output"]>;
-  season?: Maybe<Season>;
-  seasonId?: Maybe<Scalars["String"]["output"]>;
-  status?: Maybe<Scalars["String"]["output"]>;
-  updatedAt?: Maybe<Scalars["DateTime"]["output"]>;
-  venue?: Maybe<Scalars["String"]["output"]>;
-};
-
 export enum MemberRole {
   Admin = "admin",
   Member = "member",
@@ -292,27 +265,43 @@ export enum MemberRole {
 
 export type Mutation = {
   __typename?: "Mutation";
+  addStockLot?: Maybe<StockLot>;
   adminAdjustCredits?: Maybe<CreditAdjustmentResult>;
+  createCategory?: Maybe<Category>;
   createCheckout?: Maybe<CheckoutResult>;
   createCreditCheckout?: Maybe<CheckoutResult>;
   createCustomerPortal?: Maybe<CustomerPortalResult>;
+  createProduct?: Maybe<Product>;
   createProject?: Maybe<Project>;
+  createSale?: Maybe<SaleWithItems>;
   createTask?: Maybe<Task>;
+  deleteCategory?: Maybe<Scalars["Boolean"]["output"]>;
   deleteFile?: Maybe<Scalars["Boolean"]["output"]>;
+  deleteProduct?: Maybe<Scalars["Boolean"]["output"]>;
   deleteProject?: Maybe<Scalars["Boolean"]["output"]>;
   deleteTask?: Maybe<Task>;
   getSignedUrl?: Maybe<SignedUrl>;
   markAllNotificationsRead?: Maybe<Scalars["Boolean"]["output"]>;
   markNotificationRead?: Maybe<Notification>;
+  updateCategory?: Maybe<Category>;
+  updateProduct?: Maybe<Product>;
   updateProject?: Maybe<Project>;
   updateTask?: Maybe<Task>;
   uploadFile?: Maybe<File>;
+};
+
+export type MutationAddStockLotArgs = {
+  input: AddStockLotInput;
 };
 
 export type MutationAdminAdjustCreditsArgs = {
   amount: Scalars["Int"]["input"];
   organizationId: Scalars["String"]["input"];
   reason: Scalars["String"]["input"];
+};
+
+export type MutationCreateCategoryArgs = {
+  input: CreateCategoryInput;
 };
 
 export type MutationCreateCheckoutArgs = {
@@ -324,16 +313,32 @@ export type MutationCreateCreditCheckoutArgs = {
   packId: Scalars["String"]["input"];
 };
 
+export type MutationCreateProductArgs = {
+  input: CreateProductInput;
+};
+
 export type MutationCreateProjectArgs = {
   input?: InputMaybe<CreateProjectInput>;
+};
+
+export type MutationCreateSaleArgs = {
+  input: CreateSaleInput;
 };
 
 export type MutationCreateTaskArgs = {
   input: CreateTaskInput;
 };
 
+export type MutationDeleteCategoryArgs = {
+  id: Scalars["String"]["input"];
+};
+
 export type MutationDeleteFileArgs = {
   input: DeleteFileInput;
+};
+
+export type MutationDeleteProductArgs = {
+  id: Scalars["String"]["input"];
 };
 
 export type MutationDeleteProjectArgs = {
@@ -350,6 +355,16 @@ export type MutationGetSignedUrlArgs = {
 
 export type MutationMarkNotificationReadArgs = {
   notificationId: Scalars["String"]["input"];
+};
+
+export type MutationUpdateCategoryArgs = {
+  id: Scalars["String"]["input"];
+  input: UpdateCategoryInput;
+};
+
+export type MutationUpdateProductArgs = {
+  id: Scalars["String"]["input"];
+  input: UpdateProductInput;
 };
 
 export type MutationUpdateProjectArgs = {
@@ -407,6 +422,36 @@ export type PaginatedUsers = {
   users?: Maybe<Array<AdminUser>>;
 };
 
+export type Product = {
+  __typename?: "Product";
+  barcode?: Maybe<Scalars["String"]["output"]>;
+  category?: Maybe<Category>;
+  categoryId?: Maybe<Scalars["String"]["output"]>;
+  createdAt?: Maybe<Scalars["DateTime"]["output"]>;
+  id?: Maybe<Scalars["ID"]["output"]>;
+  isActive?: Maybe<Scalars["Boolean"]["output"]>;
+  name?: Maybe<Scalars["String"]["output"]>;
+  organizationId?: Maybe<Scalars["String"]["output"]>;
+  sellingPrice?: Maybe<Scalars["String"]["output"]>;
+  updatedAt?: Maybe<Scalars["DateTime"]["output"]>;
+};
+
+export type ProductWithStock = {
+  __typename?: "ProductWithStock";
+  averageCost?: Maybe<Scalars["Float"]["output"]>;
+  barcode?: Maybe<Scalars["String"]["output"]>;
+  category?: Maybe<Category>;
+  categoryId?: Maybe<Scalars["String"]["output"]>;
+  createdAt?: Maybe<Scalars["DateTime"]["output"]>;
+  id?: Maybe<Scalars["ID"]["output"]>;
+  isActive?: Maybe<Scalars["Boolean"]["output"]>;
+  name?: Maybe<Scalars["String"]["output"]>;
+  organizationId?: Maybe<Scalars["String"]["output"]>;
+  sellingPrice?: Maybe<Scalars["String"]["output"]>;
+  totalStock?: Maybe<Scalars["Int"]["output"]>;
+  updatedAt?: Maybe<Scalars["DateTime"]["output"]>;
+};
+
 export type Project = {
   __typename?: "Project";
   createdAt?: Maybe<Scalars["DateTime"]["output"]>;
@@ -424,36 +469,27 @@ export type Query = {
   adminSystemHealth?: Maybe<HealthStatus>;
   adminUsers?: Maybe<PaginatedUsers>;
   billingPlans?: Maybe<Array<BillingPlan>>;
+  categories?: Maybe<Array<Category>>;
   creditBalance?: Maybe<CreditBalance>;
   creditHistory?: Maybe<Array<CreditTransaction>>;
   creditPacks?: Maybe<Array<CreditPack>>;
-  /** Get the current season for a league */
-  currentSeason?: Maybe<Season>;
   file?: Maybe<File>;
   files?: Maybe<Array<File>>;
   health?: Maybe<Scalars["String"]["output"]>;
-  /** Get a single league by ID */
-  league?: Maybe<League>;
-  leagues?: Maybe<Array<League>>;
-  match?: Maybe<Match>;
-  /** Get matches with optional filters */
-  matches?: Maybe<Array<Match>>;
+  lowStockProducts?: Maybe<Array<ProductWithStock>>;
   notifications?: Maybe<Array<Notification>>;
+  product?: Maybe<Product>;
+  productStock?: Maybe<StockInfo>;
+  products?: Maybe<Array<Product>>;
+  productsWithStock?: Maybe<Array<ProductWithStock>>;
   project?: Maybe<Project>;
   projects?: Maybe<Array<Project>>;
-  /** Get recent form for a team (last N matches) */
-  recentForm?: Maybe<RecentForm>;
-  /** Get a single season by ID */
-  season?: Maybe<Season>;
-  /** Get seasons, optionally filtered by league */
-  seasons?: Maybe<Array<Season>>;
+  sale?: Maybe<SaleWithItems>;
+  sales?: Maybe<Array<Sale>>;
+  salesSummary?: Maybe<SalesSummary>;
+  stockLots?: Maybe<Array<StockLot>>;
   task?: Maybe<Task>;
   tasks?: Maybe<Array<Task>>;
-  /** Get a single team by ID */
-  team?: Maybe<Team>;
-  /** Get team statistics for a season */
-  teamStats?: Maybe<TeamStats>;
-  teams?: Maybe<Array<Team>>;
   unreadNotificationCount?: Maybe<UnreadCount>;
   userOrganizations?: Maybe<Array<Organization>>;
 };
@@ -474,93 +510,111 @@ export type QueryCreditHistoryArgs = {
   limit?: InputMaybe<Scalars["Int"]["input"]>;
 };
 
-export type QueryCurrentSeasonArgs = {
-  leagueId: Scalars["String"]["input"];
-};
-
 export type QueryFileArgs = {
   id: Scalars["String"]["input"];
 };
 
-export type QueryLeagueArgs = {
-  id: Scalars["String"]["input"];
-};
-
-export type QueryMatchArgs = {
-  id: Scalars["String"]["input"];
-};
-
-export type QueryMatchesArgs = {
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-  seasonId?: InputMaybe<Scalars["String"]["input"]>;
-  status?: InputMaybe<Scalars["String"]["input"]>;
-  teamId?: InputMaybe<Scalars["String"]["input"]>;
+export type QueryLowStockProductsArgs = {
+  threshold?: InputMaybe<Scalars["Int"]["input"]>;
 };
 
 export type QueryNotificationsArgs = {
   limit?: InputMaybe<Scalars["Int"]["input"]>;
 };
 
+export type QueryProductArgs = {
+  id: Scalars["String"]["input"];
+};
+
+export type QueryProductStockArgs = {
+  productId: Scalars["String"]["input"];
+};
+
+export type QueryProductsArgs = {
+  categoryId?: InputMaybe<Scalars["String"]["input"]>;
+  isActive?: InputMaybe<Scalars["Boolean"]["input"]>;
+  search?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+export type QueryProductsWithStockArgs = {
+  categoryId?: InputMaybe<Scalars["String"]["input"]>;
+  lowStockOnly?: InputMaybe<Scalars["Boolean"]["input"]>;
+  search?: InputMaybe<Scalars["String"]["input"]>;
+  threshold?: InputMaybe<Scalars["Int"]["input"]>;
+};
+
 export type QueryProjectArgs = {
   id: Scalars["String"]["input"];
 };
 
-export type QueryRecentFormArgs = {
-  numMatches?: InputMaybe<Scalars["Int"]["input"]>;
-  teamId: Scalars["String"]["input"];
-};
-
-export type QuerySeasonArgs = {
+export type QuerySaleArgs = {
   id: Scalars["String"]["input"];
 };
 
-export type QuerySeasonsArgs = {
-  leagueId?: InputMaybe<Scalars["String"]["input"]>;
+export type QuerySalesArgs = {
+  endDate?: InputMaybe<Scalars["DateTime"]["input"]>;
+  startDate?: InputMaybe<Scalars["DateTime"]["input"]>;
+};
+
+export type QuerySalesSummaryArgs = {
+  endDate: Scalars["DateTime"]["input"];
+  startDate: Scalars["DateTime"]["input"];
+};
+
+export type QueryStockLotsArgs = {
+  productId: Scalars["String"]["input"];
 };
 
 export type QueryTaskArgs = {
   id: Scalars["String"]["input"];
 };
 
-export type QueryTeamArgs = {
-  id: Scalars["String"]["input"];
-};
-
-export type QueryTeamStatsArgs = {
-  seasonId?: InputMaybe<Scalars["String"]["input"]>;
-  teamId: Scalars["String"]["input"];
-};
-
-export type RecentForm = {
-  __typename?: "RecentForm";
-  bttsRate?: Maybe<Scalars["Float"]["output"]>;
-  cleanSheets?: Maybe<Scalars["Int"]["output"]>;
-  failedToScore?: Maybe<Scalars["Int"]["output"]>;
-  form?: Maybe<Scalars["String"]["output"]>;
-  goalsConceded?: Maybe<Scalars["Int"]["output"]>;
-  goalsScored?: Maybe<Scalars["Int"]["output"]>;
-  matches?: Maybe<Scalars["Int"]["output"]>;
-  over15Rate?: Maybe<Scalars["Float"]["output"]>;
-  over25Rate?: Maybe<Scalars["Float"]["output"]>;
-  over35Rate?: Maybe<Scalars["Float"]["output"]>;
-  points?: Maybe<Scalars["Int"]["output"]>;
-  teamId?: Maybe<Scalars["String"]["output"]>;
-  xgAgainst?: Maybe<Scalars["Float"]["output"]>;
-  xgFor?: Maybe<Scalars["Float"]["output"]>;
-};
-
-export type Season = {
-  __typename?: "Season";
+export type Sale = {
+  __typename?: "Sale";
   createdAt?: Maybe<Scalars["DateTime"]["output"]>;
-  endDate?: Maybe<Scalars["DateTime"]["output"]>;
-  fbrefPath?: Maybe<Scalars["String"]["output"]>;
   id?: Maybe<Scalars["ID"]["output"]>;
-  isCurrent?: Maybe<Scalars["Boolean"]["output"]>;
-  league?: Maybe<League>;
-  leagueId?: Maybe<Scalars["String"]["output"]>;
-  name?: Maybe<Scalars["String"]["output"]>;
+  notes?: Maybe<Scalars["String"]["output"]>;
+  organizationId?: Maybe<Scalars["String"]["output"]>;
+  paymentMethod?: Maybe<Scalars["String"]["output"]>;
+  receiptNo?: Maybe<Scalars["String"]["output"]>;
+  totalAmount?: Maybe<Scalars["String"]["output"]>;
+  totalCost?: Maybe<Scalars["String"]["output"]>;
+};
+
+export type SaleItem = {
+  __typename?: "SaleItem";
+  createdAt?: Maybe<Scalars["DateTime"]["output"]>;
+  id?: Maybe<Scalars["ID"]["output"]>;
+  product?: Maybe<Product>;
+  productId?: Maybe<Scalars["String"]["output"]>;
+  quantity?: Maybe<Scalars["Int"]["output"]>;
+  saleId?: Maybe<Scalars["String"]["output"]>;
+  subtotal?: Maybe<Scalars["String"]["output"]>;
+  unitCost?: Maybe<Scalars["String"]["output"]>;
+  unitPrice?: Maybe<Scalars["String"]["output"]>;
+};
+
+export type SaleWithItems = {
+  __typename?: "SaleWithItems";
+  createdAt?: Maybe<Scalars["DateTime"]["output"]>;
+  id?: Maybe<Scalars["ID"]["output"]>;
+  items?: Maybe<Array<SaleItem>>;
+  notes?: Maybe<Scalars["String"]["output"]>;
+  organizationId?: Maybe<Scalars["String"]["output"]>;
+  paymentMethod?: Maybe<Scalars["String"]["output"]>;
+  receiptNo?: Maybe<Scalars["String"]["output"]>;
+  totalAmount?: Maybe<Scalars["String"]["output"]>;
+  totalCost?: Maybe<Scalars["String"]["output"]>;
+};
+
+export type SalesSummary = {
+  __typename?: "SalesSummary";
+  endDate?: Maybe<Scalars["DateTime"]["output"]>;
+  salesCount?: Maybe<Scalars["Int"]["output"]>;
   startDate?: Maybe<Scalars["DateTime"]["output"]>;
-  updatedAt?: Maybe<Scalars["DateTime"]["output"]>;
+  totalCost?: Maybe<Scalars["Float"]["output"]>;
+  totalProfit?: Maybe<Scalars["Float"]["output"]>;
+  totalRevenue?: Maybe<Scalars["Float"]["output"]>;
 };
 
 export type ServiceHealth = {
@@ -584,6 +638,28 @@ export type SignedUrl = {
   url?: Maybe<Scalars["String"]["output"]>;
 };
 
+export type StockInfo = {
+  __typename?: "StockInfo";
+  averageCost?: Maybe<Scalars["Float"]["output"]>;
+  lots?: Maybe<Array<StockLot>>;
+  productId?: Maybe<Scalars["String"]["output"]>;
+  totalStock?: Maybe<Scalars["Int"]["output"]>;
+};
+
+export type StockLot = {
+  __typename?: "StockLot";
+  costPrice?: Maybe<Scalars["String"]["output"]>;
+  createdAt?: Maybe<Scalars["DateTime"]["output"]>;
+  id?: Maybe<Scalars["ID"]["output"]>;
+  notes?: Maybe<Scalars["String"]["output"]>;
+  organizationId?: Maybe<Scalars["String"]["output"]>;
+  productId?: Maybe<Scalars["String"]["output"]>;
+  purchasedAt?: Maybe<Scalars["DateTime"]["output"]>;
+  quantity?: Maybe<Scalars["Int"]["output"]>;
+  remaining?: Maybe<Scalars["Int"]["output"]>;
+  supplier?: Maybe<Scalars["String"]["output"]>;
+};
+
 export enum SubscriptionStatus {
   Active = "active",
   Canceled = "canceled",
@@ -602,44 +678,21 @@ export type Task = {
   updatedAt?: Maybe<Scalars["DateTime"]["output"]>;
 };
 
-export type Team = {
-  __typename?: "Team";
-  createdAt?: Maybe<Scalars["DateTime"]["output"]>;
-  fbrefId?: Maybe<Scalars["String"]["output"]>;
-  fbrefPath?: Maybe<Scalars["String"]["output"]>;
-  id?: Maybe<Scalars["ID"]["output"]>;
-  logo?: Maybe<Scalars["String"]["output"]>;
-  name?: Maybe<Scalars["String"]["output"]>;
-  shortName?: Maybe<Scalars["String"]["output"]>;
-  stadium?: Maybe<Scalars["String"]["output"]>;
-  understatId?: Maybe<Scalars["String"]["output"]>;
-  updatedAt?: Maybe<Scalars["DateTime"]["output"]>;
-};
-
-export type TeamStats = {
-  __typename?: "TeamStats";
-  avgGoalsAgainst?: Maybe<Scalars["Float"]["output"]>;
-  avgGoalsFor?: Maybe<Scalars["Float"]["output"]>;
-  avgXgAgainst?: Maybe<Scalars["Float"]["output"]>;
-  avgXgFor?: Maybe<Scalars["Float"]["output"]>;
-  bttsMatches?: Maybe<Scalars["Int"]["output"]>;
-  cleanSheets?: Maybe<Scalars["Int"]["output"]>;
-  draws?: Maybe<Scalars["Int"]["output"]>;
-  failedToScore?: Maybe<Scalars["Int"]["output"]>;
-  goalsAgainst?: Maybe<Scalars["Int"]["output"]>;
-  goalsFor?: Maybe<Scalars["Int"]["output"]>;
-  losses?: Maybe<Scalars["Int"]["output"]>;
-  played?: Maybe<Scalars["Int"]["output"]>;
-  seasonId?: Maybe<Scalars["String"]["output"]>;
-  teamId?: Maybe<Scalars["String"]["output"]>;
-  wins?: Maybe<Scalars["Int"]["output"]>;
-  xgAgainst?: Maybe<Scalars["Float"]["output"]>;
-  xgFor?: Maybe<Scalars["Float"]["output"]>;
-};
-
 export type UnreadCount = {
   __typename?: "UnreadCount";
   count?: Maybe<Scalars["Int"]["output"]>;
+};
+
+export type UpdateCategoryInput = {
+  name?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+export type UpdateProductInput = {
+  barcode?: InputMaybe<Scalars["String"]["input"]>;
+  categoryId?: InputMaybe<Scalars["String"]["input"]>;
+  isActive?: InputMaybe<Scalars["Boolean"]["input"]>;
+  name?: InputMaybe<Scalars["String"]["input"]>;
+  sellingPrice?: InputMaybe<Scalars["Float"]["input"]>;
 };
 
 export type UpdateProjectInput = {
@@ -886,361 +939,6 @@ export type GetCreditPacksQuery = {
   }> | null;
 };
 
-export type GetLeaguesQueryVariables = Exact<{ [key: string]: never }>;
-
-export type GetLeaguesQuery = {
-  __typename?: "Query";
-  leagues?: Array<{
-    __typename?: "League";
-    id?: string | null;
-    name?: string | null;
-    country?: string | null;
-    tier?: number | null;
-    fbrefId?: string | null;
-    fbrefPath?: string | null;
-    createdAt?: any | null;
-    updatedAt?: any | null;
-  }> | null;
-};
-
-export type GetLeagueQueryVariables = Exact<{
-  id: Scalars["String"]["input"];
-}>;
-
-export type GetLeagueQuery = {
-  __typename?: "Query";
-  league?: {
-    __typename?: "League";
-    id?: string | null;
-    name?: string | null;
-    country?: string | null;
-    tier?: number | null;
-    fbrefId?: string | null;
-    fbrefPath?: string | null;
-    createdAt?: any | null;
-    updatedAt?: any | null;
-  } | null;
-};
-
-export type GetSeasonsQueryVariables = Exact<{
-  leagueId?: InputMaybe<Scalars["String"]["input"]>;
-}>;
-
-export type GetSeasonsQuery = {
-  __typename?: "Query";
-  seasons?: Array<{
-    __typename?: "Season";
-    id?: string | null;
-    leagueId?: string | null;
-    name?: string | null;
-    startDate?: any | null;
-    endDate?: any | null;
-    isCurrent?: boolean | null;
-    fbrefPath?: string | null;
-    createdAt?: any | null;
-    updatedAt?: any | null;
-    league?: {
-      __typename?: "League";
-      id?: string | null;
-      name?: string | null;
-      country?: string | null;
-      tier?: number | null;
-    } | null;
-  }> | null;
-};
-
-export type GetCurrentSeasonQueryVariables = Exact<{
-  leagueId: Scalars["String"]["input"];
-}>;
-
-export type GetCurrentSeasonQuery = {
-  __typename?: "Query";
-  currentSeason?: {
-    __typename?: "Season";
-    id?: string | null;
-    leagueId?: string | null;
-    name?: string | null;
-    startDate?: any | null;
-    endDate?: any | null;
-    isCurrent?: boolean | null;
-    fbrefPath?: string | null;
-    createdAt?: any | null;
-    updatedAt?: any | null;
-    league?: {
-      __typename?: "League";
-      id?: string | null;
-      name?: string | null;
-      country?: string | null;
-      tier?: number | null;
-    } | null;
-  } | null;
-};
-
-export type GetSeasonQueryVariables = Exact<{
-  id: Scalars["String"]["input"];
-}>;
-
-export type GetSeasonQuery = {
-  __typename?: "Query";
-  season?: {
-    __typename?: "Season";
-    id?: string | null;
-    leagueId?: string | null;
-    name?: string | null;
-    startDate?: any | null;
-    endDate?: any | null;
-    isCurrent?: boolean | null;
-    fbrefPath?: string | null;
-    createdAt?: any | null;
-    updatedAt?: any | null;
-    league?: {
-      __typename?: "League";
-      id?: string | null;
-      name?: string | null;
-      country?: string | null;
-      tier?: number | null;
-    } | null;
-  } | null;
-};
-
-export type GetTeamsQueryVariables = Exact<{ [key: string]: never }>;
-
-export type GetTeamsQuery = {
-  __typename?: "Query";
-  teams?: Array<{
-    __typename?: "Team";
-    id?: string | null;
-    name?: string | null;
-    shortName?: string | null;
-    logo?: string | null;
-    stadium?: string | null;
-    fbrefId?: string | null;
-    fbrefPath?: string | null;
-    understatId?: string | null;
-    createdAt?: any | null;
-    updatedAt?: any | null;
-  }> | null;
-};
-
-export type GetTeamQueryVariables = Exact<{
-  id: Scalars["String"]["input"];
-}>;
-
-export type GetTeamQuery = {
-  __typename?: "Query";
-  team?: {
-    __typename?: "Team";
-    id?: string | null;
-    name?: string | null;
-    shortName?: string | null;
-    logo?: string | null;
-    stadium?: string | null;
-    fbrefId?: string | null;
-    fbrefPath?: string | null;
-    understatId?: string | null;
-    createdAt?: any | null;
-    updatedAt?: any | null;
-  } | null;
-};
-
-export type GetMatchesQueryVariables = Exact<{
-  seasonId?: InputMaybe<Scalars["String"]["input"]>;
-  teamId?: InputMaybe<Scalars["String"]["input"]>;
-  status?: InputMaybe<Scalars["String"]["input"]>;
-  limit?: InputMaybe<Scalars["Int"]["input"]>;
-}>;
-
-export type GetMatchesQuery = {
-  __typename?: "Query";
-  matches?: Array<{
-    __typename?: "Match";
-    id?: string | null;
-    date?: any | null;
-    status?: string | null;
-    round?: number | null;
-    venue?: string | null;
-    homeGoals?: number | null;
-    awayGoals?: number | null;
-    homeHalfTimeGoals?: number | null;
-    awayHalfTimeGoals?: number | null;
-    homeXg?: number | null;
-    awayXg?: number | null;
-    homeShots?: number | null;
-    awayShots?: number | null;
-    homeShotsOnTarget?: number | null;
-    awayShotsOnTarget?: number | null;
-    homePossession?: number | null;
-    awayPossession?: number | null;
-    dataSource?: string | null;
-    fbrefMatchId?: string | null;
-    createdAt?: any | null;
-    updatedAt?: any | null;
-    homeTeam?: {
-      __typename?: "Team";
-      id?: string | null;
-      name?: string | null;
-      shortName?: string | null;
-      logo?: string | null;
-    } | null;
-    awayTeam?: {
-      __typename?: "Team";
-      id?: string | null;
-      name?: string | null;
-      shortName?: string | null;
-      logo?: string | null;
-    } | null;
-    season?: {
-      __typename?: "Season";
-      id?: string | null;
-      name?: string | null;
-      league?: {
-        __typename?: "League";
-        id?: string | null;
-        name?: string | null;
-        country?: string | null;
-      } | null;
-    } | null;
-  }> | null;
-};
-
-export type GetMatchQueryVariables = Exact<{
-  id: Scalars["String"]["input"];
-}>;
-
-export type GetMatchQuery = {
-  __typename?: "Query";
-  match?: {
-    __typename?: "Match";
-    id?: string | null;
-    date?: any | null;
-    status?: string | null;
-    round?: number | null;
-    venue?: string | null;
-    homeGoals?: number | null;
-    awayGoals?: number | null;
-    homeHalfTimeGoals?: number | null;
-    awayHalfTimeGoals?: number | null;
-    homeXg?: number | null;
-    awayXg?: number | null;
-    homeShots?: number | null;
-    awayShots?: number | null;
-    homeShotsOnTarget?: number | null;
-    awayShotsOnTarget?: number | null;
-    homePossession?: number | null;
-    awayPossession?: number | null;
-    homePassesCompleted?: number | null;
-    awayPassesCompleted?: number | null;
-    homePassesAttempted?: number | null;
-    awayPassesAttempted?: number | null;
-    homeTackles?: number | null;
-    awayTackles?: number | null;
-    homeInterceptions?: number | null;
-    awayInterceptions?: number | null;
-    homeClearances?: number | null;
-    awayClearances?: number | null;
-    homeCorners?: number | null;
-    awayCorners?: number | null;
-    homeCrosses?: number | null;
-    awayCrosses?: number | null;
-    homeFouls?: number | null;
-    awayFouls?: number | null;
-    homeYellowCards?: number | null;
-    awayYellowCards?: number | null;
-    homeRedCards?: number | null;
-    awayRedCards?: number | null;
-    homeOffsides?: number | null;
-    awayOffsides?: number | null;
-    homeAerialsWon?: number | null;
-    awayAerialsWon?: number | null;
-    dataSource?: string | null;
-    fbrefMatchId?: string | null;
-    createdAt?: any | null;
-    updatedAt?: any | null;
-    homeTeam?: {
-      __typename?: "Team";
-      id?: string | null;
-      name?: string | null;
-      shortName?: string | null;
-      logo?: string | null;
-      stadium?: string | null;
-    } | null;
-    awayTeam?: {
-      __typename?: "Team";
-      id?: string | null;
-      name?: string | null;
-      shortName?: string | null;
-      logo?: string | null;
-      stadium?: string | null;
-    } | null;
-    season?: {
-      __typename?: "Season";
-      id?: string | null;
-      name?: string | null;
-      league?: {
-        __typename?: "League";
-        id?: string | null;
-        name?: string | null;
-        country?: string | null;
-      } | null;
-    } | null;
-  } | null;
-};
-
-export type GetTeamStatsQueryVariables = Exact<{
-  teamId: Scalars["String"]["input"];
-  seasonId?: InputMaybe<Scalars["String"]["input"]>;
-}>;
-
-export type GetTeamStatsQuery = {
-  __typename?: "Query";
-  teamStats?: {
-    __typename?: "TeamStats";
-    teamId?: string | null;
-    seasonId?: string | null;
-    played?: number | null;
-    wins?: number | null;
-    draws?: number | null;
-    losses?: number | null;
-    goalsFor?: number | null;
-    goalsAgainst?: number | null;
-    xgFor?: number | null;
-    xgAgainst?: number | null;
-    cleanSheets?: number | null;
-    failedToScore?: number | null;
-    bttsMatches?: number | null;
-    avgGoalsFor?: number | null;
-    avgGoalsAgainst?: number | null;
-    avgXgFor?: number | null;
-    avgXgAgainst?: number | null;
-  } | null;
-};
-
-export type GetRecentFormQueryVariables = Exact<{
-  teamId: Scalars["String"]["input"];
-  numMatches?: InputMaybe<Scalars["Int"]["input"]>;
-}>;
-
-export type GetRecentFormQuery = {
-  __typename?: "Query";
-  recentForm?: {
-    __typename?: "RecentForm";
-    teamId?: string | null;
-    matches?: number | null;
-    form?: string | null;
-    points?: number | null;
-    goalsScored?: number | null;
-    goalsConceded?: number | null;
-    xgFor?: number | null;
-    xgAgainst?: number | null;
-    cleanSheets?: number | null;
-    failedToScore?: number | null;
-    bttsRate?: number | null;
-    over15Rate?: number | null;
-    over25Rate?: number | null;
-    over35Rate?: number | null;
-  } | null;
-};
-
 export type MarkNotificationReadMutationVariables = Exact<{
   notificationId: Scalars["String"]["input"];
 }>;
@@ -1309,6 +1007,399 @@ export type GetUserOrganizationsQuery = {
     role?: string | null;
     logo?: string | null;
   }> | null;
+};
+
+export type CategoriesQueryVariables = Exact<{ [key: string]: never }>;
+
+export type CategoriesQuery = {
+  __typename?: "Query";
+  categories?: Array<{
+    __typename?: "Category";
+    id?: string | null;
+    name?: string | null;
+    organizationId?: string | null;
+    createdAt?: any | null;
+  }> | null;
+};
+
+export type CreateCategoryMutationVariables = Exact<{
+  input: CreateCategoryInput;
+}>;
+
+export type CreateCategoryMutation = {
+  __typename?: "Mutation";
+  createCategory?: {
+    __typename?: "Category";
+    id?: string | null;
+    name?: string | null;
+    organizationId?: string | null;
+    createdAt?: any | null;
+  } | null;
+};
+
+export type UpdateCategoryMutationVariables = Exact<{
+  id: Scalars["String"]["input"];
+  input: UpdateCategoryInput;
+}>;
+
+export type UpdateCategoryMutation = {
+  __typename?: "Mutation";
+  updateCategory?: {
+    __typename?: "Category";
+    id?: string | null;
+    name?: string | null;
+    organizationId?: string | null;
+    createdAt?: any | null;
+  } | null;
+};
+
+export type DeleteCategoryMutationVariables = Exact<{
+  id: Scalars["String"]["input"];
+}>;
+
+export type DeleteCategoryMutation = {
+  __typename?: "Mutation";
+  deleteCategory?: boolean | null;
+};
+
+export type ProductsQueryVariables = Exact<{
+  categoryId?: InputMaybe<Scalars["String"]["input"]>;
+  search?: InputMaybe<Scalars["String"]["input"]>;
+  isActive?: InputMaybe<Scalars["Boolean"]["input"]>;
+}>;
+
+export type ProductsQuery = {
+  __typename?: "Query";
+  products?: Array<{
+    __typename?: "Product";
+    id?: string | null;
+    name?: string | null;
+    barcode?: string | null;
+    sellingPrice?: string | null;
+    isActive?: boolean | null;
+    categoryId?: string | null;
+    organizationId?: string | null;
+    createdAt?: any | null;
+    updatedAt?: any | null;
+    category?: {
+      __typename?: "Category";
+      id?: string | null;
+      name?: string | null;
+    } | null;
+  }> | null;
+};
+
+export type ProductQueryVariables = Exact<{
+  id: Scalars["String"]["input"];
+}>;
+
+export type ProductQuery = {
+  __typename?: "Query";
+  product?: {
+    __typename?: "Product";
+    id?: string | null;
+    name?: string | null;
+    barcode?: string | null;
+    sellingPrice?: string | null;
+    isActive?: boolean | null;
+    categoryId?: string | null;
+    organizationId?: string | null;
+    createdAt?: any | null;
+    updatedAt?: any | null;
+    category?: {
+      __typename?: "Category";
+      id?: string | null;
+      name?: string | null;
+    } | null;
+  } | null;
+};
+
+export type ProductsWithStockQueryVariables = Exact<{
+  categoryId?: InputMaybe<Scalars["String"]["input"]>;
+  search?: InputMaybe<Scalars["String"]["input"]>;
+  lowStockOnly?: InputMaybe<Scalars["Boolean"]["input"]>;
+  threshold?: InputMaybe<Scalars["Int"]["input"]>;
+}>;
+
+export type ProductsWithStockQuery = {
+  __typename?: "Query";
+  productsWithStock?: Array<{
+    __typename?: "ProductWithStock";
+    id?: string | null;
+    name?: string | null;
+    barcode?: string | null;
+    sellingPrice?: string | null;
+    isActive?: boolean | null;
+    categoryId?: string | null;
+    totalStock?: number | null;
+    averageCost?: number | null;
+    organizationId?: string | null;
+    createdAt?: any | null;
+    updatedAt?: any | null;
+    category?: {
+      __typename?: "Category";
+      id?: string | null;
+      name?: string | null;
+    } | null;
+  }> | null;
+};
+
+export type CreateProductMutationVariables = Exact<{
+  input: CreateProductInput;
+}>;
+
+export type CreateProductMutation = {
+  __typename?: "Mutation";
+  createProduct?: {
+    __typename?: "Product";
+    id?: string | null;
+    name?: string | null;
+    barcode?: string | null;
+    sellingPrice?: string | null;
+    isActive?: boolean | null;
+    categoryId?: string | null;
+    organizationId?: string | null;
+    createdAt?: any | null;
+    updatedAt?: any | null;
+  } | null;
+};
+
+export type UpdateProductMutationVariables = Exact<{
+  id: Scalars["String"]["input"];
+  input: UpdateProductInput;
+}>;
+
+export type UpdateProductMutation = {
+  __typename?: "Mutation";
+  updateProduct?: {
+    __typename?: "Product";
+    id?: string | null;
+    name?: string | null;
+    barcode?: string | null;
+    sellingPrice?: string | null;
+    isActive?: boolean | null;
+    categoryId?: string | null;
+    organizationId?: string | null;
+    createdAt?: any | null;
+    updatedAt?: any | null;
+  } | null;
+};
+
+export type DeleteProductMutationVariables = Exact<{
+  id: Scalars["String"]["input"];
+}>;
+
+export type DeleteProductMutation = {
+  __typename?: "Mutation";
+  deleteProduct?: boolean | null;
+};
+
+export type SalesQueryVariables = Exact<{
+  startDate?: InputMaybe<Scalars["DateTime"]["input"]>;
+  endDate?: InputMaybe<Scalars["DateTime"]["input"]>;
+}>;
+
+export type SalesQuery = {
+  __typename?: "Query";
+  sales?: Array<{
+    __typename?: "Sale";
+    id?: string | null;
+    receiptNo?: string | null;
+    totalAmount?: string | null;
+    totalCost?: string | null;
+    paymentMethod?: string | null;
+    notes?: string | null;
+    organizationId?: string | null;
+    createdAt?: any | null;
+  }> | null;
+};
+
+export type SaleQueryVariables = Exact<{
+  id: Scalars["String"]["input"];
+}>;
+
+export type SaleQuery = {
+  __typename?: "Query";
+  sale?: {
+    __typename?: "SaleWithItems";
+    id?: string | null;
+    receiptNo?: string | null;
+    totalAmount?: string | null;
+    totalCost?: string | null;
+    paymentMethod?: string | null;
+    notes?: string | null;
+    organizationId?: string | null;
+    createdAt?: any | null;
+    items?: Array<{
+      __typename?: "SaleItem";
+      id?: string | null;
+      saleId?: string | null;
+      productId?: string | null;
+      quantity?: number | null;
+      unitPrice?: string | null;
+      unitCost?: string | null;
+      subtotal?: string | null;
+      createdAt?: any | null;
+      product?: {
+        __typename?: "Product";
+        id?: string | null;
+        name?: string | null;
+        barcode?: string | null;
+        sellingPrice?: string | null;
+      } | null;
+    }> | null;
+  } | null;
+};
+
+export type SalesSummaryQueryVariables = Exact<{
+  startDate: Scalars["DateTime"]["input"];
+  endDate: Scalars["DateTime"]["input"];
+}>;
+
+export type SalesSummaryQuery = {
+  __typename?: "Query";
+  salesSummary?: {
+    __typename?: "SalesSummary";
+    totalRevenue?: number | null;
+    totalCost?: number | null;
+    totalProfit?: number | null;
+    salesCount?: number | null;
+    startDate?: any | null;
+    endDate?: any | null;
+  } | null;
+};
+
+export type CreateSaleMutationVariables = Exact<{
+  input: CreateSaleInput;
+}>;
+
+export type CreateSaleMutation = {
+  __typename?: "Mutation";
+  createSale?: {
+    __typename?: "SaleWithItems";
+    id?: string | null;
+    receiptNo?: string | null;
+    totalAmount?: string | null;
+    totalCost?: string | null;
+    paymentMethod?: string | null;
+    notes?: string | null;
+    organizationId?: string | null;
+    createdAt?: any | null;
+    items?: Array<{
+      __typename?: "SaleItem";
+      id?: string | null;
+      saleId?: string | null;
+      productId?: string | null;
+      quantity?: number | null;
+      unitPrice?: string | null;
+      unitCost?: string | null;
+      subtotal?: string | null;
+      createdAt?: any | null;
+      product?: {
+        __typename?: "Product";
+        id?: string | null;
+        name?: string | null;
+        barcode?: string | null;
+        sellingPrice?: string | null;
+      } | null;
+    }> | null;
+  } | null;
+};
+
+export type ProductStockQueryVariables = Exact<{
+  productId: Scalars["String"]["input"];
+}>;
+
+export type ProductStockQuery = {
+  __typename?: "Query";
+  productStock?: {
+    __typename?: "StockInfo";
+    productId?: string | null;
+    totalStock?: number | null;
+    averageCost?: number | null;
+    lots?: Array<{
+      __typename?: "StockLot";
+      id?: string | null;
+      productId?: string | null;
+      quantity?: number | null;
+      remaining?: number | null;
+      costPrice?: string | null;
+      supplier?: string | null;
+      notes?: string | null;
+      purchasedAt?: any | null;
+      organizationId?: string | null;
+      createdAt?: any | null;
+    }> | null;
+  } | null;
+};
+
+export type StockLotsQueryVariables = Exact<{
+  productId: Scalars["String"]["input"];
+}>;
+
+export type StockLotsQuery = {
+  __typename?: "Query";
+  stockLots?: Array<{
+    __typename?: "StockLot";
+    id?: string | null;
+    productId?: string | null;
+    quantity?: number | null;
+    remaining?: number | null;
+    costPrice?: string | null;
+    supplier?: string | null;
+    notes?: string | null;
+    purchasedAt?: any | null;
+    organizationId?: string | null;
+    createdAt?: any | null;
+  }> | null;
+};
+
+export type LowStockProductsQueryVariables = Exact<{
+  threshold?: InputMaybe<Scalars["Int"]["input"]>;
+}>;
+
+export type LowStockProductsQuery = {
+  __typename?: "Query";
+  lowStockProducts?: Array<{
+    __typename?: "ProductWithStock";
+    id?: string | null;
+    name?: string | null;
+    barcode?: string | null;
+    sellingPrice?: string | null;
+    isActive?: boolean | null;
+    categoryId?: string | null;
+    totalStock?: number | null;
+    averageCost?: number | null;
+    organizationId?: string | null;
+    createdAt?: any | null;
+    updatedAt?: any | null;
+    category?: {
+      __typename?: "Category";
+      id?: string | null;
+      name?: string | null;
+    } | null;
+  }> | null;
+};
+
+export type AddStockLotMutationVariables = Exact<{
+  input: AddStockLotInput;
+}>;
+
+export type AddStockLotMutation = {
+  __typename?: "Mutation";
+  addStockLot?: {
+    __typename?: "StockLot";
+    id?: string | null;
+    productId?: string | null;
+    quantity?: number | null;
+    remaining?: number | null;
+    costPrice?: string | null;
+    supplier?: string | null;
+    notes?: string | null;
+    purchasedAt?: any | null;
+    organizationId?: string | null;
+    createdAt?: any | null;
+  } | null;
 };
 
 export type CreateProjectMutationVariables = Exact<{
@@ -1488,7 +1579,7 @@ export const useAdminAdjustCreditsMutation = <
     TError,
     AdminAdjustCreditsMutationVariables,
     TContext
-  >
+  >,
 ) => {
   return useMutation<
     AdminAdjustCreditsMutation,
@@ -1500,18 +1591,18 @@ export const useAdminAdjustCreditsMutation = <
     mutationFn: (variables?: AdminAdjustCreditsMutationVariables) =>
       fetcher<AdminAdjustCreditsMutation, AdminAdjustCreditsMutationVariables>(
         AdminAdjustCreditsDocument,
-        variables
+        variables,
       )(),
     ...options,
   });
 };
 
 useAdminAdjustCreditsMutation.fetcher = (
-  variables: AdminAdjustCreditsMutationVariables
+  variables: AdminAdjustCreditsMutationVariables,
 ) =>
   fetcher<AdminAdjustCreditsMutation, AdminAdjustCreditsMutationVariables>(
     AdminAdjustCreditsDocument,
-    variables
+    variables,
   );
 
 export const GetAdminUsersDocument = `
@@ -1543,7 +1634,7 @@ export const useGetAdminUsersQuery = <
     "queryKey"
   > & {
     queryKey?: UseQueryOptions<GetAdminUsersQuery, TError, TData>["queryKey"];
-  }
+  },
 ) => {
   return useQuery<GetAdminUsersQuery, TError, TData>({
     queryKey:
@@ -1552,7 +1643,7 @@ export const useGetAdminUsersQuery = <
         : ["GetAdminUsers", variables],
     queryFn: fetcher<GetAdminUsersQuery, GetAdminUsersQueryVariables>(
       GetAdminUsersDocument,
-      variables
+      variables,
     ),
     ...options,
   });
@@ -1575,7 +1666,7 @@ export const useInfiniteGetAdminUsersQuery = <
       TError,
       TData
     >["queryKey"];
-  }
+  },
 ) => {
   return useInfiniteQuery<GetAdminUsersQuery, TError, TData>(
     (() => {
@@ -1588,16 +1679,16 @@ export const useInfiniteGetAdminUsersQuery = <
         queryFn: (metaData) =>
           fetcher<GetAdminUsersQuery, GetAdminUsersQueryVariables>(
             GetAdminUsersDocument,
-            { ...variables, ...(metaData.pageParam ?? {}) }
+            { ...variables, ...(metaData.pageParam ?? {}) },
           )(),
         ...restOptions,
       };
-    })()
+    })(),
   );
 };
 
 useInfiniteGetAdminUsersQuery.getKey = (
-  variables?: GetAdminUsersQueryVariables
+  variables?: GetAdminUsersQueryVariables,
 ) =>
   variables === undefined
     ? ["GetAdminUsers.infinite"]
@@ -1606,7 +1697,7 @@ useInfiniteGetAdminUsersQuery.getKey = (
 useGetAdminUsersQuery.fetcher = (variables?: GetAdminUsersQueryVariables) =>
   fetcher<GetAdminUsersQuery, GetAdminUsersQueryVariables>(
     GetAdminUsersDocument,
-    variables
+    variables,
   );
 
 export const GetAdminOrganizationsDocument = `
@@ -1644,7 +1735,7 @@ export const useGetAdminOrganizationsQuery = <
       TError,
       TData
     >["queryKey"];
-  }
+  },
 ) => {
   return useQuery<GetAdminOrganizationsQuery, TError, TData>({
     queryKey:
@@ -1660,7 +1751,7 @@ export const useGetAdminOrganizationsQuery = <
 };
 
 useGetAdminOrganizationsQuery.getKey = (
-  variables?: GetAdminOrganizationsQueryVariables
+  variables?: GetAdminOrganizationsQueryVariables,
 ) =>
   variables === undefined
     ? ["GetAdminOrganizations"]
@@ -1680,7 +1771,7 @@ export const useInfiniteGetAdminOrganizationsQuery = <
       TError,
       TData
     >["queryKey"];
-  }
+  },
 ) => {
   return useInfiniteQuery<GetAdminOrganizationsQuery, TError, TData>(
     (() => {
@@ -1700,23 +1791,23 @@ export const useInfiniteGetAdminOrganizationsQuery = <
           })(),
         ...restOptions,
       };
-    })()
+    })(),
   );
 };
 
 useInfiniteGetAdminOrganizationsQuery.getKey = (
-  variables?: GetAdminOrganizationsQueryVariables
+  variables?: GetAdminOrganizationsQueryVariables,
 ) =>
   variables === undefined
     ? ["GetAdminOrganizations.infinite"]
     : ["GetAdminOrganizations.infinite", variables];
 
 useGetAdminOrganizationsQuery.fetcher = (
-  variables?: GetAdminOrganizationsQueryVariables
+  variables?: GetAdminOrganizationsQueryVariables,
 ) =>
   fetcher<GetAdminOrganizationsQuery, GetAdminOrganizationsQueryVariables>(
     GetAdminOrganizationsDocument,
-    variables
+    variables,
   );
 
 export const GetAdminDashboardStatsDocument = `
@@ -1743,7 +1834,7 @@ export const useGetAdminDashboardStatsQuery = <
       TError,
       TData
     >["queryKey"];
-  }
+  },
 ) => {
   return useQuery<GetAdminDashboardStatsQuery, TError, TData>({
     queryKey:
@@ -1759,7 +1850,7 @@ export const useGetAdminDashboardStatsQuery = <
 };
 
 useGetAdminDashboardStatsQuery.getKey = (
-  variables?: GetAdminDashboardStatsQueryVariables
+  variables?: GetAdminDashboardStatsQueryVariables,
 ) =>
   variables === undefined
     ? ["GetAdminDashboardStats"]
@@ -1779,7 +1870,7 @@ export const useInfiniteGetAdminDashboardStatsQuery = <
       TError,
       TData
     >["queryKey"];
-  }
+  },
 ) => {
   return useInfiniteQuery<GetAdminDashboardStatsQuery, TError, TData>(
     (() => {
@@ -1799,23 +1890,23 @@ export const useInfiniteGetAdminDashboardStatsQuery = <
           })(),
         ...restOptions,
       };
-    })()
+    })(),
   );
 };
 
 useInfiniteGetAdminDashboardStatsQuery.getKey = (
-  variables?: GetAdminDashboardStatsQueryVariables
+  variables?: GetAdminDashboardStatsQueryVariables,
 ) =>
   variables === undefined
     ? ["GetAdminDashboardStats.infinite"]
     : ["GetAdminDashboardStats.infinite", variables];
 
 useGetAdminDashboardStatsQuery.fetcher = (
-  variables?: GetAdminDashboardStatsQueryVariables
+  variables?: GetAdminDashboardStatsQueryVariables,
 ) =>
   fetcher<GetAdminDashboardStatsQuery, GetAdminDashboardStatsQueryVariables>(
     GetAdminDashboardStatsDocument,
-    variables
+    variables,
   );
 
 export const GetAdminSystemHealthDocument = `
@@ -1859,7 +1950,7 @@ export const useGetAdminSystemHealthQuery = <
       TError,
       TData
     >["queryKey"];
-  }
+  },
 ) => {
   return useQuery<GetAdminSystemHealthQuery, TError, TData>({
     queryKey:
@@ -1875,7 +1966,7 @@ export const useGetAdminSystemHealthQuery = <
 };
 
 useGetAdminSystemHealthQuery.getKey = (
-  variables?: GetAdminSystemHealthQueryVariables
+  variables?: GetAdminSystemHealthQueryVariables,
 ) =>
   variables === undefined
     ? ["GetAdminSystemHealth"]
@@ -1895,7 +1986,7 @@ export const useInfiniteGetAdminSystemHealthQuery = <
       TError,
       TData
     >["queryKey"];
-  }
+  },
 ) => {
   return useInfiniteQuery<GetAdminSystemHealthQuery, TError, TData>(
     (() => {
@@ -1915,23 +2006,23 @@ export const useInfiniteGetAdminSystemHealthQuery = <
           })(),
         ...restOptions,
       };
-    })()
+    })(),
   );
 };
 
 useInfiniteGetAdminSystemHealthQuery.getKey = (
-  variables?: GetAdminSystemHealthQueryVariables
+  variables?: GetAdminSystemHealthQueryVariables,
 ) =>
   variables === undefined
     ? ["GetAdminSystemHealth.infinite"]
     : ["GetAdminSystemHealth.infinite", variables];
 
 useGetAdminSystemHealthQuery.fetcher = (
-  variables?: GetAdminSystemHealthQueryVariables
+  variables?: GetAdminSystemHealthQueryVariables,
 ) =>
   fetcher<GetAdminSystemHealthQuery, GetAdminSystemHealthQueryVariables>(
     GetAdminSystemHealthDocument,
-    variables
+    variables,
   );
 
 export const CreateCheckoutDocument = `
@@ -1949,7 +2040,7 @@ export const useCreateCheckoutMutation = <TError = unknown, TContext = unknown>(
     TError,
     CreateCheckoutMutationVariables,
     TContext
-  >
+  >,
 ) => {
   return useMutation<
     CreateCheckoutMutation,
@@ -1961,18 +2052,18 @@ export const useCreateCheckoutMutation = <TError = unknown, TContext = unknown>(
     mutationFn: (variables?: CreateCheckoutMutationVariables) =>
       fetcher<CreateCheckoutMutation, CreateCheckoutMutationVariables>(
         CreateCheckoutDocument,
-        variables
+        variables,
       )(),
     ...options,
   });
 };
 
 useCreateCheckoutMutation.fetcher = (
-  variables: CreateCheckoutMutationVariables
+  variables: CreateCheckoutMutationVariables,
 ) =>
   fetcher<CreateCheckoutMutation, CreateCheckoutMutationVariables>(
     CreateCheckoutDocument,
-    variables
+    variables,
   );
 
 export const CreateCreditCheckoutDocument = `
@@ -1993,7 +2084,7 @@ export const useCreateCreditCheckoutMutation = <
     TError,
     CreateCreditCheckoutMutationVariables,
     TContext
-  >
+  >,
 ) => {
   return useMutation<
     CreateCreditCheckoutMutation,
@@ -2012,11 +2103,11 @@ export const useCreateCreditCheckoutMutation = <
 };
 
 useCreateCreditCheckoutMutation.fetcher = (
-  variables: CreateCreditCheckoutMutationVariables
+  variables: CreateCreditCheckoutMutationVariables,
 ) =>
   fetcher<CreateCreditCheckoutMutation, CreateCreditCheckoutMutationVariables>(
     CreateCreditCheckoutDocument,
-    variables
+    variables,
   );
 
 export const CreateCustomerPortalDocument = `
@@ -2036,7 +2127,7 @@ export const useCreateCustomerPortalMutation = <
     TError,
     CreateCustomerPortalMutationVariables,
     TContext
-  >
+  >,
 ) => {
   return useMutation<
     CreateCustomerPortalMutation,
@@ -2055,11 +2146,11 @@ export const useCreateCustomerPortalMutation = <
 };
 
 useCreateCustomerPortalMutation.fetcher = (
-  variables?: CreateCustomerPortalMutationVariables
+  variables?: CreateCustomerPortalMutationVariables,
 ) =>
   fetcher<CreateCustomerPortalMutation, CreateCustomerPortalMutationVariables>(
     CreateCustomerPortalDocument,
-    variables
+    variables,
   );
 
 export const GetCreditBalanceDocument = `
@@ -2089,7 +2180,7 @@ export const useGetCreditBalanceQuery = <
       TError,
       TData
     >["queryKey"];
-  }
+  },
 ) => {
   return useQuery<GetCreditBalanceQuery, TError, TData>({
     queryKey:
@@ -2098,14 +2189,14 @@ export const useGetCreditBalanceQuery = <
         : ["GetCreditBalance", variables],
     queryFn: fetcher<GetCreditBalanceQuery, GetCreditBalanceQueryVariables>(
       GetCreditBalanceDocument,
-      variables
+      variables,
     ),
     ...options,
   });
 };
 
 useGetCreditBalanceQuery.getKey = (
-  variables?: GetCreditBalanceQueryVariables
+  variables?: GetCreditBalanceQueryVariables,
 ) =>
   variables === undefined
     ? ["GetCreditBalance"]
@@ -2125,7 +2216,7 @@ export const useInfiniteGetCreditBalanceQuery = <
       TError,
       TData
     >["queryKey"];
-  }
+  },
 ) => {
   return useInfiniteQuery<GetCreditBalanceQuery, TError, TData>(
     (() => {
@@ -2138,27 +2229,27 @@ export const useInfiniteGetCreditBalanceQuery = <
         queryFn: (metaData) =>
           fetcher<GetCreditBalanceQuery, GetCreditBalanceQueryVariables>(
             GetCreditBalanceDocument,
-            { ...variables, ...(metaData.pageParam ?? {}) }
+            { ...variables, ...(metaData.pageParam ?? {}) },
           )(),
         ...restOptions,
       };
-    })()
+    })(),
   );
 };
 
 useInfiniteGetCreditBalanceQuery.getKey = (
-  variables?: GetCreditBalanceQueryVariables
+  variables?: GetCreditBalanceQueryVariables,
 ) =>
   variables === undefined
     ? ["GetCreditBalance.infinite"]
     : ["GetCreditBalance.infinite", variables];
 
 useGetCreditBalanceQuery.fetcher = (
-  variables?: GetCreditBalanceQueryVariables
+  variables?: GetCreditBalanceQueryVariables,
 ) =>
   fetcher<GetCreditBalanceQuery, GetCreditBalanceQueryVariables>(
     GetCreditBalanceDocument,
-    variables
+    variables,
   );
 
 export const GetCreditHistoryDocument = `
@@ -2189,7 +2280,7 @@ export const useGetCreditHistoryQuery = <
       TError,
       TData
     >["queryKey"];
-  }
+  },
 ) => {
   return useQuery<GetCreditHistoryQuery, TError, TData>({
     queryKey:
@@ -2198,14 +2289,14 @@ export const useGetCreditHistoryQuery = <
         : ["GetCreditHistory", variables],
     queryFn: fetcher<GetCreditHistoryQuery, GetCreditHistoryQueryVariables>(
       GetCreditHistoryDocument,
-      variables
+      variables,
     ),
     ...options,
   });
 };
 
 useGetCreditHistoryQuery.getKey = (
-  variables?: GetCreditHistoryQueryVariables
+  variables?: GetCreditHistoryQueryVariables,
 ) =>
   variables === undefined
     ? ["GetCreditHistory"]
@@ -2225,7 +2316,7 @@ export const useInfiniteGetCreditHistoryQuery = <
       TError,
       TData
     >["queryKey"];
-  }
+  },
 ) => {
   return useInfiniteQuery<GetCreditHistoryQuery, TError, TData>(
     (() => {
@@ -2238,27 +2329,27 @@ export const useInfiniteGetCreditHistoryQuery = <
         queryFn: (metaData) =>
           fetcher<GetCreditHistoryQuery, GetCreditHistoryQueryVariables>(
             GetCreditHistoryDocument,
-            { ...variables, ...(metaData.pageParam ?? {}) }
+            { ...variables, ...(metaData.pageParam ?? {}) },
           )(),
         ...restOptions,
       };
-    })()
+    })(),
   );
 };
 
 useInfiniteGetCreditHistoryQuery.getKey = (
-  variables?: GetCreditHistoryQueryVariables
+  variables?: GetCreditHistoryQueryVariables,
 ) =>
   variables === undefined
     ? ["GetCreditHistory.infinite"]
     : ["GetCreditHistory.infinite", variables];
 
 useGetCreditHistoryQuery.fetcher = (
-  variables?: GetCreditHistoryQueryVariables
+  variables?: GetCreditHistoryQueryVariables,
 ) =>
   fetcher<GetCreditHistoryQuery, GetCreditHistoryQueryVariables>(
     GetCreditHistoryDocument,
-    variables
+    variables,
   );
 
 export const GetBillingPlansDocument = `
@@ -2285,7 +2376,7 @@ export const useGetBillingPlansQuery = <
     "queryKey"
   > & {
     queryKey?: UseQueryOptions<GetBillingPlansQuery, TError, TData>["queryKey"];
-  }
+  },
 ) => {
   return useQuery<GetBillingPlansQuery, TError, TData>({
     queryKey:
@@ -2294,7 +2385,7 @@ export const useGetBillingPlansQuery = <
         : ["GetBillingPlans", variables],
     queryFn: fetcher<GetBillingPlansQuery, GetBillingPlansQueryVariables>(
       GetBillingPlansDocument,
-      variables
+      variables,
     ),
     ...options,
   });
@@ -2319,7 +2410,7 @@ export const useInfiniteGetBillingPlansQuery = <
       TError,
       TData
     >["queryKey"];
-  }
+  },
 ) => {
   return useInfiniteQuery<GetBillingPlansQuery, TError, TData>(
     (() => {
@@ -2332,16 +2423,16 @@ export const useInfiniteGetBillingPlansQuery = <
         queryFn: (metaData) =>
           fetcher<GetBillingPlansQuery, GetBillingPlansQueryVariables>(
             GetBillingPlansDocument,
-            { ...variables, ...(metaData.pageParam ?? {}) }
+            { ...variables, ...(metaData.pageParam ?? {}) },
           )(),
         ...restOptions,
       };
-    })()
+    })(),
   );
 };
 
 useInfiniteGetBillingPlansQuery.getKey = (
-  variables?: GetBillingPlansQueryVariables
+  variables?: GetBillingPlansQueryVariables,
 ) =>
   variables === undefined
     ? ["GetBillingPlans.infinite"]
@@ -2350,7 +2441,7 @@ useInfiniteGetBillingPlansQuery.getKey = (
 useGetBillingPlansQuery.fetcher = (variables?: GetBillingPlansQueryVariables) =>
   fetcher<GetBillingPlansQuery, GetBillingPlansQueryVariables>(
     GetBillingPlansDocument,
-    variables
+    variables,
   );
 
 export const GetCreditPacksDocument = `
@@ -2374,7 +2465,7 @@ export const useGetCreditPacksQuery = <
     "queryKey"
   > & {
     queryKey?: UseQueryOptions<GetCreditPacksQuery, TError, TData>["queryKey"];
-  }
+  },
 ) => {
   return useQuery<GetCreditPacksQuery, TError, TData>({
     queryKey:
@@ -2383,7 +2474,7 @@ export const useGetCreditPacksQuery = <
         : ["GetCreditPacks", variables],
     queryFn: fetcher<GetCreditPacksQuery, GetCreditPacksQueryVariables>(
       GetCreditPacksDocument,
-      variables
+      variables,
     ),
     ...options,
   });
@@ -2406,7 +2497,7 @@ export const useInfiniteGetCreditPacksQuery = <
       TError,
       TData
     >["queryKey"];
-  }
+  },
 ) => {
   return useInfiniteQuery<GetCreditPacksQuery, TError, TData>(
     (() => {
@@ -2419,16 +2510,16 @@ export const useInfiniteGetCreditPacksQuery = <
         queryFn: (metaData) =>
           fetcher<GetCreditPacksQuery, GetCreditPacksQueryVariables>(
             GetCreditPacksDocument,
-            { ...variables, ...(metaData.pageParam ?? {}) }
+            { ...variables, ...(metaData.pageParam ?? {}) },
           )(),
         ...restOptions,
       };
-    })()
+    })(),
   );
 };
 
 useInfiniteGetCreditPacksQuery.getKey = (
-  variables?: GetCreditPacksQueryVariables
+  variables?: GetCreditPacksQueryVariables,
 ) =>
   variables === undefined
     ? ["GetCreditPacks.infinite"]
@@ -2437,1033 +2528,7 @@ useInfiniteGetCreditPacksQuery.getKey = (
 useGetCreditPacksQuery.fetcher = (variables?: GetCreditPacksQueryVariables) =>
   fetcher<GetCreditPacksQuery, GetCreditPacksQueryVariables>(
     GetCreditPacksDocument,
-    variables
-  );
-
-export const GetLeaguesDocument = `
-    query GetLeagues {
-  leagues {
-    id
-    name
-    country
-    tier
-    fbrefId
-    fbrefPath
-    createdAt
-    updatedAt
-  }
-}
-    `;
-
-export const useGetLeaguesQuery = <TData = GetLeaguesQuery, TError = unknown>(
-  variables?: GetLeaguesQueryVariables,
-  options?: Omit<
-    UseQueryOptions<GetLeaguesQuery, TError, TData>,
-    "queryKey"
-  > & {
-    queryKey?: UseQueryOptions<GetLeaguesQuery, TError, TData>["queryKey"];
-  }
-) => {
-  return useQuery<GetLeaguesQuery, TError, TData>({
-    queryKey:
-      variables === undefined ? ["GetLeagues"] : ["GetLeagues", variables],
-    queryFn: fetcher<GetLeaguesQuery, GetLeaguesQueryVariables>(
-      GetLeaguesDocument,
-      variables
-    ),
-    ...options,
-  });
-};
-
-useGetLeaguesQuery.getKey = (variables?: GetLeaguesQueryVariables) =>
-  variables === undefined ? ["GetLeagues"] : ["GetLeagues", variables];
-
-export const useInfiniteGetLeaguesQuery = <
-  TData = InfiniteData<GetLeaguesQuery>,
-  TError = unknown,
->(
-  variables: GetLeaguesQueryVariables,
-  options: Omit<
-    UseInfiniteQueryOptions<GetLeaguesQuery, TError, TData>,
-    "queryKey"
-  > & {
-    queryKey?: UseInfiniteQueryOptions<
-      GetLeaguesQuery,
-      TError,
-      TData
-    >["queryKey"];
-  }
-) => {
-  return useInfiniteQuery<GetLeaguesQuery, TError, TData>(
-    (() => {
-      const { queryKey: optionsQueryKey, ...restOptions } = options;
-      return {
-        queryKey:
-          (optionsQueryKey ?? variables === undefined)
-            ? ["GetLeagues.infinite"]
-            : ["GetLeagues.infinite", variables],
-        queryFn: (metaData) =>
-          fetcher<GetLeaguesQuery, GetLeaguesQueryVariables>(
-            GetLeaguesDocument,
-            { ...variables, ...(metaData.pageParam ?? {}) }
-          )(),
-        ...restOptions,
-      };
-    })()
-  );
-};
-
-useInfiniteGetLeaguesQuery.getKey = (variables?: GetLeaguesQueryVariables) =>
-  variables === undefined
-    ? ["GetLeagues.infinite"]
-    : ["GetLeagues.infinite", variables];
-
-useGetLeaguesQuery.fetcher = (variables?: GetLeaguesQueryVariables) =>
-  fetcher<GetLeaguesQuery, GetLeaguesQueryVariables>(
-    GetLeaguesDocument,
-    variables
-  );
-
-export const GetLeagueDocument = `
-    query GetLeague($id: String!) {
-  league(id: $id) {
-    id
-    name
-    country
-    tier
-    fbrefId
-    fbrefPath
-    createdAt
-    updatedAt
-  }
-}
-    `;
-
-export const useGetLeagueQuery = <TData = GetLeagueQuery, TError = unknown>(
-  variables: GetLeagueQueryVariables,
-  options?: Omit<UseQueryOptions<GetLeagueQuery, TError, TData>, "queryKey"> & {
-    queryKey?: UseQueryOptions<GetLeagueQuery, TError, TData>["queryKey"];
-  }
-) => {
-  return useQuery<GetLeagueQuery, TError, TData>({
-    queryKey: ["GetLeague", variables],
-    queryFn: fetcher<GetLeagueQuery, GetLeagueQueryVariables>(
-      GetLeagueDocument,
-      variables
-    ),
-    ...options,
-  });
-};
-
-useGetLeagueQuery.getKey = (variables: GetLeagueQueryVariables) => [
-  "GetLeague",
-  variables,
-];
-
-export const useInfiniteGetLeagueQuery = <
-  TData = InfiniteData<GetLeagueQuery>,
-  TError = unknown,
->(
-  variables: GetLeagueQueryVariables,
-  options: Omit<
-    UseInfiniteQueryOptions<GetLeagueQuery, TError, TData>,
-    "queryKey"
-  > & {
-    queryKey?: UseInfiniteQueryOptions<
-      GetLeagueQuery,
-      TError,
-      TData
-    >["queryKey"];
-  }
-) => {
-  return useInfiniteQuery<GetLeagueQuery, TError, TData>(
-    (() => {
-      const { queryKey: optionsQueryKey, ...restOptions } = options;
-      return {
-        queryKey: optionsQueryKey ?? ["GetLeague.infinite", variables],
-        queryFn: (metaData) =>
-          fetcher<GetLeagueQuery, GetLeagueQueryVariables>(GetLeagueDocument, {
-            ...variables,
-            ...(metaData.pageParam ?? {}),
-          })(),
-        ...restOptions,
-      };
-    })()
-  );
-};
-
-useInfiniteGetLeagueQuery.getKey = (variables: GetLeagueQueryVariables) => [
-  "GetLeague.infinite",
-  variables,
-];
-
-useGetLeagueQuery.fetcher = (variables: GetLeagueQueryVariables) =>
-  fetcher<GetLeagueQuery, GetLeagueQueryVariables>(
-    GetLeagueDocument,
-    variables
-  );
-
-export const GetSeasonsDocument = `
-    query GetSeasons($leagueId: String) {
-  seasons(leagueId: $leagueId) {
-    id
-    leagueId
-    name
-    startDate
-    endDate
-    isCurrent
-    fbrefPath
-    league {
-      id
-      name
-      country
-      tier
-    }
-    createdAt
-    updatedAt
-  }
-}
-    `;
-
-export const useGetSeasonsQuery = <TData = GetSeasonsQuery, TError = unknown>(
-  variables?: GetSeasonsQueryVariables,
-  options?: Omit<
-    UseQueryOptions<GetSeasonsQuery, TError, TData>,
-    "queryKey"
-  > & {
-    queryKey?: UseQueryOptions<GetSeasonsQuery, TError, TData>["queryKey"];
-  }
-) => {
-  return useQuery<GetSeasonsQuery, TError, TData>({
-    queryKey:
-      variables === undefined ? ["GetSeasons"] : ["GetSeasons", variables],
-    queryFn: fetcher<GetSeasonsQuery, GetSeasonsQueryVariables>(
-      GetSeasonsDocument,
-      variables
-    ),
-    ...options,
-  });
-};
-
-useGetSeasonsQuery.getKey = (variables?: GetSeasonsQueryVariables) =>
-  variables === undefined ? ["GetSeasons"] : ["GetSeasons", variables];
-
-export const useInfiniteGetSeasonsQuery = <
-  TData = InfiniteData<GetSeasonsQuery>,
-  TError = unknown,
->(
-  variables: GetSeasonsQueryVariables,
-  options: Omit<
-    UseInfiniteQueryOptions<GetSeasonsQuery, TError, TData>,
-    "queryKey"
-  > & {
-    queryKey?: UseInfiniteQueryOptions<
-      GetSeasonsQuery,
-      TError,
-      TData
-    >["queryKey"];
-  }
-) => {
-  return useInfiniteQuery<GetSeasonsQuery, TError, TData>(
-    (() => {
-      const { queryKey: optionsQueryKey, ...restOptions } = options;
-      return {
-        queryKey:
-          (optionsQueryKey ?? variables === undefined)
-            ? ["GetSeasons.infinite"]
-            : ["GetSeasons.infinite", variables],
-        queryFn: (metaData) =>
-          fetcher<GetSeasonsQuery, GetSeasonsQueryVariables>(
-            GetSeasonsDocument,
-            { ...variables, ...(metaData.pageParam ?? {}) }
-          )(),
-        ...restOptions,
-      };
-    })()
-  );
-};
-
-useInfiniteGetSeasonsQuery.getKey = (variables?: GetSeasonsQueryVariables) =>
-  variables === undefined
-    ? ["GetSeasons.infinite"]
-    : ["GetSeasons.infinite", variables];
-
-useGetSeasonsQuery.fetcher = (variables?: GetSeasonsQueryVariables) =>
-  fetcher<GetSeasonsQuery, GetSeasonsQueryVariables>(
-    GetSeasonsDocument,
-    variables
-  );
-
-export const GetCurrentSeasonDocument = `
-    query GetCurrentSeason($leagueId: String!) {
-  currentSeason(leagueId: $leagueId) {
-    id
-    leagueId
-    name
-    startDate
-    endDate
-    isCurrent
-    fbrefPath
-    league {
-      id
-      name
-      country
-      tier
-    }
-    createdAt
-    updatedAt
-  }
-}
-    `;
-
-export const useGetCurrentSeasonQuery = <
-  TData = GetCurrentSeasonQuery,
-  TError = unknown,
->(
-  variables: GetCurrentSeasonQueryVariables,
-  options?: Omit<
-    UseQueryOptions<GetCurrentSeasonQuery, TError, TData>,
-    "queryKey"
-  > & {
-    queryKey?: UseQueryOptions<
-      GetCurrentSeasonQuery,
-      TError,
-      TData
-    >["queryKey"];
-  }
-) => {
-  return useQuery<GetCurrentSeasonQuery, TError, TData>({
-    queryKey: ["GetCurrentSeason", variables],
-    queryFn: fetcher<GetCurrentSeasonQuery, GetCurrentSeasonQueryVariables>(
-      GetCurrentSeasonDocument,
-      variables
-    ),
-    ...options,
-  });
-};
-
-useGetCurrentSeasonQuery.getKey = (
-  variables: GetCurrentSeasonQueryVariables
-) => ["GetCurrentSeason", variables];
-
-export const useInfiniteGetCurrentSeasonQuery = <
-  TData = InfiniteData<GetCurrentSeasonQuery>,
-  TError = unknown,
->(
-  variables: GetCurrentSeasonQueryVariables,
-  options: Omit<
-    UseInfiniteQueryOptions<GetCurrentSeasonQuery, TError, TData>,
-    "queryKey"
-  > & {
-    queryKey?: UseInfiniteQueryOptions<
-      GetCurrentSeasonQuery,
-      TError,
-      TData
-    >["queryKey"];
-  }
-) => {
-  return useInfiniteQuery<GetCurrentSeasonQuery, TError, TData>(
-    (() => {
-      const { queryKey: optionsQueryKey, ...restOptions } = options;
-      return {
-        queryKey: optionsQueryKey ?? ["GetCurrentSeason.infinite", variables],
-        queryFn: (metaData) =>
-          fetcher<GetCurrentSeasonQuery, GetCurrentSeasonQueryVariables>(
-            GetCurrentSeasonDocument,
-            { ...variables, ...(metaData.pageParam ?? {}) }
-          )(),
-        ...restOptions,
-      };
-    })()
-  );
-};
-
-useInfiniteGetCurrentSeasonQuery.getKey = (
-  variables: GetCurrentSeasonQueryVariables
-) => ["GetCurrentSeason.infinite", variables];
-
-useGetCurrentSeasonQuery.fetcher = (
-  variables: GetCurrentSeasonQueryVariables
-) =>
-  fetcher<GetCurrentSeasonQuery, GetCurrentSeasonQueryVariables>(
-    GetCurrentSeasonDocument,
-    variables
-  );
-
-export const GetSeasonDocument = `
-    query GetSeason($id: String!) {
-  season(id: $id) {
-    id
-    leagueId
-    name
-    startDate
-    endDate
-    isCurrent
-    fbrefPath
-    league {
-      id
-      name
-      country
-      tier
-    }
-    createdAt
-    updatedAt
-  }
-}
-    `;
-
-export const useGetSeasonQuery = <TData = GetSeasonQuery, TError = unknown>(
-  variables: GetSeasonQueryVariables,
-  options?: Omit<UseQueryOptions<GetSeasonQuery, TError, TData>, "queryKey"> & {
-    queryKey?: UseQueryOptions<GetSeasonQuery, TError, TData>["queryKey"];
-  }
-) => {
-  return useQuery<GetSeasonQuery, TError, TData>({
-    queryKey: ["GetSeason", variables],
-    queryFn: fetcher<GetSeasonQuery, GetSeasonQueryVariables>(
-      GetSeasonDocument,
-      variables
-    ),
-    ...options,
-  });
-};
-
-useGetSeasonQuery.getKey = (variables: GetSeasonQueryVariables) => [
-  "GetSeason",
-  variables,
-];
-
-export const useInfiniteGetSeasonQuery = <
-  TData = InfiniteData<GetSeasonQuery>,
-  TError = unknown,
->(
-  variables: GetSeasonQueryVariables,
-  options: Omit<
-    UseInfiniteQueryOptions<GetSeasonQuery, TError, TData>,
-    "queryKey"
-  > & {
-    queryKey?: UseInfiniteQueryOptions<
-      GetSeasonQuery,
-      TError,
-      TData
-    >["queryKey"];
-  }
-) => {
-  return useInfiniteQuery<GetSeasonQuery, TError, TData>(
-    (() => {
-      const { queryKey: optionsQueryKey, ...restOptions } = options;
-      return {
-        queryKey: optionsQueryKey ?? ["GetSeason.infinite", variables],
-        queryFn: (metaData) =>
-          fetcher<GetSeasonQuery, GetSeasonQueryVariables>(GetSeasonDocument, {
-            ...variables,
-            ...(metaData.pageParam ?? {}),
-          })(),
-        ...restOptions,
-      };
-    })()
-  );
-};
-
-useInfiniteGetSeasonQuery.getKey = (variables: GetSeasonQueryVariables) => [
-  "GetSeason.infinite",
-  variables,
-];
-
-useGetSeasonQuery.fetcher = (variables: GetSeasonQueryVariables) =>
-  fetcher<GetSeasonQuery, GetSeasonQueryVariables>(
-    GetSeasonDocument,
-    variables
-  );
-
-export const GetTeamsDocument = `
-    query GetTeams {
-  teams {
-    id
-    name
-    shortName
-    logo
-    stadium
-    fbrefId
-    fbrefPath
-    understatId
-    createdAt
-    updatedAt
-  }
-}
-    `;
-
-export const useGetTeamsQuery = <TData = GetTeamsQuery, TError = unknown>(
-  variables?: GetTeamsQueryVariables,
-  options?: Omit<UseQueryOptions<GetTeamsQuery, TError, TData>, "queryKey"> & {
-    queryKey?: UseQueryOptions<GetTeamsQuery, TError, TData>["queryKey"];
-  }
-) => {
-  return useQuery<GetTeamsQuery, TError, TData>({
-    queryKey: variables === undefined ? ["GetTeams"] : ["GetTeams", variables],
-    queryFn: fetcher<GetTeamsQuery, GetTeamsQueryVariables>(
-      GetTeamsDocument,
-      variables
-    ),
-    ...options,
-  });
-};
-
-useGetTeamsQuery.getKey = (variables?: GetTeamsQueryVariables) =>
-  variables === undefined ? ["GetTeams"] : ["GetTeams", variables];
-
-export const useInfiniteGetTeamsQuery = <
-  TData = InfiniteData<GetTeamsQuery>,
-  TError = unknown,
->(
-  variables: GetTeamsQueryVariables,
-  options: Omit<
-    UseInfiniteQueryOptions<GetTeamsQuery, TError, TData>,
-    "queryKey"
-  > & {
-    queryKey?: UseInfiniteQueryOptions<
-      GetTeamsQuery,
-      TError,
-      TData
-    >["queryKey"];
-  }
-) => {
-  return useInfiniteQuery<GetTeamsQuery, TError, TData>(
-    (() => {
-      const { queryKey: optionsQueryKey, ...restOptions } = options;
-      return {
-        queryKey:
-          (optionsQueryKey ?? variables === undefined)
-            ? ["GetTeams.infinite"]
-            : ["GetTeams.infinite", variables],
-        queryFn: (metaData) =>
-          fetcher<GetTeamsQuery, GetTeamsQueryVariables>(GetTeamsDocument, {
-            ...variables,
-            ...(metaData.pageParam ?? {}),
-          })(),
-        ...restOptions,
-      };
-    })()
-  );
-};
-
-useInfiniteGetTeamsQuery.getKey = (variables?: GetTeamsQueryVariables) =>
-  variables === undefined
-    ? ["GetTeams.infinite"]
-    : ["GetTeams.infinite", variables];
-
-useGetTeamsQuery.fetcher = (variables?: GetTeamsQueryVariables) =>
-  fetcher<GetTeamsQuery, GetTeamsQueryVariables>(GetTeamsDocument, variables);
-
-export const GetTeamDocument = `
-    query GetTeam($id: String!) {
-  team(id: $id) {
-    id
-    name
-    shortName
-    logo
-    stadium
-    fbrefId
-    fbrefPath
-    understatId
-    createdAt
-    updatedAt
-  }
-}
-    `;
-
-export const useGetTeamQuery = <TData = GetTeamQuery, TError = unknown>(
-  variables: GetTeamQueryVariables,
-  options?: Omit<UseQueryOptions<GetTeamQuery, TError, TData>, "queryKey"> & {
-    queryKey?: UseQueryOptions<GetTeamQuery, TError, TData>["queryKey"];
-  }
-) => {
-  return useQuery<GetTeamQuery, TError, TData>({
-    queryKey: ["GetTeam", variables],
-    queryFn: fetcher<GetTeamQuery, GetTeamQueryVariables>(
-      GetTeamDocument,
-      variables
-    ),
-    ...options,
-  });
-};
-
-useGetTeamQuery.getKey = (variables: GetTeamQueryVariables) => [
-  "GetTeam",
-  variables,
-];
-
-export const useInfiniteGetTeamQuery = <
-  TData = InfiniteData<GetTeamQuery>,
-  TError = unknown,
->(
-  variables: GetTeamQueryVariables,
-  options: Omit<
-    UseInfiniteQueryOptions<GetTeamQuery, TError, TData>,
-    "queryKey"
-  > & {
-    queryKey?: UseInfiniteQueryOptions<GetTeamQuery, TError, TData>["queryKey"];
-  }
-) => {
-  return useInfiniteQuery<GetTeamQuery, TError, TData>(
-    (() => {
-      const { queryKey: optionsQueryKey, ...restOptions } = options;
-      return {
-        queryKey: optionsQueryKey ?? ["GetTeam.infinite", variables],
-        queryFn: (metaData) =>
-          fetcher<GetTeamQuery, GetTeamQueryVariables>(GetTeamDocument, {
-            ...variables,
-            ...(metaData.pageParam ?? {}),
-          })(),
-        ...restOptions,
-      };
-    })()
-  );
-};
-
-useInfiniteGetTeamQuery.getKey = (variables: GetTeamQueryVariables) => [
-  "GetTeam.infinite",
-  variables,
-];
-
-useGetTeamQuery.fetcher = (variables: GetTeamQueryVariables) =>
-  fetcher<GetTeamQuery, GetTeamQueryVariables>(GetTeamDocument, variables);
-
-export const GetMatchesDocument = `
-    query GetMatches($seasonId: String, $teamId: String, $status: String, $limit: Int) {
-  matches(seasonId: $seasonId, teamId: $teamId, status: $status, limit: $limit) {
-    id
-    date
-    status
-    round
-    venue
-    homeTeam {
-      id
-      name
-      shortName
-      logo
-    }
-    awayTeam {
-      id
-      name
-      shortName
-      logo
-    }
-    season {
-      id
-      name
-      league {
-        id
-        name
-        country
-      }
-    }
-    homeGoals
-    awayGoals
-    homeHalfTimeGoals
-    awayHalfTimeGoals
-    homeXg
-    awayXg
-    homeShots
-    awayShots
-    homeShotsOnTarget
-    awayShotsOnTarget
-    homePossession
-    awayPossession
-    dataSource
-    fbrefMatchId
-    createdAt
-    updatedAt
-  }
-}
-    `;
-
-export const useGetMatchesQuery = <TData = GetMatchesQuery, TError = unknown>(
-  variables?: GetMatchesQueryVariables,
-  options?: Omit<
-    UseQueryOptions<GetMatchesQuery, TError, TData>,
-    "queryKey"
-  > & {
-    queryKey?: UseQueryOptions<GetMatchesQuery, TError, TData>["queryKey"];
-  }
-) => {
-  return useQuery<GetMatchesQuery, TError, TData>({
-    queryKey:
-      variables === undefined ? ["GetMatches"] : ["GetMatches", variables],
-    queryFn: fetcher<GetMatchesQuery, GetMatchesQueryVariables>(
-      GetMatchesDocument,
-      variables
-    ),
-    ...options,
-  });
-};
-
-useGetMatchesQuery.getKey = (variables?: GetMatchesQueryVariables) =>
-  variables === undefined ? ["GetMatches"] : ["GetMatches", variables];
-
-export const useInfiniteGetMatchesQuery = <
-  TData = InfiniteData<GetMatchesQuery>,
-  TError = unknown,
->(
-  variables: GetMatchesQueryVariables,
-  options: Omit<
-    UseInfiniteQueryOptions<GetMatchesQuery, TError, TData>,
-    "queryKey"
-  > & {
-    queryKey?: UseInfiniteQueryOptions<
-      GetMatchesQuery,
-      TError,
-      TData
-    >["queryKey"];
-  }
-) => {
-  return useInfiniteQuery<GetMatchesQuery, TError, TData>(
-    (() => {
-      const { queryKey: optionsQueryKey, ...restOptions } = options;
-      return {
-        queryKey:
-          (optionsQueryKey ?? variables === undefined)
-            ? ["GetMatches.infinite"]
-            : ["GetMatches.infinite", variables],
-        queryFn: (metaData) =>
-          fetcher<GetMatchesQuery, GetMatchesQueryVariables>(
-            GetMatchesDocument,
-            { ...variables, ...(metaData.pageParam ?? {}) }
-          )(),
-        ...restOptions,
-      };
-    })()
-  );
-};
-
-useInfiniteGetMatchesQuery.getKey = (variables?: GetMatchesQueryVariables) =>
-  variables === undefined
-    ? ["GetMatches.infinite"]
-    : ["GetMatches.infinite", variables];
-
-useGetMatchesQuery.fetcher = (variables?: GetMatchesQueryVariables) =>
-  fetcher<GetMatchesQuery, GetMatchesQueryVariables>(
-    GetMatchesDocument,
-    variables
-  );
-
-export const GetMatchDocument = `
-    query GetMatch($id: String!) {
-  match(id: $id) {
-    id
-    date
-    status
-    round
-    venue
-    homeTeam {
-      id
-      name
-      shortName
-      logo
-      stadium
-    }
-    awayTeam {
-      id
-      name
-      shortName
-      logo
-      stadium
-    }
-    season {
-      id
-      name
-      league {
-        id
-        name
-        country
-      }
-    }
-    homeGoals
-    awayGoals
-    homeHalfTimeGoals
-    awayHalfTimeGoals
-    homeXg
-    awayXg
-    homeShots
-    awayShots
-    homeShotsOnTarget
-    awayShotsOnTarget
-    homePossession
-    awayPossession
-    homePassesCompleted
-    awayPassesCompleted
-    homePassesAttempted
-    awayPassesAttempted
-    homeTackles
-    awayTackles
-    homeInterceptions
-    awayInterceptions
-    homeClearances
-    awayClearances
-    homeCorners
-    awayCorners
-    homeCrosses
-    awayCrosses
-    homeFouls
-    awayFouls
-    homeYellowCards
-    awayYellowCards
-    homeRedCards
-    awayRedCards
-    homeOffsides
-    awayOffsides
-    homeAerialsWon
-    awayAerialsWon
-    dataSource
-    fbrefMatchId
-    createdAt
-    updatedAt
-  }
-}
-    `;
-
-export const useGetMatchQuery = <TData = GetMatchQuery, TError = unknown>(
-  variables: GetMatchQueryVariables,
-  options?: Omit<UseQueryOptions<GetMatchQuery, TError, TData>, "queryKey"> & {
-    queryKey?: UseQueryOptions<GetMatchQuery, TError, TData>["queryKey"];
-  }
-) => {
-  return useQuery<GetMatchQuery, TError, TData>({
-    queryKey: ["GetMatch", variables],
-    queryFn: fetcher<GetMatchQuery, GetMatchQueryVariables>(
-      GetMatchDocument,
-      variables
-    ),
-    ...options,
-  });
-};
-
-useGetMatchQuery.getKey = (variables: GetMatchQueryVariables) => [
-  "GetMatch",
-  variables,
-];
-
-export const useInfiniteGetMatchQuery = <
-  TData = InfiniteData<GetMatchQuery>,
-  TError = unknown,
->(
-  variables: GetMatchQueryVariables,
-  options: Omit<
-    UseInfiniteQueryOptions<GetMatchQuery, TError, TData>,
-    "queryKey"
-  > & {
-    queryKey?: UseInfiniteQueryOptions<
-      GetMatchQuery,
-      TError,
-      TData
-    >["queryKey"];
-  }
-) => {
-  return useInfiniteQuery<GetMatchQuery, TError, TData>(
-    (() => {
-      const { queryKey: optionsQueryKey, ...restOptions } = options;
-      return {
-        queryKey: optionsQueryKey ?? ["GetMatch.infinite", variables],
-        queryFn: (metaData) =>
-          fetcher<GetMatchQuery, GetMatchQueryVariables>(GetMatchDocument, {
-            ...variables,
-            ...(metaData.pageParam ?? {}),
-          })(),
-        ...restOptions,
-      };
-    })()
-  );
-};
-
-useInfiniteGetMatchQuery.getKey = (variables: GetMatchQueryVariables) => [
-  "GetMatch.infinite",
-  variables,
-];
-
-useGetMatchQuery.fetcher = (variables: GetMatchQueryVariables) =>
-  fetcher<GetMatchQuery, GetMatchQueryVariables>(GetMatchDocument, variables);
-
-export const GetTeamStatsDocument = `
-    query GetTeamStats($teamId: String!, $seasonId: String) {
-  teamStats(teamId: $teamId, seasonId: $seasonId) {
-    teamId
-    seasonId
-    played
-    wins
-    draws
-    losses
-    goalsFor
-    goalsAgainst
-    xgFor
-    xgAgainst
-    cleanSheets
-    failedToScore
-    bttsMatches
-    avgGoalsFor
-    avgGoalsAgainst
-    avgXgFor
-    avgXgAgainst
-  }
-}
-    `;
-
-export const useGetTeamStatsQuery = <
-  TData = GetTeamStatsQuery,
-  TError = unknown,
->(
-  variables: GetTeamStatsQueryVariables,
-  options?: Omit<
-    UseQueryOptions<GetTeamStatsQuery, TError, TData>,
-    "queryKey"
-  > & {
-    queryKey?: UseQueryOptions<GetTeamStatsQuery, TError, TData>["queryKey"];
-  }
-) => {
-  return useQuery<GetTeamStatsQuery, TError, TData>({
-    queryKey: ["GetTeamStats", variables],
-    queryFn: fetcher<GetTeamStatsQuery, GetTeamStatsQueryVariables>(
-      GetTeamStatsDocument,
-      variables
-    ),
-    ...options,
-  });
-};
-
-useGetTeamStatsQuery.getKey = (variables: GetTeamStatsQueryVariables) => [
-  "GetTeamStats",
-  variables,
-];
-
-export const useInfiniteGetTeamStatsQuery = <
-  TData = InfiniteData<GetTeamStatsQuery>,
-  TError = unknown,
->(
-  variables: GetTeamStatsQueryVariables,
-  options: Omit<
-    UseInfiniteQueryOptions<GetTeamStatsQuery, TError, TData>,
-    "queryKey"
-  > & {
-    queryKey?: UseInfiniteQueryOptions<
-      GetTeamStatsQuery,
-      TError,
-      TData
-    >["queryKey"];
-  }
-) => {
-  return useInfiniteQuery<GetTeamStatsQuery, TError, TData>(
-    (() => {
-      const { queryKey: optionsQueryKey, ...restOptions } = options;
-      return {
-        queryKey: optionsQueryKey ?? ["GetTeamStats.infinite", variables],
-        queryFn: (metaData) =>
-          fetcher<GetTeamStatsQuery, GetTeamStatsQueryVariables>(
-            GetTeamStatsDocument,
-            { ...variables, ...(metaData.pageParam ?? {}) }
-          )(),
-        ...restOptions,
-      };
-    })()
-  );
-};
-
-useInfiniteGetTeamStatsQuery.getKey = (
-  variables: GetTeamStatsQueryVariables
-) => ["GetTeamStats.infinite", variables];
-
-useGetTeamStatsQuery.fetcher = (variables: GetTeamStatsQueryVariables) =>
-  fetcher<GetTeamStatsQuery, GetTeamStatsQueryVariables>(
-    GetTeamStatsDocument,
-    variables
-  );
-
-export const GetRecentFormDocument = `
-    query GetRecentForm($teamId: String!, $numMatches: Int) {
-  recentForm(teamId: $teamId, numMatches: $numMatches) {
-    teamId
-    matches
-    form
-    points
-    goalsScored
-    goalsConceded
-    xgFor
-    xgAgainst
-    cleanSheets
-    failedToScore
-    bttsRate
-    over15Rate
-    over25Rate
-    over35Rate
-  }
-}
-    `;
-
-export const useGetRecentFormQuery = <
-  TData = GetRecentFormQuery,
-  TError = unknown,
->(
-  variables: GetRecentFormQueryVariables,
-  options?: Omit<
-    UseQueryOptions<GetRecentFormQuery, TError, TData>,
-    "queryKey"
-  > & {
-    queryKey?: UseQueryOptions<GetRecentFormQuery, TError, TData>["queryKey"];
-  }
-) => {
-  return useQuery<GetRecentFormQuery, TError, TData>({
-    queryKey: ["GetRecentForm", variables],
-    queryFn: fetcher<GetRecentFormQuery, GetRecentFormQueryVariables>(
-      GetRecentFormDocument,
-      variables
-    ),
-    ...options,
-  });
-};
-
-useGetRecentFormQuery.getKey = (variables: GetRecentFormQueryVariables) => [
-  "GetRecentForm",
-  variables,
-];
-
-export const useInfiniteGetRecentFormQuery = <
-  TData = InfiniteData<GetRecentFormQuery>,
-  TError = unknown,
->(
-  variables: GetRecentFormQueryVariables,
-  options: Omit<
-    UseInfiniteQueryOptions<GetRecentFormQuery, TError, TData>,
-    "queryKey"
-  > & {
-    queryKey?: UseInfiniteQueryOptions<
-      GetRecentFormQuery,
-      TError,
-      TData
-    >["queryKey"];
-  }
-) => {
-  return useInfiniteQuery<GetRecentFormQuery, TError, TData>(
-    (() => {
-      const { queryKey: optionsQueryKey, ...restOptions } = options;
-      return {
-        queryKey: optionsQueryKey ?? ["GetRecentForm.infinite", variables],
-        queryFn: (metaData) =>
-          fetcher<GetRecentFormQuery, GetRecentFormQueryVariables>(
-            GetRecentFormDocument,
-            { ...variables, ...(metaData.pageParam ?? {}) }
-          )(),
-        ...restOptions,
-      };
-    })()
-  );
-};
-
-useInfiniteGetRecentFormQuery.getKey = (
-  variables: GetRecentFormQueryVariables
-) => ["GetRecentForm.infinite", variables];
-
-useGetRecentFormQuery.fetcher = (variables: GetRecentFormQueryVariables) =>
-  fetcher<GetRecentFormQuery, GetRecentFormQueryVariables>(
-    GetRecentFormDocument,
-    variables
+    variables,
   );
 
 export const MarkNotificationReadDocument = `
@@ -3485,7 +2550,7 @@ export const useMarkNotificationReadMutation = <
     TError,
     MarkNotificationReadMutationVariables,
     TContext
-  >
+  >,
 ) => {
   return useMutation<
     MarkNotificationReadMutation,
@@ -3504,11 +2569,11 @@ export const useMarkNotificationReadMutation = <
 };
 
 useMarkNotificationReadMutation.fetcher = (
-  variables: MarkNotificationReadMutationVariables
+  variables: MarkNotificationReadMutationVariables,
 ) =>
   fetcher<MarkNotificationReadMutation, MarkNotificationReadMutationVariables>(
     MarkNotificationReadDocument,
-    variables
+    variables,
   );
 
 export const MarkAllNotificationsReadDocument = `
@@ -3526,7 +2591,7 @@ export const useMarkAllNotificationsReadMutation = <
     TError,
     MarkAllNotificationsReadMutationVariables,
     TContext
-  >
+  >,
 ) => {
   return useMutation<
     MarkAllNotificationsReadMutation,
@@ -3545,7 +2610,7 @@ export const useMarkAllNotificationsReadMutation = <
 };
 
 useMarkAllNotificationsReadMutation.fetcher = (
-  variables?: MarkAllNotificationsReadMutationVariables
+  variables?: MarkAllNotificationsReadMutationVariables,
 ) =>
   fetcher<
     MarkAllNotificationsReadMutation,
@@ -3581,7 +2646,7 @@ export const useGetNotificationsQuery = <
       TError,
       TData
     >["queryKey"];
-  }
+  },
 ) => {
   return useQuery<GetNotificationsQuery, TError, TData>({
     queryKey:
@@ -3590,14 +2655,14 @@ export const useGetNotificationsQuery = <
         : ["GetNotifications", variables],
     queryFn: fetcher<GetNotificationsQuery, GetNotificationsQueryVariables>(
       GetNotificationsDocument,
-      variables
+      variables,
     ),
     ...options,
   });
 };
 
 useGetNotificationsQuery.getKey = (
-  variables?: GetNotificationsQueryVariables
+  variables?: GetNotificationsQueryVariables,
 ) =>
   variables === undefined
     ? ["GetNotifications"]
@@ -3617,7 +2682,7 @@ export const useInfiniteGetNotificationsQuery = <
       TError,
       TData
     >["queryKey"];
-  }
+  },
 ) => {
   return useInfiniteQuery<GetNotificationsQuery, TError, TData>(
     (() => {
@@ -3630,27 +2695,27 @@ export const useInfiniteGetNotificationsQuery = <
         queryFn: (metaData) =>
           fetcher<GetNotificationsQuery, GetNotificationsQueryVariables>(
             GetNotificationsDocument,
-            { ...variables, ...(metaData.pageParam ?? {}) }
+            { ...variables, ...(metaData.pageParam ?? {}) },
           )(),
         ...restOptions,
       };
-    })()
+    })(),
   );
 };
 
 useInfiniteGetNotificationsQuery.getKey = (
-  variables?: GetNotificationsQueryVariables
+  variables?: GetNotificationsQueryVariables,
 ) =>
   variables === undefined
     ? ["GetNotifications.infinite"]
     : ["GetNotifications.infinite", variables];
 
 useGetNotificationsQuery.fetcher = (
-  variables?: GetNotificationsQueryVariables
+  variables?: GetNotificationsQueryVariables,
 ) =>
   fetcher<GetNotificationsQuery, GetNotificationsQueryVariables>(
     GetNotificationsDocument,
-    variables
+    variables,
   );
 
 export const GetUnreadNotificationCountDocument = `
@@ -3675,7 +2740,7 @@ export const useGetUnreadNotificationCountQuery = <
       TError,
       TData
     >["queryKey"];
-  }
+  },
 ) => {
   return useQuery<GetUnreadNotificationCountQuery, TError, TData>({
     queryKey:
@@ -3691,7 +2756,7 @@ export const useGetUnreadNotificationCountQuery = <
 };
 
 useGetUnreadNotificationCountQuery.getKey = (
-  variables?: GetUnreadNotificationCountQueryVariables
+  variables?: GetUnreadNotificationCountQueryVariables,
 ) =>
   variables === undefined
     ? ["GetUnreadNotificationCount"]
@@ -3711,7 +2776,7 @@ export const useInfiniteGetUnreadNotificationCountQuery = <
       TError,
       TData
     >["queryKey"];
-  }
+  },
 ) => {
   return useInfiniteQuery<GetUnreadNotificationCountQuery, TError, TData>(
     (() => {
@@ -3731,19 +2796,19 @@ export const useInfiniteGetUnreadNotificationCountQuery = <
           })(),
         ...restOptions,
       };
-    })()
+    })(),
   );
 };
 
 useInfiniteGetUnreadNotificationCountQuery.getKey = (
-  variables?: GetUnreadNotificationCountQueryVariables
+  variables?: GetUnreadNotificationCountQueryVariables,
 ) =>
   variables === undefined
     ? ["GetUnreadNotificationCount.infinite"]
     : ["GetUnreadNotificationCount.infinite", variables];
 
 useGetUnreadNotificationCountQuery.fetcher = (
-  variables?: GetUnreadNotificationCountQueryVariables
+  variables?: GetUnreadNotificationCountQueryVariables,
 ) =>
   fetcher<
     GetUnreadNotificationCountQuery,
@@ -3776,7 +2841,7 @@ export const useGetUserOrganizationsQuery = <
       TError,
       TData
     >["queryKey"];
-  }
+  },
 ) => {
   return useQuery<GetUserOrganizationsQuery, TError, TData>({
     queryKey:
@@ -3792,7 +2857,7 @@ export const useGetUserOrganizationsQuery = <
 };
 
 useGetUserOrganizationsQuery.getKey = (
-  variables?: GetUserOrganizationsQueryVariables
+  variables?: GetUserOrganizationsQueryVariables,
 ) =>
   variables === undefined
     ? ["GetUserOrganizations"]
@@ -3812,7 +2877,7 @@ export const useInfiniteGetUserOrganizationsQuery = <
       TError,
       TData
     >["queryKey"];
-  }
+  },
 ) => {
   return useInfiniteQuery<GetUserOrganizationsQuery, TError, TData>(
     (() => {
@@ -3832,23 +2897,1253 @@ export const useInfiniteGetUserOrganizationsQuery = <
           })(),
         ...restOptions,
       };
-    })()
+    })(),
   );
 };
 
 useInfiniteGetUserOrganizationsQuery.getKey = (
-  variables?: GetUserOrganizationsQueryVariables
+  variables?: GetUserOrganizationsQueryVariables,
 ) =>
   variables === undefined
     ? ["GetUserOrganizations.infinite"]
     : ["GetUserOrganizations.infinite", variables];
 
 useGetUserOrganizationsQuery.fetcher = (
-  variables?: GetUserOrganizationsQueryVariables
+  variables?: GetUserOrganizationsQueryVariables,
 ) =>
   fetcher<GetUserOrganizationsQuery, GetUserOrganizationsQueryVariables>(
     GetUserOrganizationsDocument,
-    variables
+    variables,
+  );
+
+export const CategoriesDocument = `
+    query Categories {
+  categories {
+    id
+    name
+    organizationId
+    createdAt
+  }
+}
+    `;
+
+export const useCategoriesQuery = <TData = CategoriesQuery, TError = unknown>(
+  variables?: CategoriesQueryVariables,
+  options?: Omit<
+    UseQueryOptions<CategoriesQuery, TError, TData>,
+    "queryKey"
+  > & {
+    queryKey?: UseQueryOptions<CategoriesQuery, TError, TData>["queryKey"];
+  },
+) => {
+  return useQuery<CategoriesQuery, TError, TData>({
+    queryKey:
+      variables === undefined ? ["Categories"] : ["Categories", variables],
+    queryFn: fetcher<CategoriesQuery, CategoriesQueryVariables>(
+      CategoriesDocument,
+      variables,
+    ),
+    ...options,
+  });
+};
+
+useCategoriesQuery.getKey = (variables?: CategoriesQueryVariables) =>
+  variables === undefined ? ["Categories"] : ["Categories", variables];
+
+export const useInfiniteCategoriesQuery = <
+  TData = InfiniteData<CategoriesQuery>,
+  TError = unknown,
+>(
+  variables: CategoriesQueryVariables,
+  options: Omit<
+    UseInfiniteQueryOptions<CategoriesQuery, TError, TData>,
+    "queryKey"
+  > & {
+    queryKey?: UseInfiniteQueryOptions<
+      CategoriesQuery,
+      TError,
+      TData
+    >["queryKey"];
+  },
+) => {
+  return useInfiniteQuery<CategoriesQuery, TError, TData>(
+    (() => {
+      const { queryKey: optionsQueryKey, ...restOptions } = options;
+      return {
+        queryKey:
+          (optionsQueryKey ?? variables === undefined)
+            ? ["Categories.infinite"]
+            : ["Categories.infinite", variables],
+        queryFn: (metaData) =>
+          fetcher<CategoriesQuery, CategoriesQueryVariables>(
+            CategoriesDocument,
+            { ...variables, ...(metaData.pageParam ?? {}) },
+          )(),
+        ...restOptions,
+      };
+    })(),
+  );
+};
+
+useInfiniteCategoriesQuery.getKey = (variables?: CategoriesQueryVariables) =>
+  variables === undefined
+    ? ["Categories.infinite"]
+    : ["Categories.infinite", variables];
+
+useCategoriesQuery.fetcher = (variables?: CategoriesQueryVariables) =>
+  fetcher<CategoriesQuery, CategoriesQueryVariables>(
+    CategoriesDocument,
+    variables,
+  );
+
+export const CreateCategoryDocument = `
+    mutation CreateCategory($input: CreateCategoryInput!) {
+  createCategory(input: $input) {
+    id
+    name
+    organizationId
+    createdAt
+  }
+}
+    `;
+
+export const useCreateCategoryMutation = <TError = unknown, TContext = unknown>(
+  options?: UseMutationOptions<
+    CreateCategoryMutation,
+    TError,
+    CreateCategoryMutationVariables,
+    TContext
+  >,
+) => {
+  return useMutation<
+    CreateCategoryMutation,
+    TError,
+    CreateCategoryMutationVariables,
+    TContext
+  >({
+    mutationKey: ["CreateCategory"],
+    mutationFn: (variables?: CreateCategoryMutationVariables) =>
+      fetcher<CreateCategoryMutation, CreateCategoryMutationVariables>(
+        CreateCategoryDocument,
+        variables,
+      )(),
+    ...options,
+  });
+};
+
+useCreateCategoryMutation.fetcher = (
+  variables: CreateCategoryMutationVariables,
+) =>
+  fetcher<CreateCategoryMutation, CreateCategoryMutationVariables>(
+    CreateCategoryDocument,
+    variables,
+  );
+
+export const UpdateCategoryDocument = `
+    mutation UpdateCategory($id: String!, $input: UpdateCategoryInput!) {
+  updateCategory(id: $id, input: $input) {
+    id
+    name
+    organizationId
+    createdAt
+  }
+}
+    `;
+
+export const useUpdateCategoryMutation = <TError = unknown, TContext = unknown>(
+  options?: UseMutationOptions<
+    UpdateCategoryMutation,
+    TError,
+    UpdateCategoryMutationVariables,
+    TContext
+  >,
+) => {
+  return useMutation<
+    UpdateCategoryMutation,
+    TError,
+    UpdateCategoryMutationVariables,
+    TContext
+  >({
+    mutationKey: ["UpdateCategory"],
+    mutationFn: (variables?: UpdateCategoryMutationVariables) =>
+      fetcher<UpdateCategoryMutation, UpdateCategoryMutationVariables>(
+        UpdateCategoryDocument,
+        variables,
+      )(),
+    ...options,
+  });
+};
+
+useUpdateCategoryMutation.fetcher = (
+  variables: UpdateCategoryMutationVariables,
+) =>
+  fetcher<UpdateCategoryMutation, UpdateCategoryMutationVariables>(
+    UpdateCategoryDocument,
+    variables,
+  );
+
+export const DeleteCategoryDocument = `
+    mutation DeleteCategory($id: String!) {
+  deleteCategory(id: $id)
+}
+    `;
+
+export const useDeleteCategoryMutation = <TError = unknown, TContext = unknown>(
+  options?: UseMutationOptions<
+    DeleteCategoryMutation,
+    TError,
+    DeleteCategoryMutationVariables,
+    TContext
+  >,
+) => {
+  return useMutation<
+    DeleteCategoryMutation,
+    TError,
+    DeleteCategoryMutationVariables,
+    TContext
+  >({
+    mutationKey: ["DeleteCategory"],
+    mutationFn: (variables?: DeleteCategoryMutationVariables) =>
+      fetcher<DeleteCategoryMutation, DeleteCategoryMutationVariables>(
+        DeleteCategoryDocument,
+        variables,
+      )(),
+    ...options,
+  });
+};
+
+useDeleteCategoryMutation.fetcher = (
+  variables: DeleteCategoryMutationVariables,
+) =>
+  fetcher<DeleteCategoryMutation, DeleteCategoryMutationVariables>(
+    DeleteCategoryDocument,
+    variables,
+  );
+
+export const ProductsDocument = `
+    query Products($categoryId: String, $search: String, $isActive: Boolean) {
+  products(categoryId: $categoryId, search: $search, isActive: $isActive) {
+    id
+    name
+    barcode
+    sellingPrice
+    isActive
+    categoryId
+    organizationId
+    createdAt
+    updatedAt
+    category {
+      id
+      name
+    }
+  }
+}
+    `;
+
+export const useProductsQuery = <TData = ProductsQuery, TError = unknown>(
+  variables?: ProductsQueryVariables,
+  options?: Omit<UseQueryOptions<ProductsQuery, TError, TData>, "queryKey"> & {
+    queryKey?: UseQueryOptions<ProductsQuery, TError, TData>["queryKey"];
+  },
+) => {
+  return useQuery<ProductsQuery, TError, TData>({
+    queryKey: variables === undefined ? ["Products"] : ["Products", variables],
+    queryFn: fetcher<ProductsQuery, ProductsQueryVariables>(
+      ProductsDocument,
+      variables,
+    ),
+    ...options,
+  });
+};
+
+useProductsQuery.getKey = (variables?: ProductsQueryVariables) =>
+  variables === undefined ? ["Products"] : ["Products", variables];
+
+export const useInfiniteProductsQuery = <
+  TData = InfiniteData<ProductsQuery>,
+  TError = unknown,
+>(
+  variables: ProductsQueryVariables,
+  options: Omit<
+    UseInfiniteQueryOptions<ProductsQuery, TError, TData>,
+    "queryKey"
+  > & {
+    queryKey?: UseInfiniteQueryOptions<
+      ProductsQuery,
+      TError,
+      TData
+    >["queryKey"];
+  },
+) => {
+  return useInfiniteQuery<ProductsQuery, TError, TData>(
+    (() => {
+      const { queryKey: optionsQueryKey, ...restOptions } = options;
+      return {
+        queryKey:
+          (optionsQueryKey ?? variables === undefined)
+            ? ["Products.infinite"]
+            : ["Products.infinite", variables],
+        queryFn: (metaData) =>
+          fetcher<ProductsQuery, ProductsQueryVariables>(ProductsDocument, {
+            ...variables,
+            ...(metaData.pageParam ?? {}),
+          })(),
+        ...restOptions,
+      };
+    })(),
+  );
+};
+
+useInfiniteProductsQuery.getKey = (variables?: ProductsQueryVariables) =>
+  variables === undefined
+    ? ["Products.infinite"]
+    : ["Products.infinite", variables];
+
+useProductsQuery.fetcher = (variables?: ProductsQueryVariables) =>
+  fetcher<ProductsQuery, ProductsQueryVariables>(ProductsDocument, variables);
+
+export const ProductDocument = `
+    query Product($id: String!) {
+  product(id: $id) {
+    id
+    name
+    barcode
+    sellingPrice
+    isActive
+    categoryId
+    organizationId
+    createdAt
+    updatedAt
+    category {
+      id
+      name
+    }
+  }
+}
+    `;
+
+export const useProductQuery = <TData = ProductQuery, TError = unknown>(
+  variables: ProductQueryVariables,
+  options?: Omit<UseQueryOptions<ProductQuery, TError, TData>, "queryKey"> & {
+    queryKey?: UseQueryOptions<ProductQuery, TError, TData>["queryKey"];
+  },
+) => {
+  return useQuery<ProductQuery, TError, TData>({
+    queryKey: ["Product", variables],
+    queryFn: fetcher<ProductQuery, ProductQueryVariables>(
+      ProductDocument,
+      variables,
+    ),
+    ...options,
+  });
+};
+
+useProductQuery.getKey = (variables: ProductQueryVariables) => [
+  "Product",
+  variables,
+];
+
+export const useInfiniteProductQuery = <
+  TData = InfiniteData<ProductQuery>,
+  TError = unknown,
+>(
+  variables: ProductQueryVariables,
+  options: Omit<
+    UseInfiniteQueryOptions<ProductQuery, TError, TData>,
+    "queryKey"
+  > & {
+    queryKey?: UseInfiniteQueryOptions<ProductQuery, TError, TData>["queryKey"];
+  },
+) => {
+  return useInfiniteQuery<ProductQuery, TError, TData>(
+    (() => {
+      const { queryKey: optionsQueryKey, ...restOptions } = options;
+      return {
+        queryKey: optionsQueryKey ?? ["Product.infinite", variables],
+        queryFn: (metaData) =>
+          fetcher<ProductQuery, ProductQueryVariables>(ProductDocument, {
+            ...variables,
+            ...(metaData.pageParam ?? {}),
+          })(),
+        ...restOptions,
+      };
+    })(),
+  );
+};
+
+useInfiniteProductQuery.getKey = (variables: ProductQueryVariables) => [
+  "Product.infinite",
+  variables,
+];
+
+useProductQuery.fetcher = (variables: ProductQueryVariables) =>
+  fetcher<ProductQuery, ProductQueryVariables>(ProductDocument, variables);
+
+export const ProductsWithStockDocument = `
+    query ProductsWithStock($categoryId: String, $search: String, $lowStockOnly: Boolean, $threshold: Int) {
+  productsWithStock(
+    categoryId: $categoryId
+    search: $search
+    lowStockOnly: $lowStockOnly
+    threshold: $threshold
+  ) {
+    id
+    name
+    barcode
+    sellingPrice
+    isActive
+    categoryId
+    totalStock
+    averageCost
+    organizationId
+    createdAt
+    updatedAt
+    category {
+      id
+      name
+    }
+  }
+}
+    `;
+
+export const useProductsWithStockQuery = <
+  TData = ProductsWithStockQuery,
+  TError = unknown,
+>(
+  variables?: ProductsWithStockQueryVariables,
+  options?: Omit<
+    UseQueryOptions<ProductsWithStockQuery, TError, TData>,
+    "queryKey"
+  > & {
+    queryKey?: UseQueryOptions<
+      ProductsWithStockQuery,
+      TError,
+      TData
+    >["queryKey"];
+  },
+) => {
+  return useQuery<ProductsWithStockQuery, TError, TData>({
+    queryKey:
+      variables === undefined
+        ? ["ProductsWithStock"]
+        : ["ProductsWithStock", variables],
+    queryFn: fetcher<ProductsWithStockQuery, ProductsWithStockQueryVariables>(
+      ProductsWithStockDocument,
+      variables,
+    ),
+    ...options,
+  });
+};
+
+useProductsWithStockQuery.getKey = (
+  variables?: ProductsWithStockQueryVariables,
+) =>
+  variables === undefined
+    ? ["ProductsWithStock"]
+    : ["ProductsWithStock", variables];
+
+export const useInfiniteProductsWithStockQuery = <
+  TData = InfiniteData<ProductsWithStockQuery>,
+  TError = unknown,
+>(
+  variables: ProductsWithStockQueryVariables,
+  options: Omit<
+    UseInfiniteQueryOptions<ProductsWithStockQuery, TError, TData>,
+    "queryKey"
+  > & {
+    queryKey?: UseInfiniteQueryOptions<
+      ProductsWithStockQuery,
+      TError,
+      TData
+    >["queryKey"];
+  },
+) => {
+  return useInfiniteQuery<ProductsWithStockQuery, TError, TData>(
+    (() => {
+      const { queryKey: optionsQueryKey, ...restOptions } = options;
+      return {
+        queryKey:
+          (optionsQueryKey ?? variables === undefined)
+            ? ["ProductsWithStock.infinite"]
+            : ["ProductsWithStock.infinite", variables],
+        queryFn: (metaData) =>
+          fetcher<ProductsWithStockQuery, ProductsWithStockQueryVariables>(
+            ProductsWithStockDocument,
+            { ...variables, ...(metaData.pageParam ?? {}) },
+          )(),
+        ...restOptions,
+      };
+    })(),
+  );
+};
+
+useInfiniteProductsWithStockQuery.getKey = (
+  variables?: ProductsWithStockQueryVariables,
+) =>
+  variables === undefined
+    ? ["ProductsWithStock.infinite"]
+    : ["ProductsWithStock.infinite", variables];
+
+useProductsWithStockQuery.fetcher = (
+  variables?: ProductsWithStockQueryVariables,
+) =>
+  fetcher<ProductsWithStockQuery, ProductsWithStockQueryVariables>(
+    ProductsWithStockDocument,
+    variables,
+  );
+
+export const CreateProductDocument = `
+    mutation CreateProduct($input: CreateProductInput!) {
+  createProduct(input: $input) {
+    id
+    name
+    barcode
+    sellingPrice
+    isActive
+    categoryId
+    organizationId
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+export const useCreateProductMutation = <TError = unknown, TContext = unknown>(
+  options?: UseMutationOptions<
+    CreateProductMutation,
+    TError,
+    CreateProductMutationVariables,
+    TContext
+  >,
+) => {
+  return useMutation<
+    CreateProductMutation,
+    TError,
+    CreateProductMutationVariables,
+    TContext
+  >({
+    mutationKey: ["CreateProduct"],
+    mutationFn: (variables?: CreateProductMutationVariables) =>
+      fetcher<CreateProductMutation, CreateProductMutationVariables>(
+        CreateProductDocument,
+        variables,
+      )(),
+    ...options,
+  });
+};
+
+useCreateProductMutation.fetcher = (
+  variables: CreateProductMutationVariables,
+) =>
+  fetcher<CreateProductMutation, CreateProductMutationVariables>(
+    CreateProductDocument,
+    variables,
+  );
+
+export const UpdateProductDocument = `
+    mutation UpdateProduct($id: String!, $input: UpdateProductInput!) {
+  updateProduct(id: $id, input: $input) {
+    id
+    name
+    barcode
+    sellingPrice
+    isActive
+    categoryId
+    organizationId
+    createdAt
+    updatedAt
+  }
+}
+    `;
+
+export const useUpdateProductMutation = <TError = unknown, TContext = unknown>(
+  options?: UseMutationOptions<
+    UpdateProductMutation,
+    TError,
+    UpdateProductMutationVariables,
+    TContext
+  >,
+) => {
+  return useMutation<
+    UpdateProductMutation,
+    TError,
+    UpdateProductMutationVariables,
+    TContext
+  >({
+    mutationKey: ["UpdateProduct"],
+    mutationFn: (variables?: UpdateProductMutationVariables) =>
+      fetcher<UpdateProductMutation, UpdateProductMutationVariables>(
+        UpdateProductDocument,
+        variables,
+      )(),
+    ...options,
+  });
+};
+
+useUpdateProductMutation.fetcher = (
+  variables: UpdateProductMutationVariables,
+) =>
+  fetcher<UpdateProductMutation, UpdateProductMutationVariables>(
+    UpdateProductDocument,
+    variables,
+  );
+
+export const DeleteProductDocument = `
+    mutation DeleteProduct($id: String!) {
+  deleteProduct(id: $id)
+}
+    `;
+
+export const useDeleteProductMutation = <TError = unknown, TContext = unknown>(
+  options?: UseMutationOptions<
+    DeleteProductMutation,
+    TError,
+    DeleteProductMutationVariables,
+    TContext
+  >,
+) => {
+  return useMutation<
+    DeleteProductMutation,
+    TError,
+    DeleteProductMutationVariables,
+    TContext
+  >({
+    mutationKey: ["DeleteProduct"],
+    mutationFn: (variables?: DeleteProductMutationVariables) =>
+      fetcher<DeleteProductMutation, DeleteProductMutationVariables>(
+        DeleteProductDocument,
+        variables,
+      )(),
+    ...options,
+  });
+};
+
+useDeleteProductMutation.fetcher = (
+  variables: DeleteProductMutationVariables,
+) =>
+  fetcher<DeleteProductMutation, DeleteProductMutationVariables>(
+    DeleteProductDocument,
+    variables,
+  );
+
+export const SalesDocument = `
+    query Sales($startDate: DateTime, $endDate: DateTime) {
+  sales(startDate: $startDate, endDate: $endDate) {
+    id
+    receiptNo
+    totalAmount
+    totalCost
+    paymentMethod
+    notes
+    organizationId
+    createdAt
+  }
+}
+    `;
+
+export const useSalesQuery = <TData = SalesQuery, TError = unknown>(
+  variables?: SalesQueryVariables,
+  options?: Omit<UseQueryOptions<SalesQuery, TError, TData>, "queryKey"> & {
+    queryKey?: UseQueryOptions<SalesQuery, TError, TData>["queryKey"];
+  },
+) => {
+  return useQuery<SalesQuery, TError, TData>({
+    queryKey: variables === undefined ? ["Sales"] : ["Sales", variables],
+    queryFn: fetcher<SalesQuery, SalesQueryVariables>(SalesDocument, variables),
+    ...options,
+  });
+};
+
+useSalesQuery.getKey = (variables?: SalesQueryVariables) =>
+  variables === undefined ? ["Sales"] : ["Sales", variables];
+
+export const useInfiniteSalesQuery = <
+  TData = InfiniteData<SalesQuery>,
+  TError = unknown,
+>(
+  variables: SalesQueryVariables,
+  options: Omit<
+    UseInfiniteQueryOptions<SalesQuery, TError, TData>,
+    "queryKey"
+  > & {
+    queryKey?: UseInfiniteQueryOptions<SalesQuery, TError, TData>["queryKey"];
+  },
+) => {
+  return useInfiniteQuery<SalesQuery, TError, TData>(
+    (() => {
+      const { queryKey: optionsQueryKey, ...restOptions } = options;
+      return {
+        queryKey:
+          (optionsQueryKey ?? variables === undefined)
+            ? ["Sales.infinite"]
+            : ["Sales.infinite", variables],
+        queryFn: (metaData) =>
+          fetcher<SalesQuery, SalesQueryVariables>(SalesDocument, {
+            ...variables,
+            ...(metaData.pageParam ?? {}),
+          })(),
+        ...restOptions,
+      };
+    })(),
+  );
+};
+
+useInfiniteSalesQuery.getKey = (variables?: SalesQueryVariables) =>
+  variables === undefined ? ["Sales.infinite"] : ["Sales.infinite", variables];
+
+useSalesQuery.fetcher = (variables?: SalesQueryVariables) =>
+  fetcher<SalesQuery, SalesQueryVariables>(SalesDocument, variables);
+
+export const SaleDocument = `
+    query Sale($id: String!) {
+  sale(id: $id) {
+    id
+    receiptNo
+    totalAmount
+    totalCost
+    paymentMethod
+    notes
+    organizationId
+    createdAt
+    items {
+      id
+      saleId
+      productId
+      quantity
+      unitPrice
+      unitCost
+      subtotal
+      createdAt
+      product {
+        id
+        name
+        barcode
+        sellingPrice
+      }
+    }
+  }
+}
+    `;
+
+export const useSaleQuery = <TData = SaleQuery, TError = unknown>(
+  variables: SaleQueryVariables,
+  options?: Omit<UseQueryOptions<SaleQuery, TError, TData>, "queryKey"> & {
+    queryKey?: UseQueryOptions<SaleQuery, TError, TData>["queryKey"];
+  },
+) => {
+  return useQuery<SaleQuery, TError, TData>({
+    queryKey: ["Sale", variables],
+    queryFn: fetcher<SaleQuery, SaleQueryVariables>(SaleDocument, variables),
+    ...options,
+  });
+};
+
+useSaleQuery.getKey = (variables: SaleQueryVariables) => ["Sale", variables];
+
+export const useInfiniteSaleQuery = <
+  TData = InfiniteData<SaleQuery>,
+  TError = unknown,
+>(
+  variables: SaleQueryVariables,
+  options: Omit<
+    UseInfiniteQueryOptions<SaleQuery, TError, TData>,
+    "queryKey"
+  > & {
+    queryKey?: UseInfiniteQueryOptions<SaleQuery, TError, TData>["queryKey"];
+  },
+) => {
+  return useInfiniteQuery<SaleQuery, TError, TData>(
+    (() => {
+      const { queryKey: optionsQueryKey, ...restOptions } = options;
+      return {
+        queryKey: optionsQueryKey ?? ["Sale.infinite", variables],
+        queryFn: (metaData) =>
+          fetcher<SaleQuery, SaleQueryVariables>(SaleDocument, {
+            ...variables,
+            ...(metaData.pageParam ?? {}),
+          })(),
+        ...restOptions,
+      };
+    })(),
+  );
+};
+
+useInfiniteSaleQuery.getKey = (variables: SaleQueryVariables) => [
+  "Sale.infinite",
+  variables,
+];
+
+useSaleQuery.fetcher = (variables: SaleQueryVariables) =>
+  fetcher<SaleQuery, SaleQueryVariables>(SaleDocument, variables);
+
+export const SalesSummaryDocument = `
+    query SalesSummary($startDate: DateTime!, $endDate: DateTime!) {
+  salesSummary(startDate: $startDate, endDate: $endDate) {
+    totalRevenue
+    totalCost
+    totalProfit
+    salesCount
+    startDate
+    endDate
+  }
+}
+    `;
+
+export const useSalesSummaryQuery = <
+  TData = SalesSummaryQuery,
+  TError = unknown,
+>(
+  variables: SalesSummaryQueryVariables,
+  options?: Omit<
+    UseQueryOptions<SalesSummaryQuery, TError, TData>,
+    "queryKey"
+  > & {
+    queryKey?: UseQueryOptions<SalesSummaryQuery, TError, TData>["queryKey"];
+  },
+) => {
+  return useQuery<SalesSummaryQuery, TError, TData>({
+    queryKey: ["SalesSummary", variables],
+    queryFn: fetcher<SalesSummaryQuery, SalesSummaryQueryVariables>(
+      SalesSummaryDocument,
+      variables,
+    ),
+    ...options,
+  });
+};
+
+useSalesSummaryQuery.getKey = (variables: SalesSummaryQueryVariables) => [
+  "SalesSummary",
+  variables,
+];
+
+export const useInfiniteSalesSummaryQuery = <
+  TData = InfiniteData<SalesSummaryQuery>,
+  TError = unknown,
+>(
+  variables: SalesSummaryQueryVariables,
+  options: Omit<
+    UseInfiniteQueryOptions<SalesSummaryQuery, TError, TData>,
+    "queryKey"
+  > & {
+    queryKey?: UseInfiniteQueryOptions<
+      SalesSummaryQuery,
+      TError,
+      TData
+    >["queryKey"];
+  },
+) => {
+  return useInfiniteQuery<SalesSummaryQuery, TError, TData>(
+    (() => {
+      const { queryKey: optionsQueryKey, ...restOptions } = options;
+      return {
+        queryKey: optionsQueryKey ?? ["SalesSummary.infinite", variables],
+        queryFn: (metaData) =>
+          fetcher<SalesSummaryQuery, SalesSummaryQueryVariables>(
+            SalesSummaryDocument,
+            { ...variables, ...(metaData.pageParam ?? {}) },
+          )(),
+        ...restOptions,
+      };
+    })(),
+  );
+};
+
+useInfiniteSalesSummaryQuery.getKey = (
+  variables: SalesSummaryQueryVariables,
+) => ["SalesSummary.infinite", variables];
+
+useSalesSummaryQuery.fetcher = (variables: SalesSummaryQueryVariables) =>
+  fetcher<SalesSummaryQuery, SalesSummaryQueryVariables>(
+    SalesSummaryDocument,
+    variables,
+  );
+
+export const CreateSaleDocument = `
+    mutation CreateSale($input: CreateSaleInput!) {
+  createSale(input: $input) {
+    id
+    receiptNo
+    totalAmount
+    totalCost
+    paymentMethod
+    notes
+    organizationId
+    createdAt
+    items {
+      id
+      saleId
+      productId
+      quantity
+      unitPrice
+      unitCost
+      subtotal
+      createdAt
+      product {
+        id
+        name
+        barcode
+        sellingPrice
+      }
+    }
+  }
+}
+    `;
+
+export const useCreateSaleMutation = <TError = unknown, TContext = unknown>(
+  options?: UseMutationOptions<
+    CreateSaleMutation,
+    TError,
+    CreateSaleMutationVariables,
+    TContext
+  >,
+) => {
+  return useMutation<
+    CreateSaleMutation,
+    TError,
+    CreateSaleMutationVariables,
+    TContext
+  >({
+    mutationKey: ["CreateSale"],
+    mutationFn: (variables?: CreateSaleMutationVariables) =>
+      fetcher<CreateSaleMutation, CreateSaleMutationVariables>(
+        CreateSaleDocument,
+        variables,
+      )(),
+    ...options,
+  });
+};
+
+useCreateSaleMutation.fetcher = (variables: CreateSaleMutationVariables) =>
+  fetcher<CreateSaleMutation, CreateSaleMutationVariables>(
+    CreateSaleDocument,
+    variables,
+  );
+
+export const ProductStockDocument = `
+    query ProductStock($productId: String!) {
+  productStock(productId: $productId) {
+    productId
+    totalStock
+    averageCost
+    lots {
+      id
+      productId
+      quantity
+      remaining
+      costPrice
+      supplier
+      notes
+      purchasedAt
+      organizationId
+      createdAt
+    }
+  }
+}
+    `;
+
+export const useProductStockQuery = <
+  TData = ProductStockQuery,
+  TError = unknown,
+>(
+  variables: ProductStockQueryVariables,
+  options?: Omit<
+    UseQueryOptions<ProductStockQuery, TError, TData>,
+    "queryKey"
+  > & {
+    queryKey?: UseQueryOptions<ProductStockQuery, TError, TData>["queryKey"];
+  },
+) => {
+  return useQuery<ProductStockQuery, TError, TData>({
+    queryKey: ["ProductStock", variables],
+    queryFn: fetcher<ProductStockQuery, ProductStockQueryVariables>(
+      ProductStockDocument,
+      variables,
+    ),
+    ...options,
+  });
+};
+
+useProductStockQuery.getKey = (variables: ProductStockQueryVariables) => [
+  "ProductStock",
+  variables,
+];
+
+export const useInfiniteProductStockQuery = <
+  TData = InfiniteData<ProductStockQuery>,
+  TError = unknown,
+>(
+  variables: ProductStockQueryVariables,
+  options: Omit<
+    UseInfiniteQueryOptions<ProductStockQuery, TError, TData>,
+    "queryKey"
+  > & {
+    queryKey?: UseInfiniteQueryOptions<
+      ProductStockQuery,
+      TError,
+      TData
+    >["queryKey"];
+  },
+) => {
+  return useInfiniteQuery<ProductStockQuery, TError, TData>(
+    (() => {
+      const { queryKey: optionsQueryKey, ...restOptions } = options;
+      return {
+        queryKey: optionsQueryKey ?? ["ProductStock.infinite", variables],
+        queryFn: (metaData) =>
+          fetcher<ProductStockQuery, ProductStockQueryVariables>(
+            ProductStockDocument,
+            { ...variables, ...(metaData.pageParam ?? {}) },
+          )(),
+        ...restOptions,
+      };
+    })(),
+  );
+};
+
+useInfiniteProductStockQuery.getKey = (
+  variables: ProductStockQueryVariables,
+) => ["ProductStock.infinite", variables];
+
+useProductStockQuery.fetcher = (variables: ProductStockQueryVariables) =>
+  fetcher<ProductStockQuery, ProductStockQueryVariables>(
+    ProductStockDocument,
+    variables,
+  );
+
+export const StockLotsDocument = `
+    query StockLots($productId: String!) {
+  stockLots(productId: $productId) {
+    id
+    productId
+    quantity
+    remaining
+    costPrice
+    supplier
+    notes
+    purchasedAt
+    organizationId
+    createdAt
+  }
+}
+    `;
+
+export const useStockLotsQuery = <TData = StockLotsQuery, TError = unknown>(
+  variables: StockLotsQueryVariables,
+  options?: Omit<UseQueryOptions<StockLotsQuery, TError, TData>, "queryKey"> & {
+    queryKey?: UseQueryOptions<StockLotsQuery, TError, TData>["queryKey"];
+  },
+) => {
+  return useQuery<StockLotsQuery, TError, TData>({
+    queryKey: ["StockLots", variables],
+    queryFn: fetcher<StockLotsQuery, StockLotsQueryVariables>(
+      StockLotsDocument,
+      variables,
+    ),
+    ...options,
+  });
+};
+
+useStockLotsQuery.getKey = (variables: StockLotsQueryVariables) => [
+  "StockLots",
+  variables,
+];
+
+export const useInfiniteStockLotsQuery = <
+  TData = InfiniteData<StockLotsQuery>,
+  TError = unknown,
+>(
+  variables: StockLotsQueryVariables,
+  options: Omit<
+    UseInfiniteQueryOptions<StockLotsQuery, TError, TData>,
+    "queryKey"
+  > & {
+    queryKey?: UseInfiniteQueryOptions<
+      StockLotsQuery,
+      TError,
+      TData
+    >["queryKey"];
+  },
+) => {
+  return useInfiniteQuery<StockLotsQuery, TError, TData>(
+    (() => {
+      const { queryKey: optionsQueryKey, ...restOptions } = options;
+      return {
+        queryKey: optionsQueryKey ?? ["StockLots.infinite", variables],
+        queryFn: (metaData) =>
+          fetcher<StockLotsQuery, StockLotsQueryVariables>(StockLotsDocument, {
+            ...variables,
+            ...(metaData.pageParam ?? {}),
+          })(),
+        ...restOptions,
+      };
+    })(),
+  );
+};
+
+useInfiniteStockLotsQuery.getKey = (variables: StockLotsQueryVariables) => [
+  "StockLots.infinite",
+  variables,
+];
+
+useStockLotsQuery.fetcher = (variables: StockLotsQueryVariables) =>
+  fetcher<StockLotsQuery, StockLotsQueryVariables>(
+    StockLotsDocument,
+    variables,
+  );
+
+export const LowStockProductsDocument = `
+    query LowStockProducts($threshold: Int) {
+  lowStockProducts(threshold: $threshold) {
+    id
+    name
+    barcode
+    sellingPrice
+    isActive
+    categoryId
+    totalStock
+    averageCost
+    organizationId
+    createdAt
+    updatedAt
+    category {
+      id
+      name
+    }
+  }
+}
+    `;
+
+export const useLowStockProductsQuery = <
+  TData = LowStockProductsQuery,
+  TError = unknown,
+>(
+  variables?: LowStockProductsQueryVariables,
+  options?: Omit<
+    UseQueryOptions<LowStockProductsQuery, TError, TData>,
+    "queryKey"
+  > & {
+    queryKey?: UseQueryOptions<
+      LowStockProductsQuery,
+      TError,
+      TData
+    >["queryKey"];
+  },
+) => {
+  return useQuery<LowStockProductsQuery, TError, TData>({
+    queryKey:
+      variables === undefined
+        ? ["LowStockProducts"]
+        : ["LowStockProducts", variables],
+    queryFn: fetcher<LowStockProductsQuery, LowStockProductsQueryVariables>(
+      LowStockProductsDocument,
+      variables,
+    ),
+    ...options,
+  });
+};
+
+useLowStockProductsQuery.getKey = (
+  variables?: LowStockProductsQueryVariables,
+) =>
+  variables === undefined
+    ? ["LowStockProducts"]
+    : ["LowStockProducts", variables];
+
+export const useInfiniteLowStockProductsQuery = <
+  TData = InfiniteData<LowStockProductsQuery>,
+  TError = unknown,
+>(
+  variables: LowStockProductsQueryVariables,
+  options: Omit<
+    UseInfiniteQueryOptions<LowStockProductsQuery, TError, TData>,
+    "queryKey"
+  > & {
+    queryKey?: UseInfiniteQueryOptions<
+      LowStockProductsQuery,
+      TError,
+      TData
+    >["queryKey"];
+  },
+) => {
+  return useInfiniteQuery<LowStockProductsQuery, TError, TData>(
+    (() => {
+      const { queryKey: optionsQueryKey, ...restOptions } = options;
+      return {
+        queryKey:
+          (optionsQueryKey ?? variables === undefined)
+            ? ["LowStockProducts.infinite"]
+            : ["LowStockProducts.infinite", variables],
+        queryFn: (metaData) =>
+          fetcher<LowStockProductsQuery, LowStockProductsQueryVariables>(
+            LowStockProductsDocument,
+            { ...variables, ...(metaData.pageParam ?? {}) },
+          )(),
+        ...restOptions,
+      };
+    })(),
+  );
+};
+
+useInfiniteLowStockProductsQuery.getKey = (
+  variables?: LowStockProductsQueryVariables,
+) =>
+  variables === undefined
+    ? ["LowStockProducts.infinite"]
+    : ["LowStockProducts.infinite", variables];
+
+useLowStockProductsQuery.fetcher = (
+  variables?: LowStockProductsQueryVariables,
+) =>
+  fetcher<LowStockProductsQuery, LowStockProductsQueryVariables>(
+    LowStockProductsDocument,
+    variables,
+  );
+
+export const AddStockLotDocument = `
+    mutation AddStockLot($input: AddStockLotInput!) {
+  addStockLot(input: $input) {
+    id
+    productId
+    quantity
+    remaining
+    costPrice
+    supplier
+    notes
+    purchasedAt
+    organizationId
+    createdAt
+  }
+}
+    `;
+
+export const useAddStockLotMutation = <TError = unknown, TContext = unknown>(
+  options?: UseMutationOptions<
+    AddStockLotMutation,
+    TError,
+    AddStockLotMutationVariables,
+    TContext
+  >,
+) => {
+  return useMutation<
+    AddStockLotMutation,
+    TError,
+    AddStockLotMutationVariables,
+    TContext
+  >({
+    mutationKey: ["AddStockLot"],
+    mutationFn: (variables?: AddStockLotMutationVariables) =>
+      fetcher<AddStockLotMutation, AddStockLotMutationVariables>(
+        AddStockLotDocument,
+        variables,
+      )(),
+    ...options,
+  });
+};
+
+useAddStockLotMutation.fetcher = (variables: AddStockLotMutationVariables) =>
+  fetcher<AddStockLotMutation, AddStockLotMutationVariables>(
+    AddStockLotDocument,
+    variables,
   );
 
 export const CreateProjectDocument = `
@@ -3870,7 +4165,7 @@ export const useCreateProjectMutation = <TError = unknown, TContext = unknown>(
     TError,
     CreateProjectMutationVariables,
     TContext
-  >
+  >,
 ) => {
   return useMutation<
     CreateProjectMutation,
@@ -3882,18 +4177,18 @@ export const useCreateProjectMutation = <TError = unknown, TContext = unknown>(
     mutationFn: (variables?: CreateProjectMutationVariables) =>
       fetcher<CreateProjectMutation, CreateProjectMutationVariables>(
         CreateProjectDocument,
-        variables
+        variables,
       )(),
     ...options,
   });
 };
 
 useCreateProjectMutation.fetcher = (
-  variables: CreateProjectMutationVariables
+  variables: CreateProjectMutationVariables,
 ) =>
   fetcher<CreateProjectMutation, CreateProjectMutationVariables>(
     CreateProjectDocument,
-    variables
+    variables,
   );
 
 export const UpdateProjectDocument = `
@@ -3915,7 +4210,7 @@ export const useUpdateProjectMutation = <TError = unknown, TContext = unknown>(
     TError,
     UpdateProjectMutationVariables,
     TContext
-  >
+  >,
 ) => {
   return useMutation<
     UpdateProjectMutation,
@@ -3927,18 +4222,18 @@ export const useUpdateProjectMutation = <TError = unknown, TContext = unknown>(
     mutationFn: (variables?: UpdateProjectMutationVariables) =>
       fetcher<UpdateProjectMutation, UpdateProjectMutationVariables>(
         UpdateProjectDocument,
-        variables
+        variables,
       )(),
     ...options,
   });
 };
 
 useUpdateProjectMutation.fetcher = (
-  variables: UpdateProjectMutationVariables
+  variables: UpdateProjectMutationVariables,
 ) =>
   fetcher<UpdateProjectMutation, UpdateProjectMutationVariables>(
     UpdateProjectDocument,
-    variables
+    variables,
   );
 
 export const DeleteProjectDocument = `
@@ -3953,7 +4248,7 @@ export const useDeleteProjectMutation = <TError = unknown, TContext = unknown>(
     TError,
     DeleteProjectMutationVariables,
     TContext
-  >
+  >,
 ) => {
   return useMutation<
     DeleteProjectMutation,
@@ -3965,18 +4260,18 @@ export const useDeleteProjectMutation = <TError = unknown, TContext = unknown>(
     mutationFn: (variables?: DeleteProjectMutationVariables) =>
       fetcher<DeleteProjectMutation, DeleteProjectMutationVariables>(
         DeleteProjectDocument,
-        variables
+        variables,
       )(),
     ...options,
   });
 };
 
 useDeleteProjectMutation.fetcher = (
-  variables: DeleteProjectMutationVariables
+  variables: DeleteProjectMutationVariables,
 ) =>
   fetcher<DeleteProjectMutation, DeleteProjectMutationVariables>(
     DeleteProjectDocument,
-    variables
+    variables,
   );
 
 export const GetProjectsDocument = `
@@ -3999,14 +4294,14 @@ export const useGetProjectsQuery = <TData = GetProjectsQuery, TError = unknown>(
     "queryKey"
   > & {
     queryKey?: UseQueryOptions<GetProjectsQuery, TError, TData>["queryKey"];
-  }
+  },
 ) => {
   return useQuery<GetProjectsQuery, TError, TData>({
     queryKey:
       variables === undefined ? ["GetProjects"] : ["GetProjects", variables],
     queryFn: fetcher<GetProjectsQuery, GetProjectsQueryVariables>(
       GetProjectsDocument,
-      variables
+      variables,
     ),
     ...options,
   });
@@ -4029,7 +4324,7 @@ export const useInfiniteGetProjectsQuery = <
       TError,
       TData
     >["queryKey"];
-  }
+  },
 ) => {
   return useInfiniteQuery<GetProjectsQuery, TError, TData>(
     (() => {
@@ -4042,11 +4337,11 @@ export const useInfiniteGetProjectsQuery = <
         queryFn: (metaData) =>
           fetcher<GetProjectsQuery, GetProjectsQueryVariables>(
             GetProjectsDocument,
-            { ...variables, ...(metaData.pageParam ?? {}) }
+            { ...variables, ...(metaData.pageParam ?? {}) },
           )(),
         ...restOptions,
       };
-    })()
+    })(),
   );
 };
 
@@ -4058,7 +4353,7 @@ useInfiniteGetProjectsQuery.getKey = (variables?: GetProjectsQueryVariables) =>
 useGetProjectsQuery.fetcher = (variables?: GetProjectsQueryVariables) =>
   fetcher<GetProjectsQuery, GetProjectsQueryVariables>(
     GetProjectsDocument,
-    variables
+    variables,
   );
 
 export const GetProjectDocument = `
@@ -4081,13 +4376,13 @@ export const useGetProjectQuery = <TData = GetProjectQuery, TError = unknown>(
     "queryKey"
   > & {
     queryKey?: UseQueryOptions<GetProjectQuery, TError, TData>["queryKey"];
-  }
+  },
 ) => {
   return useQuery<GetProjectQuery, TError, TData>({
     queryKey: ["GetProject", variables],
     queryFn: fetcher<GetProjectQuery, GetProjectQueryVariables>(
       GetProjectDocument,
-      variables
+      variables,
     ),
     ...options,
   });
@@ -4112,7 +4407,7 @@ export const useInfiniteGetProjectQuery = <
       TError,
       TData
     >["queryKey"];
-  }
+  },
 ) => {
   return useInfiniteQuery<GetProjectQuery, TError, TData>(
     (() => {
@@ -4122,11 +4417,11 @@ export const useInfiniteGetProjectQuery = <
         queryFn: (metaData) =>
           fetcher<GetProjectQuery, GetProjectQueryVariables>(
             GetProjectDocument,
-            { ...variables, ...(metaData.pageParam ?? {}) }
+            { ...variables, ...(metaData.pageParam ?? {}) },
           )(),
         ...restOptions,
       };
-    })()
+    })(),
   );
 };
 
@@ -4138,7 +4433,7 @@ useInfiniteGetProjectQuery.getKey = (variables: GetProjectQueryVariables) => [
 useGetProjectQuery.fetcher = (variables: GetProjectQueryVariables) =>
   fetcher<GetProjectQuery, GetProjectQueryVariables>(
     GetProjectDocument,
-    variables
+    variables,
   );
 
 export const CreateTaskDocument = `
@@ -4159,7 +4454,7 @@ export const useCreateTaskMutation = <TError = unknown, TContext = unknown>(
     TError,
     CreateTaskMutationVariables,
     TContext
-  >
+  >,
 ) => {
   return useMutation<
     CreateTaskMutation,
@@ -4171,7 +4466,7 @@ export const useCreateTaskMutation = <TError = unknown, TContext = unknown>(
     mutationFn: (variables?: CreateTaskMutationVariables) =>
       fetcher<CreateTaskMutation, CreateTaskMutationVariables>(
         CreateTaskDocument,
-        variables
+        variables,
       )(),
     ...options,
   });
@@ -4180,7 +4475,7 @@ export const useCreateTaskMutation = <TError = unknown, TContext = unknown>(
 useCreateTaskMutation.fetcher = (variables: CreateTaskMutationVariables) =>
   fetcher<CreateTaskMutation, CreateTaskMutationVariables>(
     CreateTaskDocument,
-    variables
+    variables,
   );
 
 export const UpdateTaskDocument = `
@@ -4201,7 +4496,7 @@ export const useUpdateTaskMutation = <TError = unknown, TContext = unknown>(
     TError,
     UpdateTaskMutationVariables,
     TContext
-  >
+  >,
 ) => {
   return useMutation<
     UpdateTaskMutation,
@@ -4213,7 +4508,7 @@ export const useUpdateTaskMutation = <TError = unknown, TContext = unknown>(
     mutationFn: (variables?: UpdateTaskMutationVariables) =>
       fetcher<UpdateTaskMutation, UpdateTaskMutationVariables>(
         UpdateTaskDocument,
-        variables
+        variables,
       )(),
     ...options,
   });
@@ -4222,7 +4517,7 @@ export const useUpdateTaskMutation = <TError = unknown, TContext = unknown>(
 useUpdateTaskMutation.fetcher = (variables: UpdateTaskMutationVariables) =>
   fetcher<UpdateTaskMutation, UpdateTaskMutationVariables>(
     UpdateTaskDocument,
-    variables
+    variables,
   );
 
 export const DeleteTaskDocument = `
@@ -4240,7 +4535,7 @@ export const useDeleteTaskMutation = <TError = unknown, TContext = unknown>(
     TError,
     DeleteTaskMutationVariables,
     TContext
-  >
+  >,
 ) => {
   return useMutation<
     DeleteTaskMutation,
@@ -4252,7 +4547,7 @@ export const useDeleteTaskMutation = <TError = unknown, TContext = unknown>(
     mutationFn: (variables?: DeleteTaskMutationVariables) =>
       fetcher<DeleteTaskMutation, DeleteTaskMutationVariables>(
         DeleteTaskDocument,
-        variables
+        variables,
       )(),
     ...options,
   });
@@ -4261,7 +4556,7 @@ export const useDeleteTaskMutation = <TError = unknown, TContext = unknown>(
 useDeleteTaskMutation.fetcher = (variables: DeleteTaskMutationVariables) =>
   fetcher<DeleteTaskMutation, DeleteTaskMutationVariables>(
     DeleteTaskDocument,
-    variables
+    variables,
   );
 
 export const GetTasksDocument = `
@@ -4280,13 +4575,13 @@ export const useGetTasksQuery = <TData = GetTasksQuery, TError = unknown>(
   variables?: GetTasksQueryVariables,
   options?: Omit<UseQueryOptions<GetTasksQuery, TError, TData>, "queryKey"> & {
     queryKey?: UseQueryOptions<GetTasksQuery, TError, TData>["queryKey"];
-  }
+  },
 ) => {
   return useQuery<GetTasksQuery, TError, TData>({
     queryKey: variables === undefined ? ["GetTasks"] : ["GetTasks", variables],
     queryFn: fetcher<GetTasksQuery, GetTasksQueryVariables>(
       GetTasksDocument,
-      variables
+      variables,
     ),
     ...options,
   });
@@ -4309,7 +4604,7 @@ export const useInfiniteGetTasksQuery = <
       TError,
       TData
     >["queryKey"];
-  }
+  },
 ) => {
   return useInfiniteQuery<GetTasksQuery, TError, TData>(
     (() => {
@@ -4326,7 +4621,7 @@ export const useInfiniteGetTasksQuery = <
           })(),
         ...restOptions,
       };
-    })()
+    })(),
   );
 };
 
@@ -4354,13 +4649,13 @@ export const useGetTaskQuery = <TData = GetTaskQuery, TError = unknown>(
   variables: GetTaskQueryVariables,
   options?: Omit<UseQueryOptions<GetTaskQuery, TError, TData>, "queryKey"> & {
     queryKey?: UseQueryOptions<GetTaskQuery, TError, TData>["queryKey"];
-  }
+  },
 ) => {
   return useQuery<GetTaskQuery, TError, TData>({
     queryKey: ["GetTask", variables],
     queryFn: fetcher<GetTaskQuery, GetTaskQueryVariables>(
       GetTaskDocument,
-      variables
+      variables,
     ),
     ...options,
   });
@@ -4381,7 +4676,7 @@ export const useInfiniteGetTaskQuery = <
     "queryKey"
   > & {
     queryKey?: UseInfiniteQueryOptions<GetTaskQuery, TError, TData>["queryKey"];
-  }
+  },
 ) => {
   return useInfiniteQuery<GetTaskQuery, TError, TData>(
     (() => {
@@ -4395,7 +4690,7 @@ export const useInfiniteGetTaskQuery = <
           })(),
         ...restOptions,
       };
-    })()
+    })(),
   );
 };
 

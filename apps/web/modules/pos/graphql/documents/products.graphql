@@ -1,0 +1,87 @@
+query Products($categoryId: String, $search: String, $isActive: Boolean) {
+  products(categoryId: $categoryId, search: $search, isActive: $isActive) {
+    id
+    name
+    barcode
+    sellingPrice
+    isActive
+    categoryId
+    organizationId
+    createdAt
+    updatedAt
+    category {
+      id
+      name
+    }
+  }
+}
+
+query Product($id: String!) {
+  product(id: $id) {
+    id
+    name
+    barcode
+    sellingPrice
+    isActive
+    categoryId
+    organizationId
+    createdAt
+    updatedAt
+    category {
+      id
+      name
+    }
+  }
+}
+
+query ProductsWithStock($categoryId: String, $search: String, $lowStockOnly: Boolean, $threshold: Int) {
+  productsWithStock(categoryId: $categoryId, search: $search, lowStockOnly: $lowStockOnly, threshold: $threshold) {
+    id
+    name
+    barcode
+    sellingPrice
+    isActive
+    categoryId
+    totalStock
+    averageCost
+    organizationId
+    createdAt
+    updatedAt
+    category {
+      id
+      name
+    }
+  }
+}
+
+mutation CreateProduct($input: CreateProductInput!) {
+  createProduct(input: $input) {
+    id
+    name
+    barcode
+    sellingPrice
+    isActive
+    categoryId
+    organizationId
+    createdAt
+    updatedAt
+  }
+}
+
+mutation UpdateProduct($id: String!, $input: UpdateProductInput!) {
+  updateProduct(id: $id, input: $input) {
+    id
+    name
+    barcode
+    sellingPrice
+    isActive
+    categoryId
+    organizationId
+    createdAt
+    updatedAt
+  }
+}
+
+mutation DeleteProduct($id: String!) {
+  deleteProduct(id: $id)
+}

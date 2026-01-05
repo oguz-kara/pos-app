@@ -1,0 +1,69 @@
+query ProductStock($productId: String!) {
+  productStock(productId: $productId) {
+    productId
+    totalStock
+    averageCost
+    lots {
+      id
+      productId
+      quantity
+      remaining
+      costPrice
+      supplier
+      notes
+      purchasedAt
+      organizationId
+      createdAt
+    }
+  }
+}
+
+query StockLots($productId: String!) {
+  stockLots(productId: $productId) {
+    id
+    productId
+    quantity
+    remaining
+    costPrice
+    supplier
+    notes
+    purchasedAt
+    organizationId
+    createdAt
+  }
+}
+
+query LowStockProducts($threshold: Int) {
+  lowStockProducts(threshold: $threshold) {
+    id
+    name
+    barcode
+    sellingPrice
+    isActive
+    categoryId
+    totalStock
+    averageCost
+    organizationId
+    createdAt
+    updatedAt
+    category {
+      id
+      name
+    }
+  }
+}
+
+mutation AddStockLot($input: AddStockLotInput!) {
+  addStockLot(input: $input) {
+    id
+    productId
+    quantity
+    remaining
+    costPrice
+    supplier
+    notes
+    purchasedAt
+    organizationId
+    createdAt
+  }
+}

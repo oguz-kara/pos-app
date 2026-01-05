@@ -1,0 +1,30 @@
+query Categories {
+  categories {
+    id
+    name
+    organizationId
+    createdAt
+  }
+}
+
+mutation CreateCategory($input: CreateCategoryInput!) {
+  createCategory(input: $input) {
+    id
+    name
+    organizationId
+    createdAt
+  }
+}
+
+mutation UpdateCategory($id: String!, $input: UpdateCategoryInput!) {
+  updateCategory(id: $id, input: $input) {
+    id
+    name
+    organizationId
+    createdAt
+  }
+}
+
+mutation DeleteCategory($id: String!) {
+  deleteCategory(id: $id)
+}

@@ -1,0 +1,81 @@
+query Sales($startDate: DateTime, $endDate: DateTime) {
+  sales(startDate: $startDate, endDate: $endDate) {
+    id
+    receiptNo
+    totalAmount
+    totalCost
+    paymentMethod
+    notes
+    organizationId
+    createdAt
+  }
+}
+
+query Sale($id: String!) {
+  sale(id: $id) {
+    id
+    receiptNo
+    totalAmount
+    totalCost
+    paymentMethod
+    notes
+    organizationId
+    createdAt
+    items {
+      id
+      saleId
+      productId
+      quantity
+      unitPrice
+      unitCost
+      subtotal
+      createdAt
+      product {
+        id
+        name
+        barcode
+        sellingPrice
+      }
+    }
+  }
+}
+
+query SalesSummary($startDate: DateTime!, $endDate: DateTime!) {
+  salesSummary(startDate: $startDate, endDate: $endDate) {
+    totalRevenue
+    totalCost
+    totalProfit
+    salesCount
+    startDate
+    endDate
+  }
+}
+
+mutation CreateSale($input: CreateSaleInput!) {
+  createSale(input: $input) {
+    id
+    receiptNo
+    totalAmount
+    totalCost
+    paymentMethod
+    notes
+    organizationId
+    createdAt
+    items {
+      id
+      saleId
+      productId
+      quantity
+      unitPrice
+      unitCost
+      subtotal
+      createdAt
+      product {
+        id
+        name
+        barcode
+        sellingPrice
+      }
+    }
+  }
+}

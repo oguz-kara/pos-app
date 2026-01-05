@@ -14,7 +14,7 @@ export interface Context {
 /**
  * Creates the GraphQL context for each request
  * Handles both Cookie (web) and Bearer token (mobile) authentication
- * Applies rate limiting based on user ID or IP address
+ * Note: Rate limiting uses disabled provider (no Redis dependency)
  */
 export async function createContext(req: NextRequest): Promise<Context> {
   // 1. Try to get session from cookies first (web clients)
@@ -31,8 +31,7 @@ export async function createContext(req: NextRequest): Promise<Context> {
     }
   }
 
-  // 3. Apply rate limiting
-  // Rate limit by user ID if authenticated, otherwise by IP address
+  // 3. Apply rate limiting (using disabled provider - no Redis)
   const identifier = getRateLimitIdentifier(req, session?.userId);
   await checkRateLimit(identifier, saasConfig.rateLimits.graphql);
 

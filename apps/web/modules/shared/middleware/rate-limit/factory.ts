@@ -1,22 +1,21 @@
 import { IRateLimitProvider } from "./interface";
-import { UpstashRateLimitProvider } from "./upstash";
+import { DisabledRateLimitProvider } from "./disabled";
 
 let cachedProvider: IRateLimitProvider | null = null;
 
 /**
  * Create a rate limit provider instance
- * Currently hardcoded to use Upstash, but can be extended to support multiple providers
- * following the same pattern as billing/email modules
+ * Currently using disabled provider (no rate limiting)
+ * Can be extended to support Upstash or other providers in the future
  */
 export function createRateLimitProvider(): IRateLimitProvider {
   if (cachedProvider) {
     return cachedProvider;
   }
 
-  // For now, we only support Upstash
-  // In the future, this could be configurable via saas.config.ts
-  // e.g., if (saasConfig.rateLimiting.provider === 'upstash') { ... }
-  cachedProvider = new UpstashRateLimitProvider();
+  // Using disabled provider - no Redis dependency
+  // To enable rate limiting, switch to UpstashRateLimitProvider
+  cachedProvider = new DisabledRateLimitProvider();
 
   return cachedProvider;
 }

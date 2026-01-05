@@ -9,6 +9,7 @@ import "@/modules/tasks/api";
 import "@/modules/billing/api";
 import "@/modules/storage/api";
 import "@/modules/notifications/api";
+import "@/modules/pos/api";
 
 // TODO: Import domain module resolvers here
 // import '@/modules/auth/api';
