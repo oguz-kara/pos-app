@@ -5,6 +5,9 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Trash2, X } from "lucide-react";
 import { CheckoutDialog } from "@/modules/pos/components/checkout-dialog";
+import { CartItemEditModal } from "@/modules/pos/components/cart-item-edit-modal";
+import { CartDiscountModal } from "@/modules/pos/components/cart-discount-modal";
+import { calculateCartDiscount } from "@/modules/pos/hooks/use-cart-discount";
 import { formatCurrency } from "@/modules/pos/utils";
 import { TR } from "@/modules/pos/constants";
 import {
@@ -24,6 +27,7 @@ type Product = {
 type CartItem = {
   product: Product;
   quantity: number;
+  unitPrice: number; // Allows custom pricing/discounts
 };
 
 export default function POSPage() {
@@ -31,6 +35,8 @@ export default function POSPage() {
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [editingItem, setEditingItem] = useState<CartItem | null>(null);
+  const [discountModalOpen, setDiscountModalOpen] = useState(false);
 
   // Debounce search input
   useEffect(() => {
@@ -66,27 +72,39 @@ export default function POSPage() {
             : item
         );
       }
-      return [...prev, { product, quantity: 1 }];
+      return [
+        ...prev,
+        {
+          product,
+          quantity: 1,
+          unitPrice: parseFloat(product.sellingPrice),
+        },
+      ];
     });
     toast.success(`${product.name} sepete eklendi`);
     setSearch("");
   }, []);
 
-  // Keyboard shortcuts (page-specific: F2 and Escape)
+  // Keyboard shortcuts (page-specific: Space for checkout, Escape to clear search)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // F2 - Open checkout
-      if (e.key === "F2") {
-        e.preventDefault();
+      // Check if user is typing in an input or textarea
+      const target = e.target as HTMLElement;
+      const isTypingField =
+        target.tagName === "INPUT" ||
+        target.tagName === "TEXTAREA" ||
+        target.isContentEditable;
+
+      // Space - Open checkout (only if not typing and cart has items)
+      if (e.key === " " && !isTypingField) {
         if (cartItems.length > 0) {
+          e.preventDefault(); // Prevent page scroll
           setCheckoutOpen(true);
         }
       }
-      // Escape - Clear search or close checkout
+      // Escape - Clear search
       if (e.key === "Escape") {
-        if (checkoutOpen) {
-          setCheckoutOpen(false);
-        } else if (search) {
+        if (search) {
           setSearch("");
         }
       }
@@ -113,6 +131,14 @@ export default function POSPage() {
     []
   );
 
+  const handleUpdateCartItem = useCallback((updatedItem: CartItem) => {
+    setCartItems((prev) =>
+      prev.map((item) =>
+        item.product.id === updatedItem.product.id ? updatedItem : item
+      )
+    );
+  }, []);
+
   const handleRemoveItem = useCallback((productId: string) => {
     setCartItems((prev) =>
       prev.filter((item) => item.product.id !== productId)
@@ -126,12 +152,20 @@ export default function POSPage() {
     }
   }, []);
 
+  // Calculate current total
+  const totalAmount = cartItems.reduce(
+    (sum, item) => sum + item.unitPrice * item.quantity,
+    0
+  );
+
+  const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+
   const handleCheckout = useCallback(
     async (paymentMethod: "cash" | "card", notes?: string) => {
       const items = cartItems.map((item) => ({
         productId: item.product.id,
         quantity: item.quantity,
-        unitPrice: parseFloat(item.product.sellingPrice),
+        unitPrice: item.unitPrice,
       }));
 
       try {
@@ -153,12 +187,14 @@ export default function POSPage() {
     [cartItems, createSale]
   );
 
-  const totalAmount = cartItems.reduce(
-    (sum, item) => sum + parseFloat(item.product.sellingPrice) * item.quantity,
-    0
+  const handleApplyDiscount = useCallback(
+    (targetTotal: number) => {
+      const discountedItems = calculateCartDiscount(cartItems, targetTotal);
+      setCartItems(discountedItems);
+      toast.success("İndirim uygulandı");
+    },
+    [cartItems]
   );
-
-  const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
     <div className="flex flex-1 bg-background">
@@ -170,6 +206,7 @@ export default function POSPage() {
         isLoading={isLoading}
         debouncedSearch={debouncedSearch}
         onProductSelect={handleSelectProduct}
+        cartItems={cartItems}
       />
 
       {/* Right Panel - Ticket/Cart (30%) */}
@@ -214,54 +251,60 @@ export default function POSPage() {
             </div>
           ) : (
             <div className="space-y-3">
-              {cartItems.map((item) => (
-                <div
-                  key={item.product.id}
-                  className="bg-background border rounded-lg p-3 relative group"
-                >
-                  <button
-                    onClick={() => handleRemoveItem(item.product.id)}
-                    className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+              {cartItems.map((item) => {
+                return (
+                  <div
+                    key={item.product.id}
+                    className="bg-background border rounded-lg p-3 relative group cursor-pointer hover:bg-accent/50 transition-colors"
+                    onClick={() => setEditingItem(item)}
                   >
-                    <X className="h-3 w-3" />
-                  </button>
-                  <div className="font-medium mb-2">{item.product.name}</div>
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() =>
-                          handleUpdateQuantity(
-                            item.product.id,
-                            item.quantity - 1
-                          )
-                        }
-                        className="h-6 w-6 rounded border bg-background hover:bg-accent flex items-center justify-center text-lg font-semibold"
-                      >
-                        -
-                      </button>
-                      <span className="w-8 text-center font-semibold">
-                        {item.quantity}
-                      </span>
-                      <button
-                        onClick={() =>
-                          handleUpdateQuantity(
-                            item.product.id,
-                            item.quantity + 1
-                          )
-                        }
-                        className="h-6 w-6 rounded border bg-background hover:bg-accent flex items-center justify-center text-lg font-semibold"
-                      >
-                        +
-                      </button>
-                    </div>
-                    <div className="font-bold">
-                      {formatCurrency(
-                        parseFloat(item.product.sellingPrice) * item.quantity
-                      )}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleRemoveItem(item.product.id);
+                      }}
+                      className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                    <div className="font-medium mb-2">{item.product.name}</div>
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleUpdateQuantity(
+                              item.product.id,
+                              item.quantity - 1
+                            );
+                          }}
+                          className="h-6 w-6 rounded border bg-background hover:bg-accent flex items-center justify-center text-lg font-semibold"
+                        >
+                          -
+                        </button>
+                        <span className="w-8 text-center font-semibold">
+                          {item.quantity}
+                        </span>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleUpdateQuantity(
+                              item.product.id,
+                              item.quantity + 1
+                            );
+                          }}
+                          className="h-6 w-6 rounded border bg-background hover:bg-accent flex items-center justify-center text-lg font-semibold"
+                        >
+                          +
+                        </button>
+                      </div>
+                      <div className="font-bold">
+                        {formatCurrency(item.unitPrice * item.quantity)}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
@@ -280,6 +323,18 @@ export default function POSPage() {
             <span>{formatCurrency(totalAmount)}</span>
           </div>
 
+          {/* Discount/Round Button */}
+          {cartItems.length > 0 && (
+            <Button
+              variant="outline"
+              size="lg"
+              className="w-full h-12 text-base"
+              onClick={() => setDiscountModalOpen(true)}
+            >
+              İndirim / Yuvarla
+            </Button>
+          )}
+
           {/* Checkout Button */}
           <Button
             size="lg"
@@ -287,7 +342,7 @@ export default function POSPage() {
             onClick={() => setCheckoutOpen(true)}
             disabled={cartItems.length === 0}
           >
-            {TR.checkout} (F2)
+            {TR.checkout} (Space)
           </Button>
         </div>
       </div>
@@ -299,6 +354,25 @@ export default function POSPage() {
         totalAmount={totalAmount}
         onConfirm={handleCheckout}
         isLoading={createSale.isPending}
+      />
+
+      {/* Cart Item Edit Modal */}
+      <CartItemEditModal
+        open={editingItem !== null}
+        onOpenChange={(open) => {
+          if (!open) setEditingItem(null);
+        }}
+        item={editingItem}
+        onSave={handleUpdateCartItem}
+        onRemove={handleRemoveItem}
+      />
+
+      {/* Cart Discount Modal */}
+      <CartDiscountModal
+        open={discountModalOpen}
+        onOpenChange={setDiscountModalOpen}
+        currentTotal={totalAmount}
+        onApply={handleApplyDiscount}
       />
     </div>
   );

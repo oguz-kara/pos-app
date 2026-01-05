@@ -1,20 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { formatCurrency } from "../utils";
-import { TR, PAYMENT_METHODS, PAYMENT_METHOD_LABELS } from "../constants";
+import { TR } from "../constants";
+import { CreditCard, Banknote, ChevronDown } from "lucide-react";
 
 type PaymentMethod = "cash" | "card";
 
@@ -31,78 +29,294 @@ export function CheckoutDialog({
   onConfirm: (paymentMethod: PaymentMethod, notes?: string) => Promise<void>;
   isLoading?: boolean;
 }) {
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("cash");
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(
+    null
+  );
+  const [receivedAmount, setReceivedAmount] = useState("");
   const [notes, setNotes] = useState("");
+  const [showNotesInput, setShowNotesInput] = useState(false);
+  const receivedInputRef = useRef<HTMLInputElement>(null);
+
+  // Reset state when modal opens
+  useEffect(() => {
+    if (open) {
+      setPaymentMethod(null);
+      setReceivedAmount("");
+      setNotes("");
+      setShowNotesInput(false);
+    }
+  }, [open]);
+
+  // Auto-focus received amount input when cash is selected
+  useEffect(() => {
+    if (paymentMethod === "cash" && receivedInputRef.current) {
+      setTimeout(() => {
+        receivedInputRef.current?.focus();
+      }, 100);
+    }
+  }, [paymentMethod]);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    if (!open) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Check if user is typing in an input or textarea
+      const target = e.target as HTMLElement;
+      const isTypingField =
+        target.tagName === "INPUT" ||
+        target.tagName === "TEXTAREA" ||
+        target.isContentEditable;
+
+      // Only handle shortcuts when not typing
+      if (!isTypingField) {
+        // Enter - Select Cash
+        if (e.key === "Enter") {
+          e.preventDefault();
+          if (!paymentMethod) {
+            setPaymentMethod("cash");
+          }
+        }
+        // C - Select Card
+        if (e.key === "c" || e.key === "C") {
+          e.preventDefault();
+          setPaymentMethod("card");
+        }
+      }
+
+      // Enter in received amount field - submit if valid
+      if (
+        e.key === "Enter" &&
+        target === receivedInputRef.current &&
+        paymentMethod === "cash"
+      ) {
+        const received = parseFloat(receivedAmount) || 0;
+        if (received >= totalAmount) {
+          handleConfirm();
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [open, paymentMethod, receivedAmount, totalAmount]);
+
+  const receivedNum = parseFloat(receivedAmount) || 0;
+  const change = receivedNum - totalAmount;
+  const canSubmit =
+    paymentMethod === "card" ||
+    (paymentMethod === "cash" && receivedNum >= totalAmount);
 
   const handleConfirm = async () => {
+    if (!paymentMethod || !canSubmit) return;
     await onConfirm(paymentMethod, notes || undefined);
-    setPaymentMethod("cash");
+    setPaymentMethod(null);
+    setReceivedAmount("");
     setNotes("");
+  };
+
+  const handlePaymentMethodSelect = (method: PaymentMethod) => {
+    setPaymentMethod(method);
+    // For card, auto-set received amount to total
+    if (method === "card") {
+      setReceivedAmount(totalAmount.toString());
+    }
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{TR.checkout}</DialogTitle>
-          <DialogDescription>
-            Ödeme yöntemini seçin ve satışı tamamlayın
-          </DialogDescription>
+      <DialogContent className="max-w-2xl">
+        {/* Header - Massive Total Amount */}
+        <DialogHeader className="border-b pb-6">
+          <DialogTitle className="text-center">
+            <div className="text-sm text-muted-foreground mb-2 uppercase tracking-wide">
+              {TR.totalAmount}
+            </div>
+            <div className="text-5xl font-black text-gray-900">
+              {formatCurrency(totalAmount)}
+            </div>
+          </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-6">
-          <div className="text-center py-4">
-            <p className="text-sm text-muted-foreground mb-2">
-              {TR.totalAmount}
-            </p>
-            <p className="text-4xl font-bold">{formatCurrency(totalAmount)}</p>
-          </div>
-
-          <div className="space-y-2">
-            <Label>{TR.paymentMethod}</Label>
-            <RadioGroup
-              value={paymentMethod}
-              onValueChange={(value) => setPaymentMethod(value as PaymentMethod)}
-            >
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value={PAYMENT_METHODS.CASH} id="cash" />
-                <Label htmlFor="cash" className="cursor-pointer">
-                  {PAYMENT_METHOD_LABELS.cash}
-                </Label>
+        <div className="space-y-6 py-4">
+          {/* Payment Method Selection - Only show if not selected yet */}
+          {!paymentMethod && (
+            <div>
+              <div className="text-sm font-semibold text-muted-foreground mb-3 text-center">
+                Ödeme Yöntemi Seçin
               </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value={PAYMENT_METHODS.CARD} id="card" />
-                <Label htmlFor="card" className="cursor-pointer">
-                  {PAYMENT_METHOD_LABELS.card}
-                </Label>
-              </div>
-            </RadioGroup>
-          </div>
+              <div className="grid grid-cols-2 gap-4">
+                {/* Cash Button */}
+                <button
+                  onClick={() => handlePaymentMethodSelect("cash")}
+                  className="h-32 rounded-xl bg-green-50 hover:bg-green-100 border-2 border-green-200 hover:border-green-400 transition-all flex flex-col items-center justify-center gap-2 group"
+                >
+                  <Banknote className="h-12 w-12 text-green-700 group-hover:scale-110 transition-transform" />
+                  <span className="text-xl font-bold text-green-700">
+                    Nakit
+                  </span>
+                  <span className="text-xs text-green-600">[Enter]</span>
+                </button>
 
-          <div className="space-y-2">
-            <Label htmlFor="notes">{TR.notes}</Label>
-            <Textarea
-              id="notes"
-              placeholder="Notlar (opsiyonel)"
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              rows={3}
-            />
-          </div>
+                {/* Card Button */}
+                <button
+                  onClick={() => handlePaymentMethodSelect("card")}
+                  className="h-32 rounded-xl bg-blue-50 hover:bg-blue-100 border-2 border-blue-200 hover:border-blue-400 transition-all flex flex-col items-center justify-center gap-2 group"
+                >
+                  <CreditCard className="h-12 w-12 text-blue-700 group-hover:scale-110 transition-transform" />
+                  <span className="text-xl font-bold text-blue-700">Kart</span>
+                  <span className="text-xs text-blue-600">[C]</span>
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Cash Payment Flow */}
+          {paymentMethod === "cash" && (
+            <div className="space-y-4">
+              {/* Selected Method Badge */}
+              <div className="flex items-center justify-center gap-2 text-green-700">
+                <Banknote className="h-5 w-5" />
+                <span className="font-semibold">Nakit Ödeme</span>
+                <button
+                  onClick={() => setPaymentMethod(null)}
+                  className="ml-2 text-xs text-muted-foreground hover:text-foreground underline"
+                >
+                  Değiştir
+                </button>
+              </div>
+
+              {/* Received Amount Input */}
+              <div>
+                <label className="text-sm font-semibold text-muted-foreground mb-2 block">
+                  Alınan Tutar
+                </label>
+                <Input
+                  ref={receivedInputRef}
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={receivedAmount}
+                  onChange={(e) => setReceivedAmount(e.target.value)}
+                  className="text-2xl h-16 text-center font-bold"
+                  placeholder="0.00"
+                />
+              </div>
+
+              {/* Change Display */}
+              {receivedNum > 0 && (
+                <div
+                  className={`p-4 rounded-lg border-2 ${
+                    change >= 0
+                      ? "bg-green-50 border-green-300"
+                      : "bg-red-50 border-red-300"
+                  }`}
+                >
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-semibold text-muted-foreground">
+                      Para Üstü
+                    </span>
+                    <span
+                      className={`text-3xl font-black ${
+                        change >= 0 ? "text-green-700" : "text-red-700"
+                      }`}
+                    >
+                      {formatCurrency(Math.max(0, change))}
+                    </span>
+                  </div>
+                  {change < 0 && (
+                    <p className="text-xs text-red-600 mt-2">
+                      Yetersiz tutar! Eksik: {formatCurrency(Math.abs(change))}
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Card Payment Flow */}
+          {paymentMethod === "card" && (
+            <div className="space-y-4">
+              {/* Selected Method Badge */}
+              <div className="flex items-center justify-center gap-2 text-blue-700">
+                <CreditCard className="h-5 w-5" />
+                <span className="font-semibold">Kart Ödeme</span>
+                <button
+                  onClick={() => setPaymentMethod(null)}
+                  className="ml-2 text-xs text-muted-foreground hover:text-foreground underline"
+                >
+                  Değiştir
+                </button>
+              </div>
+
+              <div className="p-6 rounded-lg bg-blue-50 border-2 border-blue-200 text-center">
+                <p className="text-sm text-blue-700 mb-2">Toplam Tutar</p>
+                <p className="text-4xl font-black text-blue-900">
+                  {formatCurrency(totalAmount)}
+                </p>
+                <p className="text-xs text-blue-600 mt-3">
+                  Müşteriden kart ile ödeme alınacak
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Notes Section (Collapsible) */}
+          {paymentMethod && (
+            <div>
+              <button
+                onClick={() => setShowNotesInput(!showNotesInput)}
+                className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <ChevronDown
+                  className={`h-4 w-4 transition-transform ${
+                    showNotesInput ? "rotate-180" : ""
+                  }`}
+                />
+                <span>Notlar (Opsiyonel)</span>
+              </button>
+              {showNotesInput && (
+                <Textarea
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  placeholder="Satış notu ekleyin..."
+                  rows={3}
+                  className="mt-2"
+                />
+              )}
+            </div>
+          )}
         </div>
 
-        <DialogFooter>
-          <Button
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-            disabled={isLoading}
-          >
-            {TR.cancel}
-          </Button>
-          <Button onClick={handleConfirm} disabled={isLoading}>
-            {TR.confirm}
-          </Button>
-        </DialogFooter>
+        {/* Footer - Action Buttons */}
+        {paymentMethod && (
+          <div className="flex gap-3 pt-4 border-t">
+            <Button
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+              disabled={isLoading}
+              className="flex-1 h-14 text-base"
+            >
+              İptal (Esc)
+            </Button>
+            <Button
+              onClick={handleConfirm}
+              disabled={!canSubmit || isLoading}
+              className="flex-1 h-14 text-base font-bold shadow-lg hover:shadow-xl transition-all"
+            >
+              {isLoading ? "İşleniyor..." : "Satışı Tamamla (Enter)"}
+            </Button>
+          </div>
+        )}
+
+        {/* Keyboard Shortcuts Guide */}
+        {!paymentMethod && (
+          <div className="text-center text-xs text-muted-foreground border-t pt-3">
+            Klavye Kısayolları:{" "}
+            <kbd className="px-2 py-1 bg-muted rounded">Enter</kbd> Nakit,{" "}
+            <kbd className="px-2 py-1 bg-muted rounded">C</kbd> Kart
+          </div>
+        )}
       </DialogContent>
     </Dialog>
   );

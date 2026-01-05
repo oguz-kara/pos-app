@@ -15,6 +15,7 @@ import { formatCurrency } from "@/modules/pos/utils";
 import { TR } from "@/modules/pos/constants";
 import { Plus, Package } from "lucide-react";
 import Link from "next/link";
+import { ProductWithStock } from "@/lib/graphql/generated";
 
 /**
  * Stock Overview Page
@@ -23,13 +24,15 @@ import Link from "next/link";
  */
 export default function StockPage() {
   // TODO: Fetch products with stock info from GraphQL
-  const productsWithStock: any[] = [];
+  const productsWithStock: ProductWithStock[] = [];
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">{TR.STOCK_MANAGEMENT}</h1>
+          <h1 className="text-3xl font-bold tracking-tight">
+            {TR.stockManagement}
+          </h1>
           <p className="text-muted-foreground">
             Tüm ürünlerin stok durumunu görüntüleyin
           </p>
@@ -37,7 +40,7 @@ export default function StockPage() {
         <Link href="/pos/stock/entry">
           <Button>
             <Plus className="mr-2 h-4 w-4" />
-            {TR.ADD_STOCK}
+            {TR.addStock}
           </Button>
         </Link>
       </div>
@@ -46,36 +49,43 @@ export default function StockPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Package className="h-5 w-5" />
-            {TR.STOCK_LEVELS}
+            {TR.stockLevels}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>{TR.PRODUCT_NAME}</TableHead>
-                <TableHead>{TR.CURRENT_STOCK}</TableHead>
-                <TableHead>{TR.AVERAGE_COST}</TableHead>
-                <TableHead>{TR.SELLING_PRICE}</TableHead>
-                <TableHead>{TR.STATUS}</TableHead>
+                <TableHead>{TR.productName}</TableHead>
+                <TableHead>{TR.currenctStock}</TableHead>
+                <TableHead>{TR.averageCost}</TableHead>
+                <TableHead>{TR.sellingPrice}</TableHead>
+                <TableHead>{TR.status}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {productsWithStock.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center text-muted-foreground">
-                    {TR.NO_PRODUCTS}
+                  <TableCell
+                    colSpan={5}
+                    className="text-center text-muted-foreground"
+                  >
+                    {TR.noProducts}
                   </TableCell>
                 </TableRow>
               ) : (
-                productsWithStock.map((item: any) => (
+                productsWithStock.map((item) => (
                   <TableRow key={item.id}>
                     <TableCell className="font-medium">{item.name}</TableCell>
-                    <TableCell>{item.stock}</TableCell>
-                    <TableCell>{formatCurrency(parseFloat(item.averageCost || "0"))}</TableCell>
-                    <TableCell>{formatCurrency(parseFloat(item.sellingPrice))}</TableCell>
+                    <TableCell>{item.totalStock ?? 0}</TableCell>
                     <TableCell>
-                      <StockStatusBadge stock={item.stock} />
+                      {formatCurrency(item.averageCost ?? 0)}
+                    </TableCell>
+                    <TableCell>
+                      {formatCurrency(parseFloat(item.sellingPrice ?? "0"))}
+                    </TableCell>
+                    <TableCell>
+                      <StockStatusBadge stock={item.totalStock ?? 0} />
                     </TableCell>
                   </TableRow>
                 ))

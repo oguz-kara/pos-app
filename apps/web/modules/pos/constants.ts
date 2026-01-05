@@ -26,6 +26,13 @@ export const RECEIPT_NUMBER_FORMAT = /^\d{4}-\d{6}$/;
 
 // Turkish translations
 export const TR = {
+  currenctStock: "Mevcut stok",
+  status: "Durum",
+  stockManagement: "Stok yönetimi",
+  addStock: "Stok ekle",
+  stockLevels: "Stok seviyeleri",
+  noProducts: "Urun bulunamadi",
+
   // Sales
   saleDetails: "Satış Detayları",
   saleDetailsDescription: "Satış detaylarını görüntüleyin",
