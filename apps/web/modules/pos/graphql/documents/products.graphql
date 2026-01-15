@@ -2,7 +2,9 @@ query Products($categoryId: String, $search: String, $isActive: Boolean) {
   products(categoryId: $categoryId, search: $search, isActive: $isActive) {
     id
     name
+    searchName
     barcode
+    description
     sellingPrice
     isActive
     categoryId
@@ -20,7 +22,9 @@ query Product($id: String!) {
   product(id: $id) {
     id
     name
+    searchName
     barcode
+    description
     sellingPrice
     isActive
     categoryId
@@ -38,7 +42,9 @@ query ProductsWithStock($categoryId: String, $search: String, $lowStockOnly: Boo
   productsWithStock(categoryId: $categoryId, search: $search, lowStockOnly: $lowStockOnly, threshold: $threshold) {
     id
     name
+    searchName
     barcode
+    description
     sellingPrice
     isActive
     categoryId
@@ -58,7 +64,9 @@ mutation CreateProduct($input: CreateProductInput!) {
   createProduct(input: $input) {
     id
     name
+    searchName
     barcode
+    description
     sellingPrice
     isActive
     categoryId
@@ -72,7 +80,9 @@ mutation UpdateProduct($id: String!, $input: UpdateProductInput!) {
   updateProduct(id: $id, input: $input) {
     id
     name
+    searchName
     barcode
+    description
     sellingPrice
     isActive
     categoryId

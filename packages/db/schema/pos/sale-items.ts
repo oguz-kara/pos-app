@@ -1,4 +1,5 @@
 import { decimal, index, integer, pgTable, timestamp, uuid } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
 import { products } from "./products";
 import { sales } from "./sales";
 
@@ -22,6 +23,17 @@ export const saleItems = pgTable(
     saleIdIdx: index("sale_items_sale_id_idx").on(table.saleId),
   })
 );
+
+export const saleItemsRelations = relations(saleItems, ({ one }) => ({
+  sale: one(sales, {
+    fields: [saleItems.saleId],
+    references: [sales.id],
+  }),
+  product: one(products, {
+    fields: [saleItems.productId],
+    references: [products.id],
+  }),
+}));
 
 export type SaleItem = typeof saleItems.$inferSelect;
 export type NewSaleItem = typeof saleItems.$inferInsert;

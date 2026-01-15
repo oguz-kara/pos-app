@@ -10,6 +10,7 @@ import {
 import { relations } from "drizzle-orm";
 import { organizations } from "../auth";
 import { categories } from "./categories";
+import { productImages } from "./product-images";
 
 export const products = pgTable(
   "products",
@@ -22,11 +23,15 @@ export const products = pgTable(
       onDelete: "set null",
     }),
     name: varchar("name", { length: 255 }).notNull(),
+    description: varchar("description", { length: 1000 }),
     searchName: varchar("search_name", { length: 255 })
       .notNull()
       .$defaultFn(() => ""), // Database trigger will set this, but TypeScript needs a default
     barcode: varchar("barcode", { length: 100 }),
-    sellingPrice: decimal("selling_price", { precision: 10, scale: 2 }).notNull(),
+    sellingPrice: decimal("selling_price", {
+      precision: 10,
+      scale: 2,
+    }).notNull(),
     isActive: boolean("is_active").default(true).notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
@@ -39,7 +44,7 @@ export const products = pgTable(
   })
 );
 
-export const productsRelations = relations(products, ({ one }) => ({
+export const productsRelations = relations(products, ({ one, many }) => ({
   category: one(categories, {
     fields: [products.categoryId],
     references: [categories.id],
@@ -48,6 +53,7 @@ export const productsRelations = relations(products, ({ one }) => ({
     fields: [products.organizationId],
     references: [organizations.id],
   }),
+  images: many(productImages),
 }));
 
 export type Product = typeof products.$inferSelect;

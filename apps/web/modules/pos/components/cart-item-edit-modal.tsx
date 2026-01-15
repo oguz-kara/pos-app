@@ -87,12 +87,31 @@ export function CartItemEditModal({
     originalPrice > 0 ? (discountPerItem / originalPrice) * 100 : 0;
 
   const handleSave = () => {
+    // Round to 2 decimal places
+    const roundedUnitPrice = Math.round(Math.max(0.01, unitPriceNum) * 100) / 100;
+    const roundedQuantity = Math.max(0.01, quantityNum);
+
     onSave({
       ...item,
-      quantity: Math.max(1, quantityNum),
-      unitPrice: Math.max(0, unitPriceNum),
+      quantity: roundedQuantity,
+      unitPrice: roundedUnitPrice,
     });
     onOpenChange(false);
+  };
+
+  // Auto-round price inputs on blur
+  const handleUnitPriceBlur = () => {
+    const rounded = Math.round(parseFloat(unitPrice) * 100) / 100;
+    if (!isNaN(rounded)) {
+      setUnitPrice(rounded.toFixed(2));
+    }
+  };
+
+  const handleTargetTotalBlur = () => {
+    const rounded = Math.round(parseFloat(targetTotal) * 100) / 100;
+    if (!isNaN(rounded) && targetTotal) {
+      setTargetTotal(rounded.toFixed(2));
+    }
   };
 
   const handleRemove = () => {
@@ -151,9 +170,10 @@ export function CartItemEditModal({
               id="unitPrice"
               type="number"
               step="0.01"
-              min="0"
+              min="0.01"
               value={unitPrice}
               onChange={(e) => setUnitPrice(e.target.value)}
+              onBlur={handleUnitPriceBlur}
               disabled={!!targetTotal}
               className="text-lg h-12 focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
             />
@@ -171,9 +191,10 @@ export function CartItemEditModal({
               id="targetTotal"
               type="number"
               step="0.01"
-              min="0"
+              min="0.01"
               value={targetTotal}
               onChange={(e) => setTargetTotal(e.target.value)}
+              onBlur={handleTargetTotalBlur}
               placeholder="İndirim için hedef toplam girin"
               className="text-lg h-12 focus:ring-2 focus:ring-blue-500"
             />

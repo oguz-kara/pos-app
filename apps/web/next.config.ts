@@ -3,6 +3,16 @@ import { withSentryConfig } from "@sentry/nextjs";
 
 const nextConfig: NextConfig = {
   transpilePackages: ["@jetframe/db", "@jetframe/ui", "@jetframe/email"],
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "pub-419b82550d704158ba19c494db96f194.r2.dev",
+        port: "",
+        pathname: "/**",
+      },
+    ],
+  },
 };
 
 // Wrap with Sentry config for source maps and error tracking

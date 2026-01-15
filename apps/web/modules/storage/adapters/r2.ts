@@ -12,47 +12,47 @@ import {
   GetObjectCommand,
   ListObjectsV2Command,
   HeadBucketCommand,
-} from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import type { StorageProvider } from "../interface";
-import { FileUploadError, FileDeleteError } from "@/modules/shared/errors";
+} from '@aws-sdk/client-s3'
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
+import type { StorageProvider } from '../interface'
+import { FileUploadError, FileDeleteError } from '@/modules/shared/errors'
 
 export class R2Adapter implements StorageProvider {
-  private client: S3Client;
-  private bucket: string;
-  private publicUrl: string;
+  private client: S3Client
+  private bucket: string
+  private publicUrl: string
 
   constructor() {
-    const accountId = process.env.R2_ACCOUNT_ID;
-    const accessKeyId = process.env.R2_ACCESS_KEY_ID;
-    const secretAccessKey = process.env.R2_SECRET_ACCESS_KEY;
-    const bucket = process.env.R2_BUCKET_NAME;
-    const publicUrl = process.env.R2_PUBLIC_URL;
+    const accountId = process.env.R2_ACCOUNT_ID
+    const accessKeyId = process.env.R2_ACCESS_KEY_ID
+    const secretAccessKey = process.env.R2_SECRET_ACCESS_KEY
+    const bucket = process.env.R2_BUCKET_NAME
+    const publicUrl = process.env.R2_PUBLIC_URL
 
     if (!accountId || !accessKeyId || !secretAccessKey || !bucket) {
       throw new Error(
-        "Missing required R2 environment variables: R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET_NAME"
-      );
+        'Missing required R2 environment variables: R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET_NAME',
+      )
     }
 
     this.client = new S3Client({
-      region: "auto",
+      region: 'auto',
       endpoint: `https://${accountId}.r2.cloudflarestorage.com`,
       credentials: {
         accessKeyId,
         secretAccessKey,
       },
-    });
+    })
 
-    this.bucket = bucket;
-    this.publicUrl = publicUrl || `https://${bucket}.r2.dev`;
+    this.bucket = bucket
+    this.publicUrl = publicUrl || `https://${bucket}.r2.dev`
   }
 
   async upload(params: {
-    file: Buffer;
-    key: string;
-    contentType: string;
-    metadata?: Record<string, string>;
+    file: Buffer
+    key: string
+    contentType: string
+    metadata?: Record<string, string>
   }): Promise<{ url: string; key: string }> {
     try {
       await this.client.send(
@@ -62,18 +62,18 @@ export class R2Adapter implements StorageProvider {
           Body: params.file,
           ContentType: params.contentType,
           Metadata: params.metadata,
-        })
-      );
+        }),
+      )
 
       return {
         url: `${this.publicUrl}/${params.key}`,
         key: params.key,
-      };
+      }
     } catch (error) {
-      console.error("R2 upload error:", error);
+      console.error('R2 upload error:', error)
       throw new FileUploadError(
-        error instanceof Error ? error.message : "Unknown error"
-      );
+        error instanceof Error ? error.message : 'Unknown error',
+      )
     }
   }
 
@@ -83,13 +83,13 @@ export class R2Adapter implements StorageProvider {
         new DeleteObjectCommand({
           Bucket: this.bucket,
           Key: key,
-        })
-      );
+        }),
+      )
     } catch (error) {
-      console.error("R2 delete error:", error);
+      console.error('R2 delete error:', error)
       throw new FileDeleteError(
-        error instanceof Error ? error.message : "Unknown error"
-      );
+        error instanceof Error ? error.message : 'Unknown error',
+      )
     }
   }
 
@@ -98,21 +98,43 @@ export class R2Adapter implements StorageProvider {
       const command = new GetObjectCommand({
         Bucket: this.bucket,
         Key: key,
-      });
-      return await getSignedUrl(this.client, command, { expiresIn });
+      })
+      return await getSignedUrl(this.client, command, { expiresIn })
     } catch (error) {
-      console.error("R2 getSignedUrl error:", error);
+      console.error('R2 getSignedUrl error:', error)
       throw new Error(
-        `Failed to generate signed URL: ${error instanceof Error ? error.message : "Unknown error"}`
-      );
+        `Failed to generate signed URL: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      )
+    }
+  }
+
+  async getPresignedUploadUrl(params: {
+    key: string
+    contentType: string
+    expiresIn?: number
+  }): Promise<string> {
+    try {
+      const command = new PutObjectCommand({
+        Bucket: this.bucket,
+        Key: params.key,
+        ContentType: params.contentType,
+      })
+      return await getSignedUrl(this.client, command, {
+        expiresIn: params.expiresIn || 3600,
+      })
+    } catch (error) {
+      console.error('R2 getPresignedUploadUrl error:', error)
+      throw new Error(
+        `Failed to generate presigned upload URL: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      )
     }
   }
 
   async list(prefix: string): Promise<
     Array<{
-      key: string;
-      size: number;
-      lastModified: Date;
+      key: string
+      size: number
+      lastModified: Date
     }>
   > {
     try {
@@ -120,21 +142,21 @@ export class R2Adapter implements StorageProvider {
         new ListObjectsV2Command({
           Bucket: this.bucket,
           Prefix: prefix,
-        })
-      );
+        }),
+      )
 
       return (
         response.Contents?.map((item) => ({
-          key: item.Key || "",
+          key: item.Key || '',
           size: item.Size || 0,
           lastModified: item.LastModified || new Date(),
         })) || []
-      );
+      )
     } catch (error) {
-      console.error("R2 list error:", error);
+      console.error('R2 list error:', error)
       throw new Error(
-        `Failed to list files: ${error instanceof Error ? error.message : "Unknown error"}`
-      );
+        `Failed to list files: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      )
     }
   }
 
@@ -143,14 +165,14 @@ export class R2Adapter implements StorageProvider {
       await this.client.send(
         new HeadBucketCommand({
           Bucket: this.bucket,
-        })
-      );
-      return { healthy: true };
+        }),
+      )
+      return { healthy: true }
     } catch (error) {
       return {
         healthy: false,
-        message: error instanceof Error ? error.message : "Unknown error",
-      };
+        message: error instanceof Error ? error.message : 'Unknown error',
+      }
     }
   }
 }

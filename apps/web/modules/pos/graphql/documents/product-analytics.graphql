@@ -1,0 +1,87 @@
+query ProductSalesHistory($productId: String!, $startDate: DateTime, $endDate: DateTime, $limit: Int) {
+  productSalesHistory(productId: $productId, startDate: $startDate, endDate: $endDate, limit: $limit) {
+    saleId
+    receiptNo
+    quantity
+    unitPrice
+    unitCost
+    subtotal
+    paymentMethod
+    saleType
+    createdAt
+  }
+}
+
+query ProductAnalytics($productId: String!, $startDate: DateTime, $endDate: DateTime) {
+  productAnalytics(productId: $productId, startDate: $startDate, endDate: $endDate) {
+    totalRevenue
+    totalUnitsSold
+    totalCost
+    grossProfit
+    profitMargin
+    averageSalePrice
+    firstSaleDate
+    lastSaleDate
+    transactionCount
+    refundedUnits
+    refundRate
+  }
+}
+
+query ProductSalesTrend($productId: String!, $days: Int!) {
+  productSalesTrend(productId: $productId, days: $days) {
+    date
+    unitsSold
+    revenue
+    cost
+    profit
+  }
+}
+
+query ProductWithAnalytics($productId: String!, $days: Int) {
+  product(id: $productId) {
+    id
+    name
+    searchName
+    barcode
+    description
+    sellingPrice
+    isActive
+    categoryId
+    organizationId
+    createdAt
+    updatedAt
+    category {
+      id
+      name
+    }
+  }
+  productStock(productId: $productId) {
+    totalStock
+    averageCost
+    lots {
+      id
+      productId
+      quantity
+      remaining
+      costPrice
+      supplier
+      notes
+      purchasedAt
+      createdAt
+    }
+  }
+  productAnalytics(productId: $productId, days: $days) {
+    totalRevenue
+    totalUnitsSold
+    totalCost
+    grossProfit
+    profitMargin
+    averageSalePrice
+    firstSaleDate
+    lastSaleDate
+    transactionCount
+    refundedUnits
+    refundRate
+  }
+}

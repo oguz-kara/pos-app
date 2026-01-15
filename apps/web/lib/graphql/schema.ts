@@ -1,19 +1,17 @@
-import { builder } from "./builder";
+import { builder } from './builder'
 
 // Import all module resolvers (Order matters for type references)
-import "@/modules/shared/types/scalars";
-import "@/modules/shared/types/enums";
-import "@/modules/organizations/api";
-import "@/modules/projects/api";
-import "@/modules/tasks/api";
-import "@/modules/billing/api";
-import "@/modules/storage/api";
-import "@/modules/notifications/api";
-import "@/modules/pos/api";
+import '@/modules/shared/types/scalars'
+import '@/modules/shared/types/enums'
+import '@/modules/organizations/api'
+import '@/modules/billing/api'
+import '@/modules/storage/api'
+import '@/modules/notifications/api'
+import '@/modules/pos/api'
 
 // TODO: Import domain module resolvers here
 // import '@/modules/auth/api';
-import "@/modules/admin/api";
+import '@/modules/admin/api'
 
 // Build and export the schema
-export const schema = builder.toSchema();
+export const schema = builder.toSchema()

@@ -1,0 +1,1 @@
+ALTER TABLE "sales" ADD CONSTRAINT "sales_receipt_no_unique" UNIQUE("receipt_no");

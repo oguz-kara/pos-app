@@ -2,18 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import {
-  LayoutDashboard,
-  FolderKanban,
-  CreditCard,
-  Settings,
-  ShoppingCart,
-  Package,
-  Box,
-  Receipt,
-  BarChart3,
-  Tags,
-} from "lucide-react";
+import { LayoutDashboard, Settings, ShoppingCart } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
 import {
@@ -41,6 +30,10 @@ const data = {
       isActive: true,
       items: [
         {
+          title: "Kontrol Paneli",
+          url: "/pos/dashboard",
+        },
+        {
           title: "Hızlı Satış",
           url: "/pos",
         },
@@ -57,29 +50,10 @@ const data = {
           url: "/pos/sales",
         },
         {
-          title: "Raporlar",
-          url: "/pos/reports",
-        },
-        {
           title: "Kategoriler",
           url: "/pos/categories",
         },
       ],
-    },
-    {
-      title: "Projects",
-      url: "/projects",
-      icon: FolderKanban,
-    },
-    {
-      title: "Billing",
-      url: "/billing",
-      icon: CreditCard,
-    },
-    {
-      title: "Settings",
-      url: "/settings",
-      icon: Settings,
     },
   ],
 };
@@ -96,7 +70,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   <ShoppingCart className="size-4" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">POS System</span>
+                  <span className="truncate font-semibold">Kara Ticaret</span>
                   <span className="truncate text-xs">Jetframe</span>
                 </div>
               </Link>

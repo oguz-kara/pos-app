@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import {
   Dialog,
   DialogContent,
@@ -35,6 +35,7 @@ export function CheckoutDialog({
   const [receivedAmount, setReceivedAmount] = useState("");
   const [notes, setNotes] = useState("");
   const [showNotesInput, setShowNotesInput] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const receivedInputRef = useRef<HTMLInputElement>(null);
 
   // Reset state when modal opens
@@ -44,6 +45,7 @@ export function CheckoutDialog({
       setReceivedAmount("");
       setNotes("");
       setShowNotesInput(false);
+      setIsSubmitting(false);
     }
   }, [open]);
 
@@ -55,6 +57,38 @@ export function CheckoutDialog({
       }, 100);
     }
   }, [paymentMethod]);
+
+  // Calculate submit eligibility
+  const receivedNum = parseFloat(receivedAmount) || 0;
+  const change = receivedNum - totalAmount;
+  const canSubmit =
+    paymentMethod === "card" ||
+    (paymentMethod === "cash" && receivedNum >= totalAmount);
+
+  const handleConfirm = useCallback(async () => {
+    if (!paymentMethod || !canSubmit || isSubmitting) return;
+
+    setIsSubmitting(true);
+    try {
+      await onConfirm(paymentMethod, notes || undefined);
+      setPaymentMethod(null);
+      setReceivedAmount("");
+      setNotes("");
+    } catch (error) {
+      // Error handling - allow retry
+      console.error("Sale failed:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  }, [paymentMethod, canSubmit, isSubmitting, onConfirm, notes]);
+
+  // Auto-round received amount on blur
+  const handleReceivedAmountBlur = () => {
+    const rounded = Math.round(parseFloat(receivedAmount) * 100) / 100;
+    if (!isNaN(rounded) && receivedAmount) {
+      setReceivedAmount(rounded.toFixed(2));
+    }
+  };
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -70,11 +104,14 @@ export function CheckoutDialog({
 
       // Only handle shortcuts when not typing
       if (!isTypingField) {
-        // Enter - Select Cash
+        // Enter - Select Cash or Complete Sale
         if (e.key === "Enter") {
           e.preventDefault();
           if (!paymentMethod) {
             setPaymentMethod("cash");
+          } else if (canSubmit && !isLoading && !isSubmitting) {
+            // Complete sale when payment method is selected and valid
+            handleConfirm();
           }
         }
         // C - Select Card
@@ -99,21 +136,7 @@ export function CheckoutDialog({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [open, paymentMethod, receivedAmount, totalAmount]);
-
-  const receivedNum = parseFloat(receivedAmount) || 0;
-  const change = receivedNum - totalAmount;
-  const canSubmit =
-    paymentMethod === "card" ||
-    (paymentMethod === "cash" && receivedNum >= totalAmount);
-
-  const handleConfirm = async () => {
-    if (!paymentMethod || !canSubmit) return;
-    await onConfirm(paymentMethod, notes || undefined);
-    setPaymentMethod(null);
-    setReceivedAmount("");
-    setNotes("");
-  };
+  }, [open, paymentMethod, receivedAmount, totalAmount, canSubmit, isLoading, isSubmitting, handleConfirm]);
 
   const handlePaymentMethodSelect = (method: PaymentMethod) => {
     setPaymentMethod(method);
@@ -195,29 +218,30 @@ export function CheckoutDialog({
                   ref={receivedInputRef}
                   type="number"
                   step="0.01"
-                  min="0"
+                  min="0.01"
                   value={receivedAmount}
                   onChange={(e) => setReceivedAmount(e.target.value)}
+                  onBlur={handleReceivedAmountBlur}
                   className="text-2xl h-16 text-center font-bold"
                   placeholder="0.00"
                 />
               </div>
 
-              {/* Change Display */}
+              {/* Change Display - EMPHASIZED */}
               {receivedNum > 0 && (
                 <div
-                  className={`p-4 rounded-lg border-2 ${
+                  className={`p-6 rounded-xl border-4 shadow-lg transition-all ${
                     change >= 0
-                      ? "bg-green-50 border-green-300"
-                      : "bg-red-50 border-red-300"
+                      ? "bg-gradient-to-br from-green-50 to-green-100 border-green-400 animate-pulse"
+                      : "bg-gradient-to-br from-red-50 to-red-100 border-red-400"
                   }`}
                 >
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-semibold text-muted-foreground">
-                      Para Üstü
+                  <div className="flex flex-col items-center gap-2">
+                    <span className="text-lg font-bold text-muted-foreground uppercase tracking-wide">
+                      💰 Para Üstü
                     </span>
                     <span
-                      className={`text-3xl font-black ${
+                      className={`text-6xl font-black drop-shadow-lg ${
                         change >= 0 ? "text-green-700" : "text-red-700"
                       }`}
                     >
@@ -294,17 +318,17 @@ export function CheckoutDialog({
             <Button
               variant="outline"
               onClick={() => onOpenChange(false)}
-              disabled={isLoading}
+              disabled={isLoading || isSubmitting}
               className="flex-1 h-14 text-base"
             >
               İptal (Esc)
             </Button>
             <Button
               onClick={handleConfirm}
-              disabled={!canSubmit || isLoading}
+              disabled={!canSubmit || isLoading || isSubmitting}
               className="flex-1 h-14 text-base font-bold shadow-lg hover:shadow-xl transition-all"
             >
-              {isLoading ? "İşleniyor..." : "Satışı Tamamla (Enter)"}
+              {isLoading || isSubmitting ? "İşleniyor..." : "Satışı Tamamla (Enter)"}
             </Button>
           </div>
         )}

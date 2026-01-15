@@ -1,0 +1,19 @@
+query ListFiles($input: ListFilesInput) {
+  listFiles(input: $input) {
+    files {
+      id
+      filename
+      contentType
+      size
+      url
+      fileHash
+      createdAt
+    }
+    total
+    hasMore
+  }
+}
+
+mutation DeleteFile($input: DeleteFileInput!) {
+  deleteFile(input: $input)
+}

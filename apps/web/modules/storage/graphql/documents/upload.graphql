@@ -1,0 +1,26 @@
+mutation GenerateUploadUrl($input: GenerateUploadUrlInput!) {
+  generateUploadUrl(input: $input) {
+    uploadUrl
+    key
+    fileId
+    publicUrl
+    isDuplicate
+    existingFile {
+      id
+      filename
+      url
+    }
+  }
+}
+
+mutation ConfirmUpload($input: ConfirmUploadInput!) {
+  confirmUpload(input: $input) {
+    id
+    filename
+    contentType
+    size
+    url
+    fileHash
+    createdAt
+  }
+}

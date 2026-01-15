@@ -1,0 +1,36 @@
+query TodaysPulse {
+  todaysPulse {
+    totalSales
+    totalCost
+    grossProfit
+    transactionCount
+    totalRefunds
+  }
+}
+
+query SalesTrend($days: Int) {
+  salesTrend(days: $days) {
+    date
+    sales
+    cost
+    profit
+  }
+}
+
+query TopProducts($limit: Int, $startDate: DateTime, $endDate: DateTime) {
+  topProducts(limit: $limit, startDate: $startDate, endDate: $endDate) {
+    productId
+    productName
+    quantitySold
+    revenue
+  }
+}
+
+query DashboardLowStock($threshold: Int) {
+  lowStockProducts(threshold: $threshold) {
+    productId
+    productName
+    currentStock
+    barcode
+  }
+}

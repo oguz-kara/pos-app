@@ -1,0 +1,59 @@
+query Suppliers {
+  suppliers {
+    id
+    name
+    contactPerson
+    phone
+    email
+    address
+    notes
+    createdAt
+    updatedAt
+  }
+}
+
+query Supplier($id: String!) {
+  supplier(id: $id) {
+    id
+    name
+    contactPerson
+    phone
+    email
+    address
+    notes
+    createdAt
+    updatedAt
+  }
+}
+
+mutation CreateSupplier($input: CreateSupplierInput!) {
+  createSupplier(input: $input) {
+    id
+    name
+    contactPerson
+    phone
+    email
+    address
+    notes
+    createdAt
+    updatedAt
+  }
+}
+
+mutation UpdateSupplier($id: String!, $input: UpdateSupplierInput!) {
+  updateSupplier(id: $id, input: $input) {
+    id
+    name
+    contactPerson
+    phone
+    email
+    address
+    notes
+    createdAt
+    updatedAt
+  }
+}
+
+mutation DeleteSupplier($id: String!) {
+  deleteSupplier(id: $id)
+}

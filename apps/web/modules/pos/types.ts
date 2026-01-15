@@ -3,8 +3,11 @@ import {
   categories,
   products,
   stockLots,
+  stockLogs,
+  suppliers,
   sales,
   saleItems,
+  dailyReports,
 } from "@jetframe/db";
 
 /**
@@ -45,6 +48,24 @@ export type StockInfo = {
   averageCost: number;
   lots: StockLot[];
 };
+
+// Stock Log Types
+export type StockLog = InferSelectModel<typeof stockLogs>;
+export type NewStockLog = Omit<
+  InferInsertModel<typeof stockLogs>,
+  "id" | "createdAt"
+>;
+
+export type StockLogWithProduct = StockLog & {
+  product: Product;
+};
+
+// Supplier Types
+export type Supplier = InferSelectModel<typeof suppliers>;
+export type NewSupplier = Omit<
+  InferInsertModel<typeof suppliers>,
+  "id" | "organizationId" | "createdAt" | "updatedAt"
+>;
 
 // Sale Types
 export type Sale = InferSelectModel<typeof sales>;
@@ -89,10 +110,18 @@ export type AddStockLotInput = {
   productId: string;
   quantity: number;
   costPrice: number;
-  supplier?: string | null;
+  supplierId?: string | null;
   notes?: string | null;
   purchasedAt?: Date;
 };
+
+export type AddStockBulkInput = {
+  items: AddStockLotInput[];
+  invoiceRef?: string | null;
+};
+
+export type CreateSupplierInput = NewSupplier;
+export type UpdateSupplierInput = Partial<NewSupplier>;
 
 export type CreateSaleInput = {
   items: {
@@ -102,4 +131,51 @@ export type CreateSaleInput = {
   }[];
   paymentMethod: "cash" | "card";
   notes?: string | null;
+};
+
+// Daily Report Types
+export type DailyReport = InferSelectModel<typeof dailyReports>;
+export type NewDailyReport = Omit<
+  InferInsertModel<typeof dailyReports>,
+  "id" | "createdAt"
+>;
+
+export type GenerateDailyReportInput = {
+  cashCounted?: number | null;
+  notes?: string | null;
+};
+
+// Product Analytics Types
+export type ProductSalesHistoryItem = {
+  saleId: string;
+  receiptNo: string;
+  quantity: number;
+  unitPrice: string;
+  unitCost: string;
+  subtotal: string;
+  paymentMethod: string;
+  saleType: string;
+  createdAt: Date;
+};
+
+export type ProductAnalytics = {
+  totalRevenue: number;
+  totalUnitsSold: number;
+  totalCost: number;
+  grossProfit: number;
+  profitMargin: number;
+  averageSalePrice: number;
+  firstSaleDate: Date | null;
+  lastSaleDate: Date | null;
+  transactionCount: number;
+  refundedUnits: number;
+  refundRate: number;
+};
+
+export type ProductSalesTrendItem = {
+  date: string;
+  unitsSold: number;
+  revenue: number;
+  cost: number;
+  profit: number;
 };

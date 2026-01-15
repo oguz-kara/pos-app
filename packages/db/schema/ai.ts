@@ -18,10 +18,12 @@ export const aiUsage = pgTable("ai_usage", {
   totalTokens: integer("total_tokens").notNull(),
   creditsUsed: integer("credits_used").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-}, (table) => ({
-  organizationIdIdx: index("idx_ai_usage_org_id").on(table.organizationId),
-  createdAtIdx: index("idx_ai_usage_created_at").on(table.createdAt),
-}));
+}, (table) => [
+
+  index("idx_ai_usage_org_id").on(table.organizationId),
+  index("idx_ai_usage_created_at").on(table.createdAt),
+
+]);
 
 // Relations
 export const aiUsageRelations = relations(aiUsage, ({ one }) => ({

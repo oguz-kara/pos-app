@@ -11,8 +11,7 @@
     "./schema/ai": "./schema/ai.ts",
     "./schema/files": "./schema/files.ts",
     "./schema/notifications": "./schema/notifications.ts",
-    "./schema/projects": "./schema/projects.ts",
-    "./schema/tasks": "./schema/tasks.ts",
+    "./schema/pos": "./schema/pos/index.ts",
     "./utils/pagination": "./utils/pagination.ts"
   },
   "scripts": {

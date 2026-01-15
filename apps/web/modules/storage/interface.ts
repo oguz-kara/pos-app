@@ -22,9 +22,18 @@ export interface StorageProvider {
   delete(key: string): Promise<void>;
 
   /**
-   * Get a signed URL for temporary access to a file
+   * Get a signed URL for temporary download access to a file
    */
   getSignedUrl(key: string, expiresIn?: number): Promise<string>;
+
+  /**
+   * Get a presigned URL for client-side upload
+   */
+  getPresignedUploadUrl(params: {
+    key: string;
+    contentType: string;
+    expiresIn?: number;
+  }): Promise<string>;
 
   /**
    * List files with a given prefix

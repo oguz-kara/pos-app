@@ -24,9 +24,9 @@ export const sessions = pgTable("sessions", {
   userAgent: text("userAgent"),
   createdAt: timestamp("createdAt", { mode: "date" }).notNull(),
   updatedAt: timestamp("updatedAt", { mode: "date" }).notNull(),
-}, (table) => ({
-  userIdIdx: index("idx_sessions_user_id").on(table.userId),
-}));
+}, (table) => [
+  index("idx_sessions_user_id").on(table.userId),
+]);
 
 // Accounts table (for OAuth providers) - Better-Auth manages this
 export const accounts = pgTable("accounts", {
@@ -41,9 +41,9 @@ export const accounts = pgTable("accounts", {
   expiresAt: timestamp("expiresAt", { mode: "date" }),
   createdAt: timestamp("createdAt", { mode: "date" }).notNull(),
   updatedAt: timestamp("updatedAt", { mode: "date" }).notNull(),
-}, (table) => ({
-  userIdIdx: index("idx_accounts_user_id").on(table.userId),
-}));
+}, (table) => [
+  index("idx_accounts_user_id").on(table.userId),
+]);
 
 // Verification table (for magic links and email verification)
 // Better-Auth requires specific field types and names
@@ -79,10 +79,10 @@ export const members = pgTable("members", {
   role: varchar("role", { length: 50 }).notNull().default("member"), // owner, admin, member
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
-}, (table) => ({
-  organizationIdIdx: index("idx_members_organization_id").on(table.organizationId),
-  userIdIdx: index("idx_members_user_id").on(table.userId),
-}));
+}, (table) => [
+  index("idx_members_organization_id").on(table.organizationId),
+  index("idx_members_user_id").on(table.userId),
+]);
 
 // Organization invitations table
 export const invitations = pgTable("invitations", {
@@ -100,10 +100,10 @@ export const invitations = pgTable("invitations", {
   acceptedAt: timestamp("accepted_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
-}, (table) => ({
-  organizationIdIdx: index("idx_invitations_organization_id").on(table.organizationId),
-  invitedByIdx: index("idx_invitations_invited_by").on(table.invitedBy),
-}));
+}, (table) => [
+  index("idx_invitations_organization_id").on(table.organizationId),
+  index("idx_invitations_invited_by").on(table.invitedBy),
+]);
 
 // Organization settings table (for dynamic config overrides)
 export const organizationSettings = pgTable("organization_settings", {
@@ -115,10 +115,10 @@ export const organizationSettings = pgTable("organization_settings", {
   config: text("config"), // JSON stringified config
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
   updatedBy: text("updated_by").references(() => users.id),
-}, (table) => ({
-  orgIdIdx: index("idx_organization_settings_org_id").on(table.orgId),
-  updatedByIdx: index("idx_organization_settings_updated_by").on(table.updatedBy),
-}));
+}, (table) => [
+  index("idx_organization_settings_org_id").on(table.orgId),
+  index("idx_organization_settings_updated_by").on(table.updatedBy),
+]);
 
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({

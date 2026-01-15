@@ -1,0 +1,39 @@
+query DailyReports($startDate: DateTime, $endDate: DateTime, $limit: Int) {
+  dailyReports(startDate: $startDate, endDate: $endDate, limit: $limit) {
+    id
+    organizationId
+    reportDate
+    reportStartTime
+    reportEndTime
+    totalSales
+    totalRefunds
+    totalCost
+    grossProfit
+    cashSales
+    cardSales
+    cashCounted
+    cashVariance
+    notes
+    createdAt
+  }
+}
+
+mutation GenerateDailyReport($input: GenerateDailyReportInput!) {
+  generateDailyReport(input: $input) {
+    id
+    organizationId
+    reportDate
+    reportStartTime
+    reportEndTime
+    totalSales
+    totalRefunds
+    totalCost
+    grossProfit
+    cashSales
+    cardSales
+    cashCounted
+    cashVariance
+    notes
+    createdAt
+  }
+}

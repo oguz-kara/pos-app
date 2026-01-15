@@ -1,20 +1,34 @@
-query Sales($startDate: DateTime, $endDate: DateTime) {
-  sales(startDate: $startDate, endDate: $endDate) {
+query TodaysCashSales($startDate: DateTime!, $endDate: DateTime!) {
+  salesHistory(paymentMethod: "cash", type: "SALE", startDate: $startDate, endDate: $endDate) {
     id
-    receiptNo
     totalAmount
-    totalCost
-    paymentMethod
-    notes
-    organizationId
     createdAt
   }
 }
 
-query Sale($id: String!) {
-  sale(id: $id) {
+query TodaysCardSales($startDate: DateTime!, $endDate: DateTime!) {
+  salesHistory(paymentMethod: "card", type: "SALE", startDate: $startDate, endDate: $endDate) {
+    id
+    totalAmount
+    createdAt
+  }
+}
+
+query TodaysRefunds($startDate: DateTime!, $endDate: DateTime!) {
+  salesHistory(type: "REFUND", startDate: $startDate, endDate: $endDate) {
+    id
+    totalAmount
+    paymentMethod
+    createdAt
+  }
+}
+
+query SalesHistory($startDate: DateTime, $endDate: DateTime, $paymentMethod: String, $type: String, $limit: Int) {
+  salesHistory(startDate: $startDate, endDate: $endDate, paymentMethod: $paymentMethod, type: $type, limit: $limit) {
     id
     receiptNo
+    type
+    originalSaleId
     totalAmount
     totalCost
     paymentMethod
@@ -37,17 +51,6 @@ query Sale($id: String!) {
         sellingPrice
       }
     }
-  }
-}
-
-query SalesSummary($startDate: DateTime!, $endDate: DateTime!) {
-  salesSummary(startDate: $startDate, endDate: $endDate) {
-    totalRevenue
-    totalCost
-    totalProfit
-    salesCount
-    startDate
-    endDate
   }
 }
 
@@ -55,27 +58,27 @@ mutation CreateSale($input: CreateSaleInput!) {
   createSale(input: $input) {
     id
     receiptNo
+    type
     totalAmount
     totalCost
     paymentMethod
     notes
     organizationId
     createdAt
-    items {
-      id
-      saleId
-      productId
-      quantity
-      unitPrice
-      unitCost
-      subtotal
-      createdAt
-      product {
-        id
-        name
-        barcode
-        sellingPrice
-      }
-    }
+  }
+}
+
+mutation RefundSaleItem($saleItemId: String!) {
+  refundSaleItem(saleItemId: $saleItemId) {
+    id
+    receiptNo
+    type
+    originalSaleId
+    totalAmount
+    totalCost
+    paymentMethod
+    notes
+    organizationId
+    createdAt
   }
 }

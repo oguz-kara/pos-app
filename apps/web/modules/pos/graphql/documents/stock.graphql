@@ -6,6 +6,7 @@ query ProductStock($productId: String!) {
     lots {
       id
       productId
+      supplierId
       quantity
       remaining
       costPrice
@@ -33,26 +34,6 @@ query StockLots($productId: String!) {
   }
 }
 
-query LowStockProducts($threshold: Int) {
-  lowStockProducts(threshold: $threshold) {
-    id
-    name
-    barcode
-    sellingPrice
-    isActive
-    categoryId
-    totalStock
-    averageCost
-    organizationId
-    createdAt
-    updatedAt
-    category {
-      id
-      name
-    }
-  }
-}
-
 mutation AddStockLot($input: AddStockLotInput!) {
   addStockLot(input: $input) {
     id
@@ -65,5 +46,41 @@ mutation AddStockLot($input: AddStockLotInput!) {
     purchasedAt
     organizationId
     createdAt
+  }
+}
+
+mutation AddStockBulk($input: AddStockBulkInput!) {
+  addStockBulk(input: $input) {
+    id
+    productId
+    quantity
+    remaining
+    costPrice
+    supplier
+    notes
+    purchasedAt
+    organizationId
+    createdAt
+  }
+}
+
+query StockLogs($productId: String, $type: String, $startDate: DateTime, $endDate: DateTime, $limit: Int) {
+  stockLogs(productId: $productId, type: $type, startDate: $startDate, endDate: $endDate, limit: $limit) {
+    id
+    organizationId
+    productId
+    lotId
+    type
+    quantity
+    referenceType
+    referenceId
+    notes
+    createdAt
+    product {
+      id
+      name
+      barcode
+      sellingPrice
+    }
   }
 }

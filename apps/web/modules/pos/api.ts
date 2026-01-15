@@ -1,20 +1,41 @@
 import { builder } from "@/lib/graphql/builder";
 import * as posService from "./service";
+import * as assetService from "./services/asset-service";
 import {
   CategoryType,
   ProductType,
   ProductWithStockType,
+  ProductImageType,
   StockLotType,
   StockInfoType,
+  StockLogType,
+  SupplierType,
   SaleType,
   SaleWithItemsType,
   SalesSummaryType,
+  DailyReportType,
+  TodaysPulseType,
+  SalesTrendItemType,
+  TopProductType,
+  LowStockItemType,
+  FileUsageType,
+  ProductSalesHistoryItemType,
+  ProductAnalyticsType,
+  ProductSalesTrendItemType,
   CreateCategoryInput,
   UpdateCategoryInput,
   CreateProductInput,
   UpdateProductInput,
   AddStockLotInput,
+  AddStockBulkInput,
+  CreateSupplierInput,
+  UpdateSupplierInput,
   CreateSaleInput,
+  GenerateDailyReportInput,
+  AttachProductImageInput,
+  DetachProductImageInput,
+  SetPrimaryImageInput,
+  ReorderProductImagesInput,
 } from "./schema";
 
 /**
@@ -164,7 +185,9 @@ builder.mutationField("createProduct", (t) =>
     resolve: async (_, args, ctx) => {
       return posService.createProduct(getOrgId(ctx), {
         name: args.input.name,
+        searchName: args.input.searchName || null,
         barcode: args.input.barcode || null,
+        description: args.input.description || null,
         sellingPrice: args.input.sellingPrice.toString(),
         categoryId: args.input.categoryId || null,
       });
@@ -183,8 +206,12 @@ builder.mutationField("updateProduct", (t) =>
 
       const updateData: any = {};
       if (args.input.name !== undefined) updateData.name = args.input.name;
+      if (args.input.searchName !== undefined)
+        updateData.searchName = args.input.searchName || null;
       if (args.input.barcode !== undefined)
         updateData.barcode = args.input.barcode || null;
+      if (args.input.description !== undefined)
+        updateData.description = args.input.description || null;
       if (args.input.sellingPrice !== undefined)
         updateData.sellingPrice = args.input.sellingPrice.toString();
       if (args.input.categoryId !== undefined)
@@ -247,21 +274,6 @@ builder.queryField("stockLots", (t) =>
   })
 );
 
-builder.queryField("lowStockProducts", (t) =>
-  t.field({
-    type: [ProductWithStockType],
-    args: {
-      threshold: t.arg.int({ required: false }),
-    },
-    resolve: async (_, args, ctx) => {
-      return posService.getProductsWithStock(getOrgId(ctx), {
-        lowStockOnly: true,
-        threshold: args.threshold || 10,
-      });
-    },
-  })
-);
-
 // ========================================
 // STOCK MUTATIONS
 // ========================================
@@ -277,10 +289,139 @@ builder.mutationField("addStockLot", (t) =>
         productId: args.input.productId,
         quantity: args.input.quantity,
         costPrice: args.input.costPrice.toString(),
-        supplier: args.input.supplier || null,
+        supplierId: args.input.supplierId || null,
         notes: args.input.notes || null,
         purchasedAt: args.input.purchasedAt || new Date(),
       });
+    },
+  })
+);
+
+builder.mutationField("addStockBulk", (t) =>
+  t.field({
+    type: [StockLotType],
+    args: {
+      input: t.arg({ type: AddStockBulkInput, required: true }),
+    },
+    resolve: async (_, args, ctx) => {
+      return posService.addStockBulk(getOrgId(ctx), {
+        items: args.input.items.map((item) => ({
+          productId: item.productId,
+          quantity: item.quantity,
+          costPrice: item.costPrice.toString(),
+          supplierId: item.supplierId || null,
+          notes: item.notes || null,
+          purchasedAt: item.purchasedAt || new Date(),
+        })),
+        invoiceRef: args.input.invoiceRef || null,
+      });
+    },
+  })
+);
+
+// ========================================
+// STOCK LOG QUERIES
+// ========================================
+
+builder.queryField("stockLogs", (t) =>
+  t.field({
+    type: [StockLogType],
+    args: {
+      productId: t.arg.string({ required: false }),
+      type: t.arg.string({ required: false }),
+      startDate: t.arg({ type: "DateTime", required: false }),
+      endDate: t.arg({ type: "DateTime", required: false }),
+      limit: t.arg.int({ required: false }),
+    },
+    resolve: async (_, args, ctx) => {
+      return posService.getStockLogs(getOrgId(ctx), {
+        productId: args.productId || undefined,
+        type: args.type || undefined,
+        startDate: args.startDate || undefined,
+        endDate: args.endDate || undefined,
+        limit: args.limit || undefined,
+      });
+    },
+  })
+);
+
+// ========================================
+// SUPPLIER QUERIES
+// ========================================
+
+builder.queryField("suppliers", (t) =>
+  t.field({
+    type: [SupplierType],
+    resolve: async (_, __, ctx) => {
+      return posService.getSuppliers(getOrgId(ctx));
+    },
+  })
+);
+
+builder.queryField("supplier", (t) =>
+  t.field({
+    type: SupplierType,
+    nullable: true,
+    args: {
+      id: t.arg.string({ required: true }),
+    },
+    resolve: async (_, args, ctx) => {
+      return posService.getSupplier(args.id, getOrgId(ctx));
+    },
+  })
+);
+
+// ========================================
+// SUPPLIER MUTATIONS
+// ========================================
+
+builder.mutationField("createSupplier", (t) =>
+  t.field({
+    type: SupplierType,
+    args: {
+      input: t.arg({ type: CreateSupplierInput, required: true }),
+    },
+    resolve: async (_, args, ctx) => {
+      return posService.createSupplier(getOrgId(ctx), {
+        name: args.input.name,
+        contactPerson: args.input.contactPerson || null,
+        phone: args.input.phone || null,
+        email: args.input.email || null,
+        address: args.input.address || null,
+        notes: args.input.notes || null,
+      });
+    },
+  })
+);
+
+builder.mutationField("updateSupplier", (t) =>
+  t.field({
+    type: SupplierType,
+    args: {
+      id: t.arg.string({ required: true }),
+      input: t.arg({ type: UpdateSupplierInput, required: true }),
+    },
+    resolve: async (_, args, ctx) => {
+      return posService.updateSupplier(args.id, getOrgId(ctx), {
+        ...(args.input.name && { name: args.input.name }),
+        ...(args.input.contactPerson !== undefined && { contactPerson: args.input.contactPerson }),
+        ...(args.input.phone !== undefined && { phone: args.input.phone }),
+        ...(args.input.email !== undefined && { email: args.input.email }),
+        ...(args.input.address !== undefined && { address: args.input.address }),
+        ...(args.input.notes !== undefined && { notes: args.input.notes }),
+      });
+    },
+  })
+);
+
+builder.mutationField("deleteSupplier", (t) =>
+  t.field({
+    type: "Boolean",
+    args: {
+      id: t.arg.string({ required: true }),
+    },
+    resolve: async (_, args, ctx) => {
+      return posService.deleteSupplier(args.id, getOrgId(ctx));
     },
   })
 );
@@ -366,6 +507,324 @@ builder.mutationField("createSale", (t) =>
         paymentMethod,
         notes: args.input.notes || null,
       });
+    },
+  })
+);
+
+// ========================================
+// SALES HISTORY & REFUNDS
+// ========================================
+
+builder.queryField("salesHistory", (t) =>
+  t.field({
+    type: [SaleWithItemsType],
+    args: {
+      startDate: t.arg({ type: "DateTime", required: false }),
+      endDate: t.arg({ type: "DateTime", required: false }),
+      paymentMethod: t.arg.string({ required: false }),
+      type: t.arg.string({ required: false }),
+      limit: t.arg.int({ required: false }),
+    },
+    resolve: async (_, args, ctx) => {
+      return posService.getSalesHistory(getOrgId(ctx), {
+        startDate: args.startDate || undefined,
+        endDate: args.endDate || undefined,
+        paymentMethod: args.paymentMethod || undefined,
+        type: args.type || undefined,
+        limit: args.limit || undefined,
+      });
+    },
+  })
+);
+
+builder.mutationField("refundSaleItem", (t) =>
+  t.field({
+    type: SaleType,
+    args: {
+      saleItemId: t.arg.string({ required: true }),
+    },
+    resolve: async (_, args, ctx) => {
+      return posService.processSaleRefund(getOrgId(ctx), args.saleItemId);
+    },
+  })
+);
+
+// ========================================
+// DAILY REPORTS (Z-REPORT)
+// ========================================
+
+builder.queryField("dailyReports", (t) =>
+  t.field({
+    type: [DailyReportType],
+    args: {
+      startDate: t.arg({ type: "DateTime", required: false }),
+      endDate: t.arg({ type: "DateTime", required: false }),
+      limit: t.arg.int({ required: false }),
+    },
+    resolve: async (_, args, ctx) => {
+      return posService.getDailyReports(getOrgId(ctx), {
+        startDate: args.startDate || undefined,
+        endDate: args.endDate || undefined,
+        limit: args.limit || undefined,
+      });
+    },
+  })
+);
+
+builder.mutationField("generateDailyReport", (t) =>
+  t.field({
+    type: DailyReportType,
+    args: {
+      input: t.arg({ type: GenerateDailyReportInput, required: true }),
+    },
+    resolve: async (_, args, ctx) => {
+      return posService.generateDailyReport(getOrgId(ctx), {
+        cashCounted: args.input.cashCounted ?? null,
+        notes: args.input.notes ?? null,
+      });
+    },
+  })
+);
+
+// ========================================
+// DASHBOARD ANALYTICS
+// ========================================
+
+builder.queryField("todaysPulse", (t) =>
+  t.field({
+    type: TodaysPulseType,
+    resolve: async (_, __, ctx) => {
+      return posService.getTodaysPulse(getOrgId(ctx));
+    },
+  })
+);
+
+builder.queryField("salesTrend", (t) =>
+  t.field({
+    type: [SalesTrendItemType],
+    args: {
+      days: t.arg.int({ required: false }),
+    },
+    resolve: async (_, args, ctx) => {
+      return posService.getSalesTrend(getOrgId(ctx), args.days || 7);
+    },
+  })
+);
+
+builder.queryField("topProducts", (t) =>
+  t.field({
+    type: [TopProductType],
+    args: {
+      limit: t.arg.int({ required: false }),
+      startDate: t.arg({ type: "DateTime", required: false }),
+      endDate: t.arg({ type: "DateTime", required: false }),
+    },
+    resolve: async (_, args, ctx) => {
+      return posService.getTopProducts(
+        getOrgId(ctx),
+        args.limit || 5,
+        args.startDate || undefined,
+        args.endDate || undefined
+      );
+    },
+  })
+);
+
+builder.queryField("lowStockProducts", (t) =>
+  t.field({
+    type: [LowStockItemType],
+    args: {
+      threshold: t.arg.int({ required: false }),
+    },
+    resolve: async (_, args, ctx) => {
+      return posService.getLowStockProducts(getOrgId(ctx), args.threshold || 10);
+    },
+  })
+);
+
+// ========================================
+// PRODUCT IMAGES QUERIES & MUTATIONS
+// ========================================
+
+/**
+ * Get all images for a product
+ */
+builder.queryField("productImages", (t) =>
+  t.field({
+    type: [ProductImageType],
+    args: {
+      productId: t.arg.string({ required: true }),
+    },
+    resolve: async (_, { productId }, ctx) => {
+      return assetService.getProductImages(getOrgId(ctx), productId);
+    },
+  })
+);
+
+/**
+ * Attach an image to a product
+ */
+builder.mutationField("attachProductImage", (t) =>
+  t.field({
+    type: ProductImageType,
+    args: {
+      input: t.arg({ type: AttachProductImageInput, required: true }),
+    },
+    resolve: async (_, { input }, ctx) => {
+      return assetService.attachImageToProduct(getOrgId(ctx), {
+        productId: input.productId,
+        fileId: input.fileId,
+        isPrimary: input.isPrimary || false,
+      });
+    },
+  })
+);
+
+/**
+ * Detach an image from a product
+ */
+builder.mutationField("detachProductImage", (t) =>
+  t.field({
+    type: "Boolean",
+    args: {
+      input: t.arg({ type: DetachProductImageInput, required: true }),
+    },
+    resolve: async (_, { input }, ctx) => {
+      await assetService.detachImageFromProduct(getOrgId(ctx), {
+        productId: input.productId,
+        fileId: input.fileId,
+      });
+      return true;
+    },
+  })
+);
+
+/**
+ * Set primary image for a product
+ */
+builder.mutationField("setPrimaryImage", (t) =>
+  t.field({
+    type: "Boolean",
+    args: {
+      input: t.arg({ type: SetPrimaryImageInput, required: true }),
+    },
+    resolve: async (_, { input }, ctx) => {
+      await assetService.setPrimaryImage(getOrgId(ctx), {
+        productId: input.productId,
+        fileId: input.fileId,
+      });
+      return true;
+    },
+  })
+);
+
+/**
+ * Reorder product images
+ */
+builder.mutationField("reorderProductImages", (t) =>
+  t.field({
+    type: "Boolean",
+    args: {
+      input: t.arg({ type: ReorderProductImagesInput, required: true }),
+    },
+    resolve: async (_, { input }, ctx) => {
+      await assetService.reorderProductImages(getOrgId(ctx), {
+        productId: input.productId,
+        imageIds: input.imageIds,
+      });
+      return true;
+    },
+  })
+);
+
+/**
+ * Check if a file is in use by products
+ * Useful for preventing deletion of files that are attached to products
+ */
+builder.queryField("fileUsage", (t) =>
+  t.field({
+    type: FileUsageType,
+    args: {
+      fileId: t.arg.string({ required: true }),
+    },
+    resolve: async (_, { fileId }, ctx) => {
+      return assetService.isFileInUse(getOrgId(ctx), fileId);
+    },
+  })
+);
+
+// ========================================
+// PRODUCT ANALYTICS QUERIES
+// ========================================
+
+/**
+ * Get sales history for a specific product
+ */
+builder.queryField("productSalesHistory", (t) =>
+  t.field({
+    type: [ProductSalesHistoryItemType],
+    args: {
+      productId: t.arg.string({ required: true }),
+      startDate: t.arg({ type: "DateTime", required: false }),
+      endDate: t.arg({ type: "DateTime", required: false }),
+      limit: t.arg.int({ required: false }),
+    },
+    resolve: async (_, args, ctx) => {
+      return posService.getProductSalesHistory(
+        args.productId,
+        getOrgId(ctx),
+        {
+          startDate: args.startDate || undefined,
+          endDate: args.endDate || undefined,
+          limit: args.limit || undefined,
+        }
+      );
+    },
+  })
+);
+
+/**
+ * Get aggregated analytics for a specific product
+ */
+builder.queryField("productAnalytics", (t) =>
+  t.field({
+    type: ProductAnalyticsType,
+    args: {
+      productId: t.arg.string({ required: true }),
+      startDate: t.arg({ type: "DateTime", required: false }),
+      endDate: t.arg({ type: "DateTime", required: false }),
+      days: t.arg.int({ required: false }),
+    },
+    resolve: async (_, args, ctx) => {
+      return posService.getProductAnalytics(
+        args.productId,
+        getOrgId(ctx),
+        {
+          startDate: args.startDate || undefined,
+          endDate: args.endDate || undefined,
+          days: args.days || undefined,
+        }
+      );
+    },
+  })
+);
+
+/**
+ * Get daily sales trend for a specific product
+ */
+builder.queryField("productSalesTrend", (t) =>
+  t.field({
+    type: [ProductSalesTrendItemType],
+    args: {
+      productId: t.arg.string({ required: true }),
+      days: t.arg.int({ required: true }),
+    },
+    resolve: async (_, args, ctx) => {
+      return posService.getProductSalesTrend(
+        args.productId,
+        getOrgId(ctx),
+        args.days
+      );
     },
   })
 );

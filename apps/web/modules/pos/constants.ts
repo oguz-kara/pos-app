@@ -107,10 +107,15 @@ export const TR = {
 
   // Reports
   reports: "Raporlar",
+  daily: "Günlük",
+  weekly: "Haftalık",
+  monthly: "Aylık",
   dailyReport: "Günlük Rapor",
   weeklyReport: "Haftalık Rapor",
   monthlyReport: "Aylık Rapor",
   dailySummary: "Günlük Özet",
+  revenueTrend: "Ciro Trendi",
+  revenueVsCost: "Ciro vs Maliyet",
 
   // Common
   search: "Ara",

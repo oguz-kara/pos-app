@@ -1,0 +1,49 @@
+query ProductImages($productId: String!) {
+  productImages(productId: $productId) {
+    id
+    productId
+    fileId
+    isPrimary
+    displayOrder
+    createdAt
+    updatedAt
+    file {
+      id
+      filename
+      contentType
+      size
+      url
+      fileHash
+      createdAt
+    }
+  }
+}
+
+mutation AttachProductImage($input: AttachProductImageInput!) {
+  attachProductImage(input: $input) {
+    id
+    productId
+    fileId
+    isPrimary
+    displayOrder
+  }
+}
+
+mutation DetachProductImage($input: DetachProductImageInput!) {
+  detachProductImage(input: $input)
+}
+
+mutation SetPrimaryImage($input: SetPrimaryImageInput!) {
+  setPrimaryImage(input: $input)
+}
+
+mutation ReorderProductImages($input: ReorderProductImagesInput!) {
+  reorderProductImages(input: $input)
+}
+
+query FileUsage($fileId: String!) {
+  fileUsage(fileId: $fileId) {
+    inUse
+    productCount
+  }
+}

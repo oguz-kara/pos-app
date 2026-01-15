@@ -49,10 +49,12 @@ export const organizationBilling = pgTable("organization_billing", {
   subscriptionEndDate: timestamp("subscription_end_date"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
-}, (table) => ({
-  organizationIdIdx: index("idx_organization_billing_org_id").on(table.organizationId),
-  stripeCustomerIdIdx: index("idx_organization_billing_stripe_customer_id").on(table.stripeCustomerId),
-}));
+}, (table) => [
+
+  index("idx_organization_billing_org_id").on(table.organizationId),
+  index("idx_organization_billing_stripe_customer_id").on(table.stripeCustomerId),
+
+]);
 
 // Credit transactions table (append-only ledger)
 export const creditTransactions = pgTable("credit_transactions", {
@@ -67,10 +69,12 @@ export const creditTransactions = pgTable("credit_transactions", {
   balanceAfter: integer("balance_after").notNull(), // Running balance after this transaction
   createdAt: timestamp("created_at").defaultNow().notNull(),
   createdBy: uuid("created_by"), // User who triggered the transaction (optional)
-}, (table) => ({
-  organizationIdIdx: index("idx_credit_transactions_org_id").on(table.organizationId),
-  createdAtIdx: index("idx_credit_transactions_created_at").on(table.createdAt),
-}));
+}, (table) => [
+
+  index("idx_credit_transactions_org_id").on(table.organizationId),
+  index("idx_credit_transactions_created_at").on(table.createdAt),
+
+]);
 
 // Subscription plans table (for credit packs and plan configs)
 export const plans = pgTable("plans", {
@@ -115,10 +119,12 @@ export const invoices = pgTable("invoices", {
   periodEnd: timestamp("period_end").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   paidAt: timestamp("paid_at"),
-}, (table) => ({
-  organizationIdIdx: index("idx_invoices_org_id").on(table.organizationId),
-  stripeInvoiceIdIdx: index("idx_invoices_stripe_invoice_id").on(table.stripeInvoiceId),
-}));
+}, (table) => [
+
+  index("idx_invoices_org_id").on(table.organizationId),
+  index("idx_invoices_stripe_invoice_id").on(table.stripeInvoiceId),
+
+]);
 
 // Relations
 export const organizationBillingRelations = relations(organizationBilling, ({ one, many }) => ({
