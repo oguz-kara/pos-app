@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { CheckCircle2, CreditCard, Zap, ArrowRight } from "lucide-react";
@@ -15,15 +15,9 @@ import {
 } from "@/components/ui/card";
 
 /**
- * Billing Success Page
- *
- * Shown after successful Stripe checkout for:
- * - Subscription purchases (default)
- * - Credit pack purchases (?type=credits)
- *
- * Displays success message and redirects to dashboard or billing page.
+ * Content component that uses useSearchParams
  */
-export default function BillingSuccessPage() {
+function SuccessContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const type = searchParams.get("type");
@@ -119,5 +113,33 @@ export default function BillingSuccessPage() {
         </CardFooter>
       </Card>
     </div>
+  );
+}
+
+/**
+ * Billing Success Page
+ *
+ * Shown after successful Stripe checkout for:
+ * - Subscription purchases (default)
+ * - Credit pack purchases (?type=credits)
+ *
+ * Displays success message and redirects to dashboard or billing page.
+ */
+export default function BillingSuccessPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center p-4">
+        <Card className="w-full max-w-lg">
+          <CardHeader className="text-center">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/20">
+              <CheckCircle2 className="h-8 w-8 text-green-600 dark:text-green-400" />
+            </div>
+            <CardTitle className="text-2xl">Processing...</CardTitle>
+          </CardHeader>
+        </Card>
+      </div>
+    }>
+      <SuccessContent />
+    </Suspense>
   );
 }

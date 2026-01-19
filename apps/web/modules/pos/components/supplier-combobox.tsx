@@ -1,12 +1,12 @@
-"use client"
+'use client'
 
-import * as React from "react"
-import { toast } from "sonner"
-import { Combobox } from "@/components/ui/combobox"
+import * as React from 'react'
+import { toast } from 'sonner'
+import { Combobox } from '@/components/ui/combobox'
 import {
   useSuppliersQuery,
   useCreateSupplierMutation,
-} from "@/lib/graphql/generated"
+} from '@/lib/graphql/generated'
 
 export interface SupplierComboboxProps {
   value?: string
@@ -19,7 +19,7 @@ export interface SupplierComboboxProps {
 export function SupplierCombobox({
   value,
   onValueChange,
-  placeholder = "Select supplier...",
+  placeholder = 'Select supplier...',
   className,
   disabled = false,
 }: SupplierComboboxProps) {
@@ -39,16 +39,24 @@ export function SupplierCombobox({
 
       toast.success(`Tedarikçi eklendi: ${data.createSupplier?.name}`)
     },
-    onError: (error) => {
+    // FIX 1: Explicitly type the error as 'Error' to access .message
+    onError: (error: Error) => {
       toast.error(`Hata: ${error.message}`)
     },
   })
 
   const suppliers = React.useMemo(() => {
-    return (suppliersData?.suppliers || []).map((supplier) => ({
-      value: supplier.id,
-      label: supplier.name,
-    }))
+    return (
+      (suppliersData?.suppliers || [])
+        // FIX 2: Guard Clause
+        // First, filter out items that don't have an ID or Name (broken data)
+        .filter((s) => s.id && s.name)
+        // Then map them. TypeScript now knows s.id and s.name are truthy strings.
+        .map((supplier) => ({
+          value: supplier.id as string,
+          label: supplier.name as string,
+        }))
+    )
   }, [suppliersData])
 
   const handleCreateNew = (inputValue: string) => {

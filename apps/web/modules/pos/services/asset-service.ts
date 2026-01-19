@@ -8,27 +8,27 @@
  * - Fetching product images with metadata
  */
 
-import { db, eq, and, asc, productImages, products, files } from "@jetframe/db";
-import { NotFoundError } from "@/modules/shared/errors";
+import { db, eq, and, asc, productImages, products, files } from '@jetframe/db'
+import { NotFoundError } from '@/modules/shared/errors'
 
 export type ProductImageWithFile = {
-  id: string;
-  productId: string;
-  fileId: string;
-  isPrimary: boolean;
-  displayOrder: number;
-  createdAt: Date;
-  updatedAt: Date;
+  id: string
+  productId: string
+  fileId: string
+  isPrimary: boolean
+  displayOrder: number
+  createdAt: Date
+  updatedAt: Date
   file: {
-    id: string;
-    filename: string;
-    contentType: string;
-    size: number;
-    url: string;
-    fileHash: string | null;
-    createdAt: Date;
-  };
-};
+    id: string
+    filename: string
+    contentType: string
+    size: number
+    url: string
+    fileHash: string | null
+    createdAt: Date
+  }
+}
 
 /**
  * Attach an image to a product
@@ -36,30 +36,30 @@ export type ProductImageWithFile = {
 export async function attachImageToProduct(
   orgId: string,
   params: {
-    productId: string;
-    fileId: string;
-    isPrimary?: boolean;
-  }
+    productId: string
+    fileId: string
+    isPrimary?: boolean
+  },
 ): Promise<ProductImageWithFile> {
   // Verify product exists and belongs to org
   const product = await db.query.products.findFirst({
     where: and(
       eq(products.id, params.productId),
-      eq(products.organizationId, orgId)
+      eq(products.organizationId, orgId),
     ),
-  });
+  })
 
   if (!product) {
-    throw new NotFoundError("Product");
+    throw new NotFoundError('Product')
   }
 
   // Verify file exists and belongs to org
   const file = await db.query.files.findFirst({
     where: and(eq(files.id, params.fileId), eq(files.organizationId, orgId)),
-  });
+  })
 
   if (!file) {
-    throw new NotFoundError("File");
+    throw new NotFoundError('File')
   }
 
   // If setting as primary, unset any existing primary image
@@ -70,21 +70,21 @@ export async function attachImageToProduct(
       .where(
         and(
           eq(productImages.productId, params.productId),
-          eq(productImages.isPrimary, true)
-        )
-      );
+          eq(productImages.isPrimary, true),
+        ),
+      )
   }
 
   // Get max display order
   const maxOrderResult = await db.query.productImages.findMany({
     where: eq(productImages.productId, params.productId),
     orderBy: [asc(productImages.displayOrder)],
-  });
+  })
 
   const maxOrder =
     maxOrderResult.length > 0
       ? Math.max(...maxOrderResult.map((img) => img.displayOrder))
-      : -1;
+      : -1
 
   // Create product image record
   const [productImage] = await db
@@ -95,7 +95,7 @@ export async function attachImageToProduct(
       isPrimary: params.isPrimary || false,
       displayOrder: maxOrder + 1,
     })
-    .returning();
+    .returning()
 
   // Fetch with file info
   const result = await db.query.productImages.findFirst({
@@ -103,9 +103,9 @@ export async function attachImageToProduct(
     with: {
       file: true,
     },
-  });
+  })
 
-  return result as ProductImageWithFile;
+  return result as unknown as ProductImageWithFile
 }
 
 /**
@@ -114,20 +114,20 @@ export async function attachImageToProduct(
 export async function detachImageFromProduct(
   orgId: string,
   params: {
-    productId: string;
-    fileId: string;
-  }
+    productId: string
+    fileId: string
+  },
 ): Promise<void> {
   // Verify product belongs to org
   const product = await db.query.products.findFirst({
     where: and(
       eq(products.id, params.productId),
-      eq(products.organizationId, orgId)
+      eq(products.organizationId, orgId),
     ),
-  });
+  })
 
   if (!product) {
-    throw new NotFoundError("Product");
+    throw new NotFoundError('Product')
   }
 
   // Delete the product image record
@@ -136,9 +136,9 @@ export async function detachImageFromProduct(
     .where(
       and(
         eq(productImages.productId, params.productId),
-        eq(productImages.fileId, params.fileId)
-      )
-    );
+        eq(productImages.fileId, params.fileId),
+      ),
+    )
 }
 
 /**
@@ -147,45 +147,45 @@ export async function detachImageFromProduct(
 export async function setPrimaryImage(
   orgId: string,
   params: {
-    productId: string;
-    fileId: string;
-  }
+    productId: string
+    fileId: string
+  },
 ): Promise<void> {
   // Verify product belongs to org
   const product = await db.query.products.findFirst({
     where: and(
       eq(products.id, params.productId),
-      eq(products.organizationId, orgId)
+      eq(products.organizationId, orgId),
     ),
-  });
+  })
 
   if (!product) {
-    throw new NotFoundError("Product");
+    throw new NotFoundError('Product')
   }
 
   // Verify the image is attached to the product
   const productImage = await db.query.productImages.findFirst({
     where: and(
       eq(productImages.productId, params.productId),
-      eq(productImages.fileId, params.fileId)
+      eq(productImages.fileId, params.fileId),
     ),
-  });
+  })
 
   if (!productImage) {
-    throw new NotFoundError("Product Image");
+    throw new NotFoundError('Product Image')
   }
 
   // Unset all primary images for this product
   await db
     .update(productImages)
     .set({ isPrimary: false })
-    .where(eq(productImages.productId, params.productId));
+    .where(eq(productImages.productId, params.productId))
 
   // Set new primary image
   await db
     .update(productImages)
     .set({ isPrimary: true })
-    .where(eq(productImages.id, productImage.id));
+    .where(eq(productImages.id, productImage.id))
 }
 
 /**
@@ -194,20 +194,20 @@ export async function setPrimaryImage(
 export async function reorderProductImages(
   orgId: string,
   params: {
-    productId: string;
-    imageIds: string[]; // Array of file IDs in desired order
-  }
+    productId: string
+    imageIds: string[] // Array of file IDs in desired order
+  },
 ): Promise<void> {
   // Verify product belongs to org
   const product = await db.query.products.findFirst({
     where: and(
       eq(products.id, params.productId),
-      eq(products.organizationId, orgId)
+      eq(products.organizationId, orgId),
     ),
-  });
+  })
 
   if (!product) {
-    throw new NotFoundError("Product");
+    throw new NotFoundError('Product')
   }
 
   // Update display order for each image
@@ -218,9 +218,9 @@ export async function reorderProductImages(
       .where(
         and(
           eq(productImages.productId, params.productId),
-          eq(productImages.fileId, params.imageIds[i])
-        )
-      );
+          eq(productImages.fileId, params.imageIds[i]),
+        ),
+      )
   }
 }
 
@@ -229,15 +229,15 @@ export async function reorderProductImages(
  */
 export async function getProductImages(
   orgId: string,
-  productId: string
+  productId: string,
 ): Promise<ProductImageWithFile[]> {
   // Verify product belongs to org
   const product = await db.query.products.findFirst({
     where: and(eq(products.id, productId), eq(products.organizationId, orgId)),
-  });
+  })
 
   if (!product) {
-    throw new NotFoundError("Product");
+    throw new NotFoundError('Product')
   }
 
   // Fetch images with file info
@@ -247,9 +247,9 @@ export async function getProductImages(
       file: true,
     },
     orderBy: [asc(productImages.displayOrder)],
-  });
+  })
 
-  return images as ProductImageWithFile[];
+  return images as unknown as ProductImageWithFile[]
 }
 
 /**
@@ -257,24 +257,24 @@ export async function getProductImages(
  */
 export async function isFileInUse(
   orgId: string,
-  fileId: string
+  fileId: string,
 ): Promise<{ inUse: boolean; productCount: number }> {
   // Verify file belongs to org
   const file = await db.query.files.findFirst({
     where: and(eq(files.id, fileId), eq(files.organizationId, orgId)),
-  });
+  })
 
   if (!file) {
-    throw new NotFoundError("File");
+    throw new NotFoundError('File')
   }
 
   // Count how many products use this file
   const usages = await db.query.productImages.findMany({
     where: eq(productImages.fileId, fileId),
-  });
+  })
 
   return {
     inUse: usages.length > 0,
     productCount: usages.length,
-  };
+  }
 }

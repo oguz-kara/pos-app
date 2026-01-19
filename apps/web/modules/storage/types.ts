@@ -11,6 +11,7 @@ export interface FileRecord {
   contentType: string;
   size: number;
   url: string;
+  fileHash: string | null;
   metadata: unknown;
   createdAt: Date;
   updatedAt: Date;

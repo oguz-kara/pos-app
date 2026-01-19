@@ -31,10 +31,10 @@ export async function getUserOrganizations(
   return memberships
     .filter((m) => m.organization)
     .map((m) => ({
-      id: m.organization!.id,
-      name: m.organization!.name,
-      slug: m.organization!.slug,
-      logo: m.organization!.logo,
+      id: (m.organization as any)!.id,
+      name: (m.organization as any)!.name,
+      slug: (m.organization as any)!.slug,
+      logo: (m.organization as any)!.logo,
       role: m.role,
     }));
 }

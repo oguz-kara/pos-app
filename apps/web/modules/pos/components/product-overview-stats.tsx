@@ -1,16 +1,16 @@
-"use client";
+'use client'
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { formatCurrency, getStockStatus, getStockStatusLabel } from "../utils";
-import { Package, Boxes, DollarSign, TrendingUp } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { formatCurrency, getStockStatus, getStockStatusLabel } from '../utils'
+import { Package, Boxes, DollarSign, TrendingUp } from 'lucide-react'
 
 interface ProductOverviewStatsProps {
-  totalStock: number;
-  averageCost: number;
-  totalRevenue: number;
-  grossProfit: number;
-  profitMargin: number;
+  totalStock: number
+  averageCost: number
+  totalRevenue: number
+  grossProfit: number
+  profitMargin: number
 }
 
 export function ProductOverviewStats({
@@ -20,9 +20,9 @@ export function ProductOverviewStats({
   grossProfit,
   profitMargin,
 }: ProductOverviewStatsProps) {
-  const inventoryValue = totalStock * averageCost;
-  const stockStatus = getStockStatus(totalStock);
-  const stockLabel = getStockStatusLabel(totalStock);
+  const inventoryValue = totalStock * averageCost
+  const stockStatus = getStockStatus(totalStock)
+  const stockLabel = getStockStatusLabel(totalStock)
 
   return (
     <div className="grid grid-cols-4 gap-6">
@@ -73,9 +73,7 @@ export function ProductOverviewStats({
           <div className="text-3xl font-bold">
             {formatCurrency(totalRevenue)}
           </div>
-          <p className="text-xs text-muted-foreground mt-1">
-            Seçili dönem
-          </p>
+          <p className="text-xs text-muted-foreground mt-1">Seçili dönem</p>
         </CardContent>
       </Card>
 
@@ -97,5 +95,5 @@ export function ProductOverviewStats({
         </CardContent>
       </Card>
     </div>
-  );
+  )
 }

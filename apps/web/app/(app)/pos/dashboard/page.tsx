@@ -57,15 +57,17 @@ export default function DashboardPage() {
   const lowStockProducts = lowStockData?.lowStockProducts || [];
 
   // Format sales trend data for recharts
-  const chartData = salesTrend.map((item) => ({
-    date: new Date(item.date).toLocaleDateString("tr-TR", {
-      month: "short",
-      day: "numeric",
-    }),
-    Satış: item.sales,
-    Maliyet: item.cost,
-    Kar: item.profit,
-  }));
+  const chartData = salesTrend
+    .filter((item) => item?.date != null)
+    .map((item) => ({
+      date: new Date(item.date!).toLocaleDateString("tr-TR", {
+        month: "short",
+        day: "numeric",
+      }),
+      Satış: item.sales,
+      Maliyet: item.cost,
+      Kar: item.profit,
+    }));
 
   return (
     <div className="space-y-6 p-4">
@@ -131,9 +133,9 @@ export default function DashboardPage() {
             <div className="text-3xl font-bold text-green-600">
               {formatCurrency(pulse?.grossProfit || 0)}
             </div>
-            {pulse && pulse.totalSales > 0 && (
+            {pulse && pulse.totalSales != null && pulse.totalSales > 0 && (
               <p className="text-xs text-muted-foreground mt-1">
-                {Math.round((pulse.grossProfit / pulse.totalSales) * 100)}% Kar
+                {Math.round(((pulse.grossProfit || 0) / pulse.totalSales) * 100)}% Kar
                 Marjı
               </p>
             )}
@@ -152,7 +154,7 @@ export default function DashboardPage() {
             <div className="text-3xl font-bold">
               {pulse?.transactionCount || 0}
             </div>
-            {pulse && pulse.transactionCount > 0 && (
+            {pulse && pulse.transactionCount != null && pulse.transactionCount > 0 && pulse.totalSales != null && (
               <p className="text-xs text-muted-foreground mt-1">
                 Ort: {formatCurrency(pulse.totalSales / pulse.transactionCount)}
               </p>
@@ -193,7 +195,7 @@ export default function DashboardPage() {
                 <XAxis dataKey="date" />
                 <YAxis />
                 <Tooltip
-                  formatter={(value: number) => formatCurrency(value)}
+                  formatter={(value: number | undefined) => formatCurrency(value || 0)}
                 />
                 <Legend />
                 <Bar dataKey="Satış" fill="#3b82f6" />
@@ -237,7 +239,7 @@ export default function DashboardPage() {
                     </div>
                     <div className="text-right">
                       <div className="font-bold text-green-600">
-                        {formatCurrency(product.revenue)}
+                        {formatCurrency(product.revenue || 0)}
                       </div>
                     </div>
                   </div>
@@ -263,13 +265,14 @@ export default function DashboardPage() {
             {lowStockProducts.length > 0 ? (
               <div className="space-y-4">
                 {lowStockProducts.map((product) => {
+                  const currentStock = product.currentStock ?? 0;
                   const stockPercentage = Math.min(
-                    (product.currentStock / lowStockThreshold) * 100,
+                    (currentStock / lowStockThreshold) * 100,
                     100
                   );
                   const getProgressColor = () => {
-                    if (product.currentStock === 0) return "bg-destructive";
-                    if (product.currentStock < 5) return "bg-orange-500";
+                    if (currentStock === 0) return "bg-destructive";
+                    if (currentStock < 5) return "bg-orange-500";
                     return "bg-yellow-500";
                   };
 
@@ -291,12 +294,12 @@ export default function DashboardPage() {
                         </div>
                         <Badge
                           variant={
-                            product.currentStock === 0
+                            currentStock === 0
                               ? "destructive"
                               : "secondary"
                           }
                         >
-                          {product.currentStock} adet
+                          {currentStock} adet
                         </Badge>
                       </div>
                       <Progress

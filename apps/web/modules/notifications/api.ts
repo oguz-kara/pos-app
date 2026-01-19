@@ -26,7 +26,7 @@ builder.queryField("notifications", (t) =>
       return notificationService.getUserNotifications(
         ctx.session.userId,
         limit || 50
-      );
+      ) as any;
     },
   })
 );

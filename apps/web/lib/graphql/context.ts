@@ -6,6 +6,10 @@ import { getRateLimitIdentifier } from '@/modules/shared/utils/ip';
 import { saasConfig } from '@/saas.config';
 
 export interface Context {
+  /**
+   * Session can be null for unauthenticated requests
+   * Use requireAuth() from @/lib/graphql/guards to enforce authentication in resolvers
+   */
   session: Session;
   db: typeof db;
   req: NextRequest;
@@ -15,6 +19,13 @@ export interface Context {
  * Creates the GraphQL context for each request
  * Handles both Cookie (web) and Bearer token (mobile) authentication
  * Note: Rate limiting uses disabled provider (no Redis dependency)
+ *
+ * Session will be null for:
+ * - Unauthenticated requests
+ * - Invalid tokens
+ * - Users without organization memberships
+ *
+ * Protected resolvers should use requireAuth(ctx) to enforce authentication
  */
 export async function createContext(req: NextRequest): Promise<Context> {
   // 1. Try to get session from cookies first (web clients)

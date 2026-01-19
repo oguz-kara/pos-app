@@ -32,6 +32,7 @@ import type {
   Supplier,
   CreateSaleInput,
   Sale,
+  SaleItem,
   SaleWithItems,
   SalesSummary,
   ProductWithStock,
@@ -74,7 +75,7 @@ async function generateReceiptNumber(organizationId: string): Promise<string> {
 
   const lastSale = Array.isArray(result) && result.length > 0 ? result[0] : null
 
-  if (lastSale?.receipt_no) {
+  if (lastSale?.receipt_no && typeof lastSale.receipt_no === 'string') {
     // Extract the number part: "2026-000042" -> "000042"
     const parts = lastSale.receipt_no.split('-')
     if (parts.length >= 2) {
@@ -112,7 +113,7 @@ export async function getCategories(
   return db.query.categories.findMany({
     where: eq(categories.organizationId, organizationId),
     orderBy: [asc(categories.name)],
-  })
+  }) as unknown as Promise<Category[]>
 }
 
 export async function updateCategory(
@@ -192,7 +193,7 @@ export async function getProducts(
       with: {
         category: true,
       },
-    })
+    }) as unknown as Promise<Product[]>
   }
 
   // Turkish-aware fuzzy search with multi-strategy relevance scoring
@@ -201,11 +202,14 @@ export async function getProducts(
 
   // Multi-strategy search with relevance scoring:
   // 1. Exact match on search_name (score: 100)
-  // 2. Starts with search_name (score: 80)
-  // 3. Contains in search_name (score: 60)
-  // 4. Exact match on barcode (score: 90)
-  // 5. Trigram similarity on search_name (score: similarity * 50)
-  // 6. Trigram similarity on barcode (score: similarity * 45)
+  // 2. Exact match on SKU (score: 95)
+  // 3. Exact match on barcode (score: 90)
+  // 4. Starts with search_name (score: 80)
+  // 5. Starts with SKU (score: 75)
+  // 6. Contains in search_name (score: 60)
+  // 7. Trigram similarity on search_name (score: similarity * 50)
+  // 8. Trigram similarity on SKU (score: similarity * 48)
+  // 9. Trigram similarity on barcode (score: similarity * 45)
 
   const results = await db.execute(sql`
     WITH search_results AS (
@@ -214,15 +218,22 @@ export async function getProducts(
         CASE
           -- Exact match on normalized name (highest priority)
           WHEN p.search_name = ${normalizedSearch}::text THEN 100
-          -- Starts with (prefix match)
-          WHEN p.search_name LIKE ${normalizedSearch + '%'}::text THEN 80
-          -- Contains (substring match)
-          WHEN p.search_name LIKE ${'%' + normalizedSearch + '%'}::text THEN 60
+          -- Exact SKU match (very high priority for hardware stores)
+          WHEN p.sku = ${options.search}::text THEN 95
           -- Exact barcode match
           WHEN p.barcode = ${options.search}::text THEN 90
+          -- Starts with (prefix match)
+          WHEN p.search_name LIKE ${normalizedSearch + '%'}::text THEN 80
+          -- SKU starts with
+          WHEN p.sku IS NOT NULL AND p.sku LIKE ${options.search + '%'}::text THEN 75
+          -- Contains (substring match)
+          WHEN p.search_name LIKE ${'%' + normalizedSearch + '%'}::text THEN 60
           -- Trigram similarity on search_name (fuzzy matching)
           WHEN similarity(p.search_name::text, ${normalizedSearch}::text) > 0.1
             THEN similarity(p.search_name::text, ${normalizedSearch}::text) * 50
+          -- Trigram similarity on SKU
+          WHEN p.sku IS NOT NULL AND similarity(p.sku::text, ${options.search}::text) > 0.1
+            THEN similarity(p.sku::text, ${options.search}::text) * 48
           -- Trigram similarity on barcode
           WHEN p.barcode IS NOT NULL AND similarity(p.barcode::text, ${options.search}::text) > 0.1
             THEN similarity(p.barcode::text, ${options.search}::text) * 45
@@ -238,9 +249,12 @@ export async function getProducts(
           p.search_name = ${normalizedSearch}::text
           OR p.search_name LIKE ${normalizedSearch + '%'}::text
           OR p.search_name LIKE ${'%' + normalizedSearch + '%'}::text
+          OR p.sku = ${options.search}::text
+          OR (p.sku IS NOT NULL AND p.sku LIKE ${options.search + '%'}::text)
           OR p.barcode = ${options.search}::text
           -- Trigram similarity matches (threshold: 0.1 = very lenient for typos)
           OR similarity(p.search_name::text, ${normalizedSearch}::text) > 0.1
+          OR (p.sku IS NOT NULL AND similarity(p.sku::text, ${options.search}::text) > 0.1)
           OR (p.barcode IS NOT NULL AND similarity(p.barcode::text, ${options.search}::text) > 0.1)
         )
     )
@@ -251,7 +265,7 @@ export async function getProducts(
 
   // Fetch categories for each product
   // Note: db.execute returns snake_case column names from database
-  const rows = Array.isArray(results) ? results : results.rows || []
+  const rows = Array.isArray(results) ? results : (results as any).rows || []
   const productsWithCategories = await Promise.all(
     rows.map(async (product: any) => {
       const categoryId = product.category_id
@@ -302,7 +316,7 @@ export async function getProduct(
     with: {
       category: true,
     },
-  })
+  }) as unknown as Promise<Product | undefined>
 }
 
 export async function getProductsWithStock(
@@ -398,13 +412,22 @@ export async function getProductStock(
   })
 
   // Map lots to include supplier name from relation
-  const lots = rawLots.map((lot) => {
+  const lots: StockLot[] = rawLots.map((lot: any) => {
     // When using 'with: { supplier: true }', the supplier property becomes the relation object
     // We need to preserve the original structure and add supplier name if available
     const supplierName = lot.supplier?.name || lot.supplier || null
     return {
-      ...lot,
+      id: lot.id,
+      createdAt: lot.createdAt,
+      organizationId: lot.organizationId,
+      productId: lot.productId,
+      notes: lot.notes,
+      supplierId: lot.supplierId,
+      quantity: lot.quantity,
+      remaining: lot.remaining,
+      costPrice: lot.costPrice,
       supplier: supplierName as string | null,
+      purchasedAt: lot.purchasedAt,
     }
   })
 
@@ -467,10 +490,15 @@ export async function addStockBulk(
       const [lot] = await tx
         .insert(stockLots)
         .values({
-          ...item,
+          productId: item.productId,
+          quantity: item.quantity,
+          costPrice: item.costPrice.toString(),
+          supplierId: item.supplierId || null,
+          notes: item.notes || null,
+          purchasedAt: item.purchasedAt || new Date(),
           organizationId,
           remaining: item.quantity,
-        })
+        } as any)
         .returning()
 
       createdLots.push(lot!)
@@ -550,7 +578,7 @@ export async function getStockLogs(
     },
   })
 
-  return logs as StockLogWithProduct[]
+  return logs as unknown as StockLogWithProduct[]
 }
 
 /**
@@ -572,12 +600,12 @@ export async function getStockLots(
   })
 
   // Map lots to include supplier name from relation
-  return rawLots.map((lot) => {
+  return rawLots.map((lot: any) => {
     const supplierName = lot.supplier?.name || lot.supplier || null
     return {
       ...lot,
       supplier: supplierName as string | null,
-    }
+    } as StockLot
   })
 }
 
@@ -675,7 +703,7 @@ export async function getSuppliers(
   return db.query.suppliers.findMany({
     where: eq(suppliers.organizationId, organizationId),
     orderBy: [asc(suppliers.name)],
-  })
+  }) as unknown as Promise<Supplier[]>
 }
 
 export async function getSupplier(
@@ -687,7 +715,7 @@ export async function getSupplier(
       eq(suppliers.id, id),
       eq(suppliers.organizationId, organizationId),
     ),
-  })
+  }) as unknown as Supplier | undefined
   return supplier || null
 }
 
@@ -866,7 +894,7 @@ export async function getSales(
   return db.query.sales.findMany({
     where: and(...conditions),
     orderBy: [desc(sales.createdAt)],
-  })
+  }) as unknown as Promise<Sale[]>
 }
 
 /**
@@ -878,7 +906,7 @@ export async function getSale(
 ): Promise<SaleWithItems | undefined> {
   const sale = await db.query.sales.findFirst({
     where: and(eq(sales.id, id), eq(sales.organizationId, organizationId)),
-  })
+  }) as unknown as Sale | undefined
 
   if (!sale) {
     return undefined
@@ -886,13 +914,13 @@ export async function getSale(
 
   const items = await db.query.saleItems.findMany({
     where: eq(saleItems.saleId, id),
-  })
+  }) as unknown as SaleItem[]
 
   const itemsWithProducts = await Promise.all(
     items.map(async (item) => {
       const product = await db.query.products.findFirst({
         where: eq(products.id, item.productId),
-      })
+      }) as unknown as Product
       return {
         ...item,
         product: product!,
@@ -903,7 +931,7 @@ export async function getSale(
   return {
     ...sale,
     items: itemsWithProducts,
-  }
+  } as SaleWithItems
 }
 
 /**
@@ -981,7 +1009,7 @@ export async function getSalesHistory(
     },
   })
 
-  return salesList as SaleWithItems[]
+  return salesList as unknown as SaleWithItems[]
 }
 
 /**
@@ -1038,7 +1066,7 @@ export async function processSaleRefund(
     })
 
     // 4. Generate refund receipt number
-    const refundReceiptNo = `${originalItem.sale.receiptNo}-R`
+    const refundReceiptNo = `${(originalItem.sale as any).receiptNo}-R`
 
     // 5. Create NEW negative sale (TODAY's date, type='REFUND')
     const [refundSale] = await tx
@@ -1052,8 +1080,8 @@ export async function processSaleRefund(
         totalCost: (
           -parseFloat(originalItem.unitCost) * originalItem.quantity
         ).toString(),
-        paymentMethod: originalItem.sale.paymentMethod,
-        notes: `Refund for ${originalItem.sale.receiptNo}`,
+        paymentMethod: (originalItem.sale as any).paymentMethod,
+        notes: `Refund for ${(originalItem.sale as any).receiptNo}`,
         createdAt: new Date(), // TODAY - not the original sale date!
       })
       .returning()
@@ -1091,7 +1119,7 @@ export async function processSaleRefund(
         quantity: quantityToRestore, // Positive for stock restoration
         referenceType: 'sale',
         referenceId: refundSale!.id,
-        notes: `Refund for ${originalItem.sale.receiptNo}`,
+        notes: `Refund for ${(originalItem.sale as any).receiptNo}`,
       })
     }
 
@@ -1223,7 +1251,7 @@ export async function getDailyReports(
     limit: filters?.limit || 50,
   })
 
-  return reports
+  return reports as unknown as DailyReport[]
 }
 
 /**
@@ -1394,7 +1422,7 @@ export async function getTopProducts(
   for (const sale of salesWithItems) {
     for (const item of sale.items) {
       const existing = productMap.get(item.productId) || {
-        name: item.product.name,
+        name: (item.product as any).name,
         quantity: 0,
         revenue: 0,
       }
@@ -1475,9 +1503,7 @@ export async function getProductSalesHistory(
     createdAt: Date
   }>
 > {
-  const conditions = [
-    eq(saleItems.productId, productId),
-  ]
+  const conditions = [eq(saleItems.productId, productId)]
 
   // Build where conditions
   const saleIdSubquery = db
@@ -1503,16 +1529,16 @@ export async function getProductSalesHistory(
   })
 
   return items
-    .filter((item) => item.sale.organizationId === organizationId)
+    .filter((item) => (item.sale as any).organizationId === organizationId)
     .map((item) => ({
       saleId: item.saleId,
-      receiptNo: item.sale.receiptNo,
+      receiptNo: (item.sale as any).receiptNo,
       quantity: item.quantity,
       unitPrice: item.unitPrice,
       unitCost: item.unitCost,
       subtotal: item.subtotal,
-      paymentMethod: item.sale.paymentMethod,
-      saleType: item.sale.type,
+      paymentMethod: (item.sale as any).paymentMethod,
+      saleType: (item.sale as any).type,
       createdAt: item.createdAt,
     }))
 }
@@ -1594,8 +1620,10 @@ export async function getProductAnalytics(
 
   const grossProfit = totalRevenue - totalCost
   const profitMargin = totalRevenue > 0 ? (grossProfit / totalRevenue) * 100 : 0
-  const averageSalePrice = totalUnitsSold > 0 ? totalRevenue / totalUnitsSold : 0
-  const refundRate = totalUnitsSold > 0 ? (refundedUnits / totalUnitsSold) * 100 : 0
+  const averageSalePrice =
+    totalUnitsSold > 0 ? totalRevenue / totalUnitsSold : 0
+  const refundRate =
+    totalUnitsSold > 0 ? (refundedUnits / totalUnitsSold) * 100 : 0
 
   return {
     totalRevenue,

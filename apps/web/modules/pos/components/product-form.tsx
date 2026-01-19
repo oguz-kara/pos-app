@@ -1,9 +1,9 @@
-"use client";
+'use client'
 
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { Button } from "@/components/ui/button";
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import * as z from 'zod'
+import { Button } from '@/components/ui/button'
 import {
   Form,
   FormControl,
@@ -12,24 +12,29 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { CategorySelect } from "./category-select";
-import { TR } from "../constants";
+} from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { CategorySelect } from './category-select'
+import { TR } from '../constants'
 
 type Category = {
-  id: string;
-  name: string;
-};
+  id: string
+  name: string
+}
 
+// 1. STRICT SCHEMA CHANGE
+// Removed z.coerce. We now explicitly expect a number.
+// This matches the ProductFormValues type exactly, satisfying the resolver.
 const productSchema = z.object({
-  name: z.string().min(1, "Ürün adı gerekli").max(255),
+  name: z.string().min(1, 'Ürün adı gerekli').max(255),
   barcode: z.string().optional(),
-  sellingPrice: z.coerce.number().min(0, "Fiyat 0'dan büyük olmalı"),
+  sellingPrice: z
+    .number('Geçerli bir fiyat giriniz')
+    .min(0, "Fiyat 0'dan büyük olmalı"),
   categoryId: z.string().optional(),
-});
+})
 
-export type ProductFormValues = z.infer<typeof productSchema>;
+export type ProductFormValues = z.infer<typeof productSchema>
 
 export function ProductForm({
   categories,
@@ -38,32 +43,32 @@ export function ProductForm({
   onCancel,
   isLoading,
 }: {
-  categories: Category[];
-  defaultValues?: Partial<ProductFormValues>;
-  onSubmit: (data: ProductFormValues) => Promise<void>;
-  onCancel?: () => void;
-  isLoading?: boolean;
+  categories: Category[]
+  defaultValues?: Partial<ProductFormValues>
+  onSubmit: (data: ProductFormValues) => Promise<void>
+  onCancel?: () => void
+  isLoading?: boolean
 }) {
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productSchema),
     defaultValues: {
-      name: defaultValues?.name || "",
-      barcode: defaultValues?.barcode || "",
+      name: defaultValues?.name || '',
+      barcode: defaultValues?.barcode || '',
       sellingPrice: defaultValues?.sellingPrice || 0,
-      categoryId: defaultValues?.categoryId || "",
+      categoryId: defaultValues?.categoryId || '',
     },
-  });
+  })
 
   const handleSubmit = async (data: ProductFormValues) => {
     try {
-      await onSubmit(data);
+      await onSubmit(data)
       if (!defaultValues) {
-        form.reset();
+        form.reset()
       }
     } catch (error) {
-      console.error("Error submitting product:", error);
+      console.error('Error submitting product:', error)
     }
-  };
+  }
 
   return (
     <Form {...form}>
@@ -104,11 +109,19 @@ export function ProductForm({
             <FormItem>
               <FormLabel>{TR.sellingPrice}</FormLabel>
               <FormControl>
+                {/* 2. UI CONVERSION CHANGE */}
                 <Input
                   type="number"
                   step="0.01"
                   placeholder="0.00"
                   {...field}
+                  // We manually handle the string -> number conversion here
+                  // so the value passed to 'field.onChange' matches the Schema's expectation.
+                  onChange={(e) => {
+                    const value = e.target.valueAsNumber
+                    field.onChange(Number.isNaN(value) ? 0 : value)
+                  }}
+                  value={field.value}
                 />
               </FormControl>
               <FormDescription>Satış fiyatı (TL)</FormDescription>
@@ -148,5 +161,5 @@ export function ProductForm({
         </div>
       </form>
     </Form>
-  );
+  )
 }

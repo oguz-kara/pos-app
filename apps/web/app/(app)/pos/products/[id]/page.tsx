@@ -162,8 +162,36 @@ export default function ProductDetailsPage({
         {/* Left: Product Info (1 column) */}
         <div>
           <ProductInfoSection
-            product={product}
-            images={images}
+            product={{
+              id: product.id!,
+              name: product.name!,
+              searchName: product.searchName!,
+              barcode: product.barcode ?? null,
+              sku: product.sku ?? null,
+              brand: product.brand ?? null,
+              description: product.description ?? null,
+              sellingPrice: product.sellingPrice!,
+              isActive: product.isActive!,
+              createdAt: product.createdAt!,
+              updatedAt: product.updatedAt!,
+              category: product.category && product.category.id && product.category.name ? {
+                id: product.category.id,
+                name: product.category.name,
+              } : null,
+            }}
+            images={images
+              .filter((img) => img.id && img.productId && img.fileId && img.file && img.file.id)
+              .map((img) => ({
+                id: img.id!,
+                fileId: img.fileId!,
+                isPrimary: img.isPrimary ?? false,
+                displayOrder: img.displayOrder ?? 0,
+                file: {
+                  id: img.file!.id!,
+                  filename: img.file!.filename!,
+                  url: img.file!.url ?? '',
+                },
+              }))}
             averageCost={stock?.averageCost || 0}
           />
         </div>
@@ -190,7 +218,7 @@ export default function ProductDetailsPage({
                     Ort. Satış Fiyatı
                   </p>
                   <p className="text-3xl font-bold mt-2">
-                    ₺{analytics.averageSalePrice.toFixed(2)}
+                    ₺{(analytics.averageSalePrice ?? 0).toFixed(2)}
                   </p>
                   <p className="text-xs text-muted-foreground mt-1">
                     birim başına
@@ -214,7 +242,7 @@ export default function ProductDetailsPage({
                 <CardContent className="pt-6">
                   <p className="text-sm text-muted-foreground">İade Oranı</p>
                   <p className="text-3xl font-bold mt-2 text-orange-600">
-                    {analytics.refundRate.toFixed(1)}%
+                    {(analytics.refundRate ?? 0).toFixed(1)}%
                   </p>
                   <p className="text-xs text-muted-foreground mt-1">
                     {analytics.refundedUnits} iade
@@ -237,7 +265,15 @@ export default function ProductDetailsPage({
             </Card>
           ) : (
             <ProductSalesChart
-              trend={trend}
+              trend={trend
+                .filter((t) => t.date)
+                .map((t) => ({
+                  date: t.date!,
+                  unitsSold: t.unitsSold ?? 0,
+                  revenue: t.revenue ?? 0,
+                  cost: t.cost ?? 0,
+                  profit: t.profit ?? 0,
+                }))}
               days={trendDays}
               onDaysChange={setTrendDays}
             />
@@ -249,7 +285,19 @@ export default function ProductDetailsPage({
           <Skeleton className="h-96 w-full" />
         ) : (
           <ProductStockLotsTable
-            lots={stock?.lots || []}
+            lots={(stock?.lots || [])
+              .filter((lot) => lot.id)
+              .map((lot) => ({
+                id: lot.id!,
+                supplierId: lot.supplierId ?? null,
+                quantity: lot.quantity ?? 0,
+                remaining: lot.remaining ?? 0,
+                costPrice: lot.costPrice!,
+                supplier: lot.supplier ?? null,
+                notes: lot.notes ?? null,
+                purchasedAt: lot.purchasedAt!.toString(),
+                createdAt: lot.createdAt!.toString(),
+              }))}
             averageCost={stock?.averageCost || 0}
           />
         )}
@@ -259,8 +307,34 @@ export default function ProductDetailsPage({
           <Skeleton className="h-96 w-full" />
         ) : (
           <ProductActivityTimeline
-            salesHistory={salesHistory}
-            stockLogs={stockLogs}
+            salesHistory={salesHistory
+              .filter((sh) => sh.saleId)
+              .map((sh) => ({
+                saleId: sh.saleId!,
+                receiptNo: sh.receiptNo!,
+                quantity: sh.quantity ?? 0,
+                unitPrice: sh.unitPrice!,
+                unitCost: sh.unitCost!,
+                subtotal: sh.subtotal!,
+                paymentMethod: sh.paymentMethod!,
+                saleType: sh.saleType!,
+                createdAt: sh.createdAt!,
+              }))}
+            stockLogs={stockLogs
+              .filter((sl) => sl.id && sl.productId)
+              .map((sl) => ({
+                id: sl.id!,
+                organizationId: sl.organizationId!,
+                productId: sl.productId!,
+                lotId: sl.lotId ?? null,
+                type: sl.type!,
+                quantity: sl.quantity ?? 0,
+                referenceType: sl.referenceType ?? null,
+                referenceId: sl.referenceId ?? null,
+                notes: sl.notes ?? null,
+                createdAt: sl.createdAt!,
+                product: sl.product,
+              }))}
           />
         )}
       </div>

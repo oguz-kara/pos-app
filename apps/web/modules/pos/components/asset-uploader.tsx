@@ -123,20 +123,28 @@ export function AssetUploader({
 
       const { generateUploadUrl } = uploadUrlResult;
 
+      if (!generateUploadUrl) {
+        throw new Error('Failed to generate upload URL');
+      }
+
       // Step 4: Check for duplicate
       if (generateUploadUrl.isDuplicate && generateUploadUrl.existingFile) {
         setDuplicateInfo({
-          fileId: generateUploadUrl.existingFile.id,
-          filename: generateUploadUrl.existingFile.filename,
-          url: generateUploadUrl.existingFile.url,
+          fileId: generateUploadUrl.existingFile.id!,
+          filename: generateUploadUrl.existingFile.filename!,
+          url: generateUploadUrl.existingFile.url!,
         });
         setUploadState("duplicate");
         return;
       }
 
       // Store the pending file ID for cleanup if upload fails
-      setPendingFileId(generateUploadUrl.fileId);
+      setPendingFileId(generateUploadUrl.fileId ?? null);
       setProgress(40);
+
+      if (!generateUploadUrl.uploadUrl) {
+        throw new Error('No upload URL provided');
+      }
 
       // Step 5: Upload to R2 using presigned URL
       setUploadState("uploading");
@@ -159,7 +167,7 @@ export function AssetUploader({
       // Step 6: Confirm upload in database
       await confirmUploadMutation.mutateAsync({
         input: {
-          fileId: generateUploadUrl.fileId,
+          fileId: generateUploadUrl.fileId!,
           size: file.size,
           metadata: {
             originalName: file.name,
@@ -173,7 +181,7 @@ export function AssetUploader({
       setPendingFileId(null);
 
       // Notify parent component
-      onUploadSuccess?.(generateUploadUrl.fileId, file.name);
+      onUploadSuccess?.(generateUploadUrl.fileId!, file.name);
       toast.success(`${file.name} uploaded successfully`);
 
       // Auto-reset after 2 seconds
@@ -274,6 +282,11 @@ export function AssetUploader({
       });
 
       const { generateUploadUrl } = uploadUrlResult;
+
+      if (!generateUploadUrl || !generateUploadUrl.uploadUrl || !generateUploadUrl.fileId) {
+        throw new Error('Invalid upload URL response');
+      }
+
       setPendingFileId(generateUploadUrl.fileId);
       setProgress(40);
 

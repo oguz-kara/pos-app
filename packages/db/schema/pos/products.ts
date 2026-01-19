@@ -28,6 +28,8 @@ export const products = pgTable(
       .notNull()
       .$defaultFn(() => ""), // Database trigger will set this, but TypeScript needs a default
     barcode: varchar("barcode", { length: 100 }),
+    sku: varchar("sku", { length: 100 }),
+    brand: varchar("brand", { length: 255 }),
     sellingPrice: decimal("selling_price", {
       precision: 10,
       scale: 2,
@@ -41,6 +43,7 @@ export const products = pgTable(
       table.organizationId
     ),
     barcodeIdx: index("products_barcode_idx").on(table.barcode),
+    skuIdx: index("products_sku_idx").on(table.sku),
   })
 );
 

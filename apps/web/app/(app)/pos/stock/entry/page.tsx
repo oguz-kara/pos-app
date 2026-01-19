@@ -91,6 +91,8 @@ export default function StockEntryPage() {
       id: p.id!,
       name: p.name!,
       barcode: p.barcode ?? null,
+      sku: p.sku ?? null,
+      brand: p.brand ?? null,
       sellingPrice: String(p.sellingPrice!),
       totalStock: p.totalStock ?? undefined,
       averageCost: p.averageCost ?? null,

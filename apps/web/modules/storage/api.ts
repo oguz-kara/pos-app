@@ -3,11 +3,16 @@
  *
  * Thin resolvers that delegate to the storage service layer.
  * Handles authentication and GraphQL-specific concerns only.
+ *
+ * Security:
+ * - All resolvers require authentication via requireAuth()
+ * - Multi-tenant isolation enforced via getOrgId()
+ * - File access controlled by organization membership
  */
 
 import { builder } from "@/lib/graphql/builder";
+import { requireAuth, getOrgId } from "@/lib/graphql/guards";
 import * as storageService from "./service";
-import { NotAuthenticatedError } from "@/modules/shared/errors";
 import {
   FileType,
   SignedUrlType,
@@ -20,20 +25,6 @@ import {
   ListFilesInputType,
   ListFilesResponseType,
 } from "./schema";
-/**
- * DEV ONLY: Default organization and user IDs from seed data
- * This bypasses authentication to make testing easier
- * TODO: Enable proper authentication in production
- */
-const DEFAULT_ORG_ID = "c9a7278c-7f73-43aa-bfc4-8c19e4458b69";
-const DEFAULT_USER_ID = "11111111-1111-1111-1111-111111111111"; // Placeholder user ID
-
-function getDevDefaults() {
-  return {
-    organizationId: DEFAULT_ORG_ID,
-    userId: DEFAULT_USER_ID,
-  };
-}
 
 // === QUERIES ===
 
@@ -47,9 +38,8 @@ builder.queryField("file", (t) =>
       id: t.arg.string({ required: true }),
     },
     resolve: async (_, { id }, ctx) => {
-      if (!ctx.session) throw new NotAuthenticatedError();
-
-      return storageService.getFile(ctx.session.activeOrganizationId, id);
+      requireAuth(ctx);
+      return storageService.getFile(getOrgId(ctx), id);
     },
   })
 );
@@ -61,12 +51,8 @@ builder.queryField("files", (t) =>
   t.field({
     type: [FileType],
     resolve: async (_, __, ctx) => {
-      // DEV: Use default org if no session
-      const { organizationId } = ctx.session
-        ? { organizationId: ctx.session.activeOrganizationId }
-        : getDevDefaults();
-
-      const result = await storageService.listFiles(organizationId);
+      requireAuth(ctx);
+      const result = await storageService.listFiles(getOrgId(ctx));
       return result.files;
     },
   })
@@ -82,15 +68,11 @@ builder.queryField("listFiles", (t) =>
       input: t.arg({ type: ListFilesInputType, required: false }),
     },
     resolve: async (_, { input }, ctx) => {
-      // DEV: Use default org if no session
-      const { organizationId } = ctx.session
-        ? { organizationId: ctx.session.activeOrganizationId }
-        : getDevDefaults();
-
-      return storageService.listFiles(organizationId, {
-        offset: input?.offset,
-        limit: input?.limit,
-        search: input?.search,
+      requireAuth(ctx);
+      return storageService.listFiles(getOrgId(ctx), {
+        offset: input?.offset ?? undefined,
+        limit: input?.limit ?? undefined,
+        search: input?.search ?? undefined,
       });
     },
   })
@@ -110,14 +92,14 @@ builder.mutationField("uploadFile", (t) =>
       input: t.arg({ type: UploadFileInputType, required: true }),
     },
     resolve: async (_, { input }, ctx) => {
-      if (!ctx.session) throw new NotAuthenticatedError();
+      const session = requireAuth(ctx);
 
       // Convert base64 to buffer
       const buffer = Buffer.from(input.base64Data, "base64");
 
       return storageService.uploadFile(
-        ctx.session.activeOrganizationId,
-        ctx.session.userId,
+        session.activeOrganizationId,
+        session.userId,
         {
           buffer,
           name: input.filename,
@@ -138,13 +120,9 @@ builder.mutationField("deleteFile", (t) =>
       input: t.arg({ type: DeleteFileInputType, required: true }),
     },
     resolve: async (_, { input }, ctx) => {
-      // DEV: Use default org if no session
-      const { organizationId } = ctx.session
-        ? { organizationId: ctx.session.activeOrganizationId }
-        : getDevDefaults();
-
+      requireAuth(ctx);
       await storageService.deleteFile(
-        organizationId,
+        getOrgId(ctx),
         input.fileId
       );
 
@@ -163,10 +141,9 @@ builder.mutationField("getSignedUrl", (t) =>
       input: t.arg({ type: GetSignedUrlInputType, required: true }),
     },
     resolve: async (_, { input }, ctx) => {
-      if (!ctx.session) throw new NotAuthenticatedError();
-
+      requireAuth(ctx);
       const url = await storageService.getSignedUrl(
-        ctx.session.activeOrganizationId,
+        getOrgId(ctx),
         input.fileId,
         input.expiresIn || 3600
       );
@@ -190,14 +167,11 @@ builder.mutationField("generateUploadUrl", (t) =>
       input: t.arg({ type: GenerateUploadUrlInputType, required: true }),
     },
     resolve: async (_, { input }, ctx) => {
-      // DEV: Use default org/user if no session
-      const { organizationId, userId } = ctx.session
-        ? { organizationId: ctx.session.activeOrganizationId, userId: ctx.session.userId }
-        : getDevDefaults();
+      const session = requireAuth(ctx);
 
       const result = await storageService.generatePresignedUploadUrl(
-        organizationId,
-        userId,
+        session.activeOrganizationId,
+        session.userId,
         {
           filename: input.filename,
           contentType: input.contentType,
@@ -233,13 +207,9 @@ builder.mutationField("confirmUpload", (t) =>
       input: t.arg({ type: ConfirmUploadInputType, required: true }),
     },
     resolve: async (_, { input }, ctx) => {
-      // DEV: Use default org/user if no session
-      const { organizationId } = ctx.session
-        ? { organizationId: ctx.session.activeOrganizationId }
-        : getDevDefaults();
-
+      requireAuth(ctx);
       return storageService.confirmUpload(
-        organizationId,
+        getOrgId(ctx),
         input.fileId,
         {
           size: input.size,

@@ -104,8 +104,7 @@ export function CategoryManager({
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">{TR.categories}</h2>
+      <div className="flex justify-end items-center">
         <Dialog open={open} onOpenChange={handleOpenChange}>
           <DialogTrigger asChild>
             <Button>

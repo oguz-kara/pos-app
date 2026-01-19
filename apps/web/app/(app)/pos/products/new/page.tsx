@@ -36,6 +36,8 @@ const productSchema = z.object({
   name: z.string().min(1, 'Ürün adı gereklidir').max(255),
   searchName: z.string().max(255).optional(),
   barcode: z.string().optional(),
+  sku: z.string().max(100).optional(),
+  brand: z.string().max(255).optional(),
   description: z.string().max(1000).optional(),
   sellingPrice: z.coerce.number().min(0.01, "Satış fiyatı 0'dan büyük olmalı"),
   categoryId: z.string().optional(),
@@ -58,12 +60,14 @@ export default function ProductCreatePage() {
   // Attach product image mutation
   const attachImageMutation = useAttachProductImageMutation()
 
-  const form = useForm<ProductFormValues>({
+  const form = useForm({
     resolver: zodResolver(productSchema),
     defaultValues: {
       name: '',
       searchName: '',
       barcode: '',
+      sku: '',
+      brand: '',
       description: '',
       sellingPrice: 0,
       categoryId: '',
@@ -79,11 +83,17 @@ export default function ProductCreatePage() {
           name: data.name,
           searchName: data.searchName || null,
           barcode: data.barcode || null,
+          sku: data.sku || null,
+          brand: data.brand || null,
           description: data.description || null,
           sellingPrice: data.sellingPrice,
           categoryId: data.categoryId || null,
         },
       })
+
+      if (!result.createProduct?.id) {
+        throw new Error('Product creation failed')
+      }
 
       const productId = result.createProduct.id
 
@@ -302,6 +312,46 @@ export default function ProductCreatePage() {
                           </FormItem>
                         )}
                       />
+
+                      <FormField
+                        control={form.control}
+                        name="sku"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-sm font-semibold">
+                              SKU / Stok Kodu
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="Ürün stok kodu"
+                                className="h-10"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="brand"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-sm font-semibold">
+                              Marka
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="Ürün markası"
+                                className="h-10"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                     </div>
                   </CardContent>
                 </Card>
@@ -324,7 +374,8 @@ export default function ProductCreatePage() {
                                 step="0.01"
                                 placeholder="0.00"
                                 className="h-11 text-lg"
-                                {...field}
+                                value={typeof field.value === 'number' ? field.value : 0}
+                                onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : 0)}
                               />
                             </FormControl>
                             <FormMessage />

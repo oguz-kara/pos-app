@@ -50,10 +50,12 @@ const productSchema = z.object({
   name: z.string().min(1, "Ürün adı gereklidir").max(255),
   searchName: z.string().max(255).optional(),
   barcode: z.string().optional(),
+  sku: z.string().max(100).optional(),
+  brand: z.string().max(255).optional(),
   description: z.string().max(1000).optional(),
-  sellingPrice: z.coerce.number().min(0.01, "Satış fiyatı 0'dan büyük olmalı"),
+  sellingPrice: z.number().min(0.01, "Satış fiyatı 0'dan büyük olmalı"),
   categoryId: z.string().optional(),
-  isActive: z.boolean().default(true),
+  isActive: z.boolean(),
 });
 
 type ProductFormValues = z.infer<typeof productSchema>;
@@ -113,6 +115,8 @@ export default function ProductEditPage({
       name: "",
       searchName: "",
       barcode: "",
+      sku: "",
+      brand: "",
       description: "",
       sellingPrice: 0,
       categoryId: "",
@@ -127,13 +131,15 @@ export default function ProductEditPage({
   useEffect(() => {
     if (product) {
       form.reset({
-        name: product.name,
+        name: product.name || "",
         searchName: product.searchName || "",
         barcode: product.barcode || "",
+        sku: product.sku || "",
+        brand: product.brand || "",
         description: product.description || "",
-        sellingPrice: parseFloat(product.sellingPrice),
+        sellingPrice: product.sellingPrice ? parseFloat(product.sellingPrice) : 0,
         categoryId: product.categoryId || "",
-        isActive: product.isActive,
+        isActive: product.isActive ?? true,
       });
     }
   }, [product, form]);
@@ -144,11 +150,11 @@ export default function ProductEditPage({
       const featuredImage = productImages.find((img) => img.isPrimary);
       const galleryImages = productImages
         .filter((img) => !img.isPrimary)
-        .sort((a, b) => a.displayOrder - b.displayOrder);
+        .sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0));
 
       setImages({
-        featuredImageId: featuredImage?.fileId,
-        galleryImageIds: galleryImages.map((img) => img.fileId),
+        featuredImageId: featuredImage?.fileId ?? undefined,
+        galleryImageIds: galleryImages.map((img) => img.fileId).filter((id): id is string => id != null),
       });
     }
   }, [productImages]);
@@ -163,6 +169,8 @@ export default function ProductEditPage({
           name: data.name,
           searchName: data.searchName || null,
           barcode: data.barcode || null,
+          sku: data.sku || null,
+          brand: data.brand || null,
           description: data.description || null,
           sellingPrice: data.sellingPrice,
           categoryId: data.categoryId || null,
@@ -171,7 +179,7 @@ export default function ProductEditPage({
       });
 
       // Step 2: Sync images
-      const currentImageIds = productImages.map((img) => img.fileId);
+      const currentImageIds = productImages.map((img) => img.fileId).filter((id): id is string => id != null);
       const newImageIds = [
         ...(images.featuredImageId ? [images.featuredImageId] : []),
         ...(images.galleryImageIds || []),
@@ -456,6 +464,46 @@ export default function ProductEditPage({
                             <FormControl>
                               <Input
                                 placeholder="Barkod numarası"
+                                className="h-10"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="sku"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-sm font-semibold">
+                              SKU / Stok Kodu
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="Ürün stok kodu"
+                                className="h-10"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="brand"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-sm font-semibold">
+                              Marka
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="Ürün markası"
                                 className="h-10"
                                 {...field}
                               />

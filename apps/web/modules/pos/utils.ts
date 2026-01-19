@@ -49,9 +49,9 @@ export function calculateSellingPrice(
 export function getStockStatus(
   stock: number,
   threshold: number = 10
-): "default" | "warning" | "destructive" {
+): "default" | "secondary" | "destructive" {
   if (stock <= 0) return "destructive";
-  if (stock <= threshold) return "warning";
+  if (stock <= threshold) return "secondary";
   return "default";
 }
 

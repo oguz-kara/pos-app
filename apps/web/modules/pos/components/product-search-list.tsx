@@ -19,6 +19,8 @@ type Product = {
   id: string
   name: string
   barcode: string | null
+  sku: string | null
+  brand: string | null
   sellingPrice: string
   totalStock?: number
   category?: Category | null
@@ -189,11 +191,23 @@ export function ProductSearchList({
                   <div className="flex justify-between items-start">
                     <div className="flex-1">
                       <h3 className="font-semibold text-lg">{product.name}</h3>
-                      {product.barcode && (
-                        <p className="text-sm text-muted-foreground mt-1">
-                          {product.barcode}
-                        </p>
-                      )}
+                      <div className="mt-1 space-y-0.5">
+                        {product.brand && (
+                          <p className="text-sm text-muted-foreground">
+                            {product.brand}
+                          </p>
+                        )}
+                        {product.sku && (
+                          <p className="text-xs text-muted-foreground font-mono">
+                            SKU: {product.sku}
+                          </p>
+                        )}
+                        {product.barcode && (
+                          <p className="text-xs text-muted-foreground font-mono">
+                            Barkod: {product.barcode}
+                          </p>
+                        )}
+                      </div>
                     </div>
                     <div className="text-right ml-4 flex items-start gap-3">
                       <div>

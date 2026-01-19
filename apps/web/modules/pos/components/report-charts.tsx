@@ -1,6 +1,6 @@
-"use client";
+'use client'
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   LineChart,
   Line,
@@ -12,22 +12,22 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-} from "recharts";
-import { TR } from "../constants";
+} from 'recharts'
+import { TR } from '../constants'
 
 type ChartData = {
-  date: string;
-  revenue: number;
-  profit: number;
-  cost: number;
-};
+  date: string
+  revenue: number
+  profit: number
+  cost: number
+}
 
 export function ReportCharts({ data }: { data: ChartData[] }) {
   return (
     <div className="grid gap-4 md:grid-cols-2">
       <Card>
         <CardHeader>
-          <CardTitle>{TR.REVENUE_TREND}</CardTitle>
+          <CardTitle>{TR.revenueTrend}</CardTitle>
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={300}>
@@ -41,13 +41,13 @@ export function ReportCharts({ data }: { data: ChartData[] }) {
                 type="monotone"
                 dataKey="revenue"
                 stroke="hsl(var(--primary))"
-                name={TR.REVENUE}
+                name={TR.revenue}
               />
               <Line
                 type="monotone"
                 dataKey="profit"
                 stroke="hsl(var(--chart-2))"
-                name={TR.PROFIT}
+                name={TR.profit}
               />
             </LineChart>
           </ResponsiveContainer>
@@ -56,7 +56,7 @@ export function ReportCharts({ data }: { data: ChartData[] }) {
 
       <Card>
         <CardHeader>
-          <CardTitle>{TR.REVENUE_VS_COST}</CardTitle>
+          <CardTitle>{TR.revenueVsCost}</CardTitle>
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={300}>
@@ -66,12 +66,24 @@ export function ReportCharts({ data }: { data: ChartData[] }) {
               <YAxis />
               <Tooltip />
               <Legend />
-              <Bar dataKey="revenue" fill="hsl(var(--primary))" name={TR.REVENUE} />
-              <Bar dataKey="cost" fill="hsl(var(--chart-3))" name={TR.COST} />
+              <Bar
+                dataKey="revenue"
+                fill="hsl(var(--primary))"
+                name={TR.revenue}
+              />
+              <Bar
+                dataKey="cost"
+                fill="hsl(var(--chart-3))"
+                /* FIX: Changed TR.costOfGoods -> TR.cost 
+                   The error log indicated the issue was with "COST".
+                   The direct camelCase translation is "cost".
+                */
+                name={TR.cost}
+              />
             </BarChart>
           </ResponsiveContainer>
         </CardContent>
       </Card>
     </div>
-  );
+  )
 }

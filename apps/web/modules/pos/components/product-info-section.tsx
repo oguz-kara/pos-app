@@ -10,6 +10,8 @@ interface Product {
   name: string
   searchName: string
   barcode: string | null
+  sku: string | null
+  brand: string | null
   description: string | null
   sellingPrice: string
   isActive: boolean
@@ -146,6 +148,16 @@ export function ProductInfoSection({
           <div>
             <p className="text-sm font-medium text-muted-foreground">Barkod</p>
             <p className="text-sm font-mono">{product.barcode || '—'}</p>
+          </div>
+
+          <div>
+            <p className="text-sm font-medium text-muted-foreground">SKU</p>
+            <p className="text-sm font-mono">{product.sku || '—'}</p>
+          </div>
+
+          <div>
+            <p className="text-sm font-medium text-muted-foreground">Marka</p>
+            <p className="text-sm">{product.brand || '—'}</p>
           </div>
 
           <div>

@@ -18,6 +18,8 @@ type Product = {
   id: string;
   name: string;
   barcode: string | null;
+  sku: string | null;
+  brand: string | null;
   sellingPrice: string;
   totalStock?: number;
 };

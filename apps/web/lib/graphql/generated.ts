@@ -152,11 +152,13 @@ export type CreateCategoryInput = {
 
 export type CreateProductInput = {
   barcode?: InputMaybe<Scalars['String']['input']>
+  brand?: InputMaybe<Scalars['String']['input']>
   categoryId?: InputMaybe<Scalars['String']['input']>
   description?: InputMaybe<Scalars['String']['input']>
   name: Scalars['String']['input']
   searchName?: InputMaybe<Scalars['String']['input']>
   sellingPrice: Scalars['Float']['input']
+  sku?: InputMaybe<Scalars['String']['input']>
 }
 
 export type CreateSaleInput = {
@@ -554,6 +556,7 @@ export type PresignedUploadUrl = {
 export type Product = {
   __typename?: 'Product'
   barcode?: Maybe<Scalars['String']['output']>
+  brand?: Maybe<Scalars['String']['output']>
   category?: Maybe<Category>
   categoryId?: Maybe<Scalars['String']['output']>
   createdAt?: Maybe<Scalars['DateTime']['output']>
@@ -564,6 +567,7 @@ export type Product = {
   organizationId?: Maybe<Scalars['String']['output']>
   searchName?: Maybe<Scalars['String']['output']>
   sellingPrice?: Maybe<Scalars['String']['output']>
+  sku?: Maybe<Scalars['String']['output']>
   updatedAt?: Maybe<Scalars['DateTime']['output']>
 }
 
@@ -620,6 +624,7 @@ export type ProductWithStock = {
   __typename?: 'ProductWithStock'
   averageCost?: Maybe<Scalars['Float']['output']>
   barcode?: Maybe<Scalars['String']['output']>
+  brand?: Maybe<Scalars['String']['output']>
   category?: Maybe<Category>
   categoryId?: Maybe<Scalars['String']['output']>
   createdAt?: Maybe<Scalars['DateTime']['output']>
@@ -630,6 +635,7 @@ export type ProductWithStock = {
   organizationId?: Maybe<Scalars['String']['output']>
   searchName?: Maybe<Scalars['String']['output']>
   sellingPrice?: Maybe<Scalars['String']['output']>
+  sku?: Maybe<Scalars['String']['output']>
   totalStock?: Maybe<Scalars['Int']['output']>
   updatedAt?: Maybe<Scalars['DateTime']['output']>
 }
@@ -989,12 +995,14 @@ export type UpdateCategoryInput = {
 
 export type UpdateProductInput = {
   barcode?: InputMaybe<Scalars['String']['input']>
+  brand?: InputMaybe<Scalars['String']['input']>
   categoryId?: InputMaybe<Scalars['String']['input']>
   description?: InputMaybe<Scalars['String']['input']>
   isActive?: InputMaybe<Scalars['Boolean']['input']>
   name?: InputMaybe<Scalars['String']['input']>
   searchName?: InputMaybe<Scalars['String']['input']>
   sellingPrice?: InputMaybe<Scalars['Float']['input']>
+  sku?: InputMaybe<Scalars['String']['input']>
 }
 
 export type UpdateSupplierInput = {
@@ -1641,6 +1649,8 @@ export type ProductsQuery = {
     name?: string | null
     searchName?: string | null
     barcode?: string | null
+    sku?: string | null
+    brand?: string | null
     description?: string | null
     sellingPrice?: string | null
     isActive?: boolean | null
@@ -1668,6 +1678,8 @@ export type ProductQuery = {
     name?: string | null
     searchName?: string | null
     barcode?: string | null
+    sku?: string | null
+    brand?: string | null
     description?: string | null
     sellingPrice?: string | null
     isActive?: boolean | null
@@ -1698,6 +1710,8 @@ export type ProductsWithStockQuery = {
     name?: string | null
     searchName?: string | null
     barcode?: string | null
+    sku?: string | null
+    brand?: string | null
     description?: string | null
     sellingPrice?: string | null
     isActive?: boolean | null
@@ -1727,6 +1741,8 @@ export type CreateProductMutation = {
     name?: string | null
     searchName?: string | null
     barcode?: string | null
+    sku?: string | null
+    brand?: string | null
     description?: string | null
     sellingPrice?: string | null
     isActive?: boolean | null
@@ -1750,6 +1766,8 @@ export type UpdateProductMutation = {
     name?: string | null
     searchName?: string | null
     barcode?: string | null
+    sku?: string | null
+    brand?: string | null
     description?: string | null
     sellingPrice?: string | null
     isActive?: boolean | null
@@ -1820,6 +1838,45 @@ export type GenerateDailyReportMutation = {
     cashVariance?: string | null
     notes?: string | null
     createdAt?: any | null
+  } | null
+}
+
+export type SaleQueryVariables = Exact<{
+  id: Scalars['String']['input']
+}>
+
+export type SaleQuery = {
+  __typename?: 'Query'
+  sale?: {
+    __typename?: 'SaleWithItems'
+    id?: string | null
+    receiptNo?: string | null
+    type?: string | null
+    originalSaleId?: string | null
+    totalAmount?: string | null
+    totalCost?: string | null
+    paymentMethod?: string | null
+    notes?: string | null
+    organizationId?: string | null
+    createdAt?: any | null
+    items?: Array<{
+      __typename?: 'SaleItem'
+      id?: string | null
+      saleId?: string | null
+      productId?: string | null
+      quantity?: number | null
+      unitPrice?: string | null
+      unitCost?: string | null
+      subtotal?: string | null
+      createdAt?: any | null
+      product?: {
+        __typename?: 'Product'
+        id?: string | null
+        name?: string | null
+        barcode?: string | null
+        sellingPrice?: string | null
+      } | null
+    }> | null
   } | null
 }
 
@@ -4871,6 +4928,8 @@ export const ProductsDocument = `
     name
     searchName
     barcode
+    sku
+    brand
     description
     sellingPrice
     isActive
@@ -4951,6 +5010,8 @@ export const ProductDocument = `
     name
     searchName
     barcode
+    sku
+    brand
     description
     sellingPrice
     isActive
@@ -5035,6 +5096,8 @@ export const ProductsWithStockDocument = `
     name
     searchName
     barcode
+    sku
+    brand
     description
     sellingPrice
     isActive
@@ -5145,6 +5208,8 @@ export const CreateProductDocument = `
     name
     searchName
     barcode
+    sku
+    brand
     description
     sellingPrice
     isActive
@@ -5195,6 +5260,8 @@ export const UpdateProductDocument = `
     name
     searchName
     barcode
+    sku
+    brand
     description
     sellingPrice
     isActive
@@ -5428,6 +5495,90 @@ useGenerateDailyReportMutation.fetcher = (
     GenerateDailyReportDocument,
     variables,
   )
+
+export const SaleDocument = `
+    query Sale($id: String!) {
+  sale(id: $id) {
+    id
+    receiptNo
+    type
+    originalSaleId
+    totalAmount
+    totalCost
+    paymentMethod
+    notes
+    organizationId
+    createdAt
+    items {
+      id
+      saleId
+      productId
+      quantity
+      unitPrice
+      unitCost
+      subtotal
+      createdAt
+      product {
+        id
+        name
+        barcode
+        sellingPrice
+      }
+    }
+  }
+}
+    `
+
+export const useSaleQuery = <TData = SaleQuery, TError = unknown>(
+  variables: SaleQueryVariables,
+  options?: Omit<UseQueryOptions<SaleQuery, TError, TData>, 'queryKey'> & {
+    queryKey?: UseQueryOptions<SaleQuery, TError, TData>['queryKey']
+  },
+) => {
+  return useQuery<SaleQuery, TError, TData>({
+    queryKey: ['Sale', variables],
+    queryFn: fetcher<SaleQuery, SaleQueryVariables>(SaleDocument, variables),
+    ...options,
+  })
+}
+
+useSaleQuery.getKey = (variables: SaleQueryVariables) => ['Sale', variables]
+
+export const useInfiniteSaleQuery = <
+  TData = InfiniteData<SaleQuery>,
+  TError = unknown,
+>(
+  variables: SaleQueryVariables,
+  options: Omit<
+    UseInfiniteQueryOptions<SaleQuery, TError, TData>,
+    'queryKey'
+  > & {
+    queryKey?: UseInfiniteQueryOptions<SaleQuery, TError, TData>['queryKey']
+  },
+) => {
+  return useInfiniteQuery<SaleQuery, TError, TData>(
+    (() => {
+      const { queryKey: optionsQueryKey, ...restOptions } = options
+      return {
+        queryKey: optionsQueryKey ?? ['Sale.infinite', variables],
+        queryFn: (metaData) =>
+          fetcher<SaleQuery, SaleQueryVariables>(SaleDocument, {
+            ...variables,
+            ...(metaData.pageParam ?? {}),
+          })(),
+        ...restOptions,
+      }
+    })(),
+  )
+}
+
+useInfiniteSaleQuery.getKey = (variables: SaleQueryVariables) => [
+  'Sale.infinite',
+  variables,
+]
+
+useSaleQuery.fetcher = (variables: SaleQueryVariables) =>
+  fetcher<SaleQuery, SaleQueryVariables>(SaleDocument, variables)
 
 export const TodaysCashSalesDocument = `
     query TodaysCashSales($startDate: DateTime!, $endDate: DateTime!) {

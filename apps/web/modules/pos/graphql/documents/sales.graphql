@@ -1,3 +1,34 @@
+query Sale($id: String!) {
+  sale(id: $id) {
+    id
+    receiptNo
+    type
+    originalSaleId
+    totalAmount
+    totalCost
+    paymentMethod
+    notes
+    organizationId
+    createdAt
+    items {
+      id
+      saleId
+      productId
+      quantity
+      unitPrice
+      unitCost
+      subtotal
+      createdAt
+      product {
+        id
+        name
+        barcode
+        sellingPrice
+      }
+    }
+  }
+}
+
 query TodaysCashSales($startDate: DateTime!, $endDate: DateTime!) {
   salesHistory(paymentMethod: "cash", type: "SALE", startDate: $startDate, endDate: $endDate) {
     id

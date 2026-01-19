@@ -120,7 +120,7 @@ export async function getFile(
     throw new NotFoundError("File");
   }
 
-  return file;
+  return file as unknown as FileRecord;
 }
 
 /**
@@ -164,7 +164,7 @@ export async function listFiles(
   });
 
   return {
-    files: fileList,
+    files: fileList as unknown as FileRecord[],
     total: total ?? 0,
     hasMore: offset + fileList.length < (total ?? 0),
   };
@@ -197,7 +197,7 @@ export async function checkDuplicateByHash(
     where: and(eq(files.fileHash, fileHash), eq(files.organizationId, orgId)),
   });
 
-  return existingFile || null;
+  return (existingFile as unknown as FileRecord) || null;
 }
 
 /**
@@ -253,7 +253,7 @@ export async function generatePresignedUploadUrl(
 
   // Create storage provider
   const storage = createStorageProvider();
-  const publicUrl = `${storage["publicUrl"] || process.env.R2_PUBLIC_URL}/${key}`;
+  const publicUrl = `${(storage as any)["publicUrl"] || process.env.R2_PUBLIC_URL}/${key}`;
 
   // Generate presigned upload URL
   const uploadUrl = await storage.getPresignedUploadUrl({

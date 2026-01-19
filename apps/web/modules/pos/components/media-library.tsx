@@ -15,7 +15,6 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
-  AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
@@ -28,7 +27,7 @@ interface MediaLibraryProps {
   onMultiSelect?: (fileIds: string[]) => void
   multiSelect?: boolean
   maxSelect?: number
-  refreshTrigger?: number // Used to trigger refetch from parent
+  refreshTrigger?: number
 }
 
 export function MediaLibrary({
@@ -53,18 +52,18 @@ export function MediaLibrary({
     return () => clearTimeout(timer)
   }, [search])
 
-  // Query files with pagination - show first page only, no infinite scroll state management
-  const { data, isLoading, refetch, isFetching } = useListFilesQuery(
+  // Query files
+  const { data, isLoading, refetch } = useListFilesQuery(
     {
       input: {
-        offset: 0, // Always load first page
-        limit: 100, // Load more items at once
+        offset: 0,
+        limit: 100,
         search: debouncedSearch.trim() || undefined,
       },
     },
     {
-      staleTime: 5 * 60 * 1000, // 5 minutes
-      gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
+      staleTime: 5 * 60 * 1000,
+      gcTime: 10 * 60 * 1000,
     },
   )
 
@@ -74,7 +73,7 @@ export function MediaLibrary({
   // Delete mutation
   const deleteMutation = useDeleteFileMutation()
 
-  // Check if file is in use (only when delete dialog is open)
+  // Check usage
   const { data: usageData, isLoading: isCheckingUsage } = useFileUsageQuery(
     { fileId: fileToDelete || '' },
     { enabled: !!fileToDelete },
@@ -127,7 +126,7 @@ export function MediaLibrary({
     }
   }
 
-  // Refetch when refreshTrigger changes (e.g., after upload)
+  // Refetch trigger
   useEffect(() => {
     if (refreshTrigger !== undefined) {
       refetch()
@@ -170,18 +169,25 @@ export function MediaLibrary({
         ) : (
           <div className="p-4">
             <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-2">
-              {files.map((file) => (
-                <ImagePreview
-                  key={file.id}
-                  id={file.id}
-                  url={file.url}
-                  filename={file.filename}
-                  selected={selectedIds.includes(file.id)}
-                  onSelect={handleSelect}
-                  onRemove={(id) => handleDeleteClick(id)}
-                  showActions={true}
-                />
-              ))}
+              {files.map((file) => {
+                // 1. Guard Clause: Skip files that are functionally broken (no ID or URL)
+                if (!file?.id || !file?.url) return null
+
+                return (
+                  <ImagePreview
+                    key={file.id}
+                    id={file.id}
+                    url={file.url}
+                    // 2. Fallback Fix: If filename is null/undefined, use an empty string or default
+                    // This satisfies TypeScript's strict string requirement.
+                    filename={file.filename || 'Untitled'}
+                    selected={selectedIds.includes(file.id)}
+                    onSelect={handleSelect}
+                    onRemove={(id) => handleDeleteClick(id)}
+                    showActions={true}
+                  />
+                )
+              })}
             </div>
 
             {hasMore && (

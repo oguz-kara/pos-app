@@ -1,7 +1,6 @@
 "use client";
 
 import { CategoryManager } from "@/modules/pos/components/category-manager";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { TR } from "@/modules/pos/constants";
 import {
   useCategoriesQuery,
@@ -22,7 +21,13 @@ export default function CategoriesPage() {
   const updateCategory = useUpdateCategoryMutation();
   const deleteCategory = useDeleteCategoryMutation();
 
-  const categories = data?.categories || [];
+  const categories = (data?.categories || [])
+    .filter((c): c is NonNullable<typeof c> => c != null && c.id != null && c.name != null)
+    .map((c) => ({
+      id: c.id!,
+      name: c.name!,
+      createdAt: new Date(c.createdAt),
+    }));
 
   const handleCreate = async (formData: { name: string }) => {
     try {
@@ -58,31 +63,21 @@ export default function CategoriesPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-4">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">{TR.CATEGORIES}</h1>
+        <h1 className="text-3xl font-bold tracking-tight">{TR.categories}</h1>
         <p className="text-muted-foreground">
           Ürün kategorilerini yönetin
         </p>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>{TR.MANAGE_CATEGORIES}</CardTitle>
-          <CardDescription>
-            Kategorileri ekleyin, düzenleyin veya silin
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <CategoryManager
-            categories={categories}
-            onCreateCategory={handleCreate}
-            onUpdateCategory={handleUpdate}
-            onDeleteCategory={handleDelete}
-            isLoading={isLoading}
-          />
-        </CardContent>
-      </Card>
+      <CategoryManager
+        categories={categories}
+        onCreateCategory={handleCreate}
+        onUpdateCategory={handleUpdate}
+        onDeleteCategory={handleDelete}
+        isLoading={isLoading}
+      />
     </div>
   );
 }

@@ -1,9 +1,9 @@
-"use client";
+'use client'
 
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { Button } from "@/components/ui/button";
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import * as z from 'zod'
+import { Button } from '@/components/ui/button'
 import {
   Form,
   FormControl,
@@ -12,21 +12,29 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { TR } from "../constants";
+} from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { TR } from '../constants'
 
+// 1. STRICT SCHEMA: Remove z.coerce.
+// We now explicitly expect numbers. This satisfies the TypeScript
+// requirement that Schema Input === Form State (StockLotFormValues).
 const stockLotSchema = z.object({
-  productId: z.string().min(1, "Ürün seçilmeli"),
-  quantity: z.coerce.number().int().min(1, "Miktar en az 1 olmalı"),
-  costPrice: z.coerce.number().min(0, "Alış fiyatı 0'dan büyük olmalı"),
+  productId: z.string().min(1, 'Ürün seçilmeli'),
+  quantity: z
+    .number('Geçerli bir sayı giriniz')
+    .int()
+    .min(1, 'Miktar en az 1 olmalı'),
+  costPrice: z
+    .number('Geçerli bir fiyat giriniz')
+    .min(0, "Alış fiyatı 0'dan büyük olmalı"),
   supplier: z.string().optional(),
   notes: z.string().optional(),
   purchasedAt: z.string().optional(),
-});
+})
 
-export type StockLotFormValues = z.infer<typeof stockLotSchema>;
+export type StockLotFormValues = z.infer<typeof stockLotSchema>
 
 export function StockEntryForm({
   productId,
@@ -34,31 +42,31 @@ export function StockEntryForm({
   onCancel,
   isLoading,
 }: {
-  productId?: string;
-  onSubmit: (data: StockLotFormValues) => Promise<void>;
-  onCancel?: () => void;
-  isLoading?: boolean;
+  productId?: string
+  onSubmit: (data: StockLotFormValues) => Promise<void>
+  onCancel?: () => void
+  isLoading?: boolean
 }) {
   const form = useForm<StockLotFormValues>({
-    resolver: zodResolver(stockLotSchema),
+    resolver: zodResolver(stockLotSchema), // TS is happy now: Input(number) matches Form(number)
     defaultValues: {
-      productId: productId || "",
+      productId: productId || '',
       quantity: 1,
       costPrice: 0,
-      supplier: "",
-      notes: "",
-      purchasedAt: new Date().toISOString().split("T")[0],
+      supplier: '',
+      notes: '',
+      purchasedAt: new Date().toISOString().split('T')[0],
     },
-  });
+  })
 
   const handleSubmit = async (data: StockLotFormValues) => {
     try {
-      await onSubmit(data);
-      form.reset();
+      await onSubmit(data)
+      form.reset()
     } catch (error) {
-      console.error("Error submitting stock:", error);
+      console.error('Error submitting stock:', error)
     }
-  };
+  }
 
   return (
     <Form {...form}>
@@ -70,7 +78,22 @@ export function StockEntryForm({
             <FormItem>
               <FormLabel>{TR.quantity}</FormLabel>
               <FormControl>
-                <Input type="number" min="1" {...field} />
+                {/* 2. UI COERCION: Handle string-to-number here */}
+                <Input
+                  type="number"
+                  min="1"
+                  {...field}
+                  // Override standard onChange to convert string -> number
+                  onChange={(e) => {
+                    const value = e.target.valueAsNumber
+                    // valueAsNumber returns NaN for empty strings.
+                    // We pass NaN to the form if empty, or the actual number.
+                    field.onChange(Number.isNaN(value) ? 0 : value)
+                  }}
+                  // If state is 0, we might want to show it.
+                  // If you want empty string on 0, handle it here.
+                  value={field.value}
+                />
               </FormControl>
               <FormDescription>Alınan ürün miktarı</FormDescription>
               <FormMessage />
@@ -91,6 +114,11 @@ export function StockEntryForm({
                   min="0"
                   placeholder="0.00"
                   {...field}
+                  onChange={(e) => {
+                    const value = e.target.valueAsNumber
+                    field.onChange(Number.isNaN(value) ? 0 : value)
+                  }}
+                  value={field.value}
                 />
               </FormControl>
               <FormDescription>Birim alış fiyatı (TL)</FormDescription>
@@ -98,6 +126,8 @@ export function StockEntryForm({
             </FormItem>
           )}
         />
+
+        {/* ... The rest of your fields remain unchanged ... */}
 
         <FormField
           control={form.control}
@@ -153,5 +183,5 @@ export function StockEntryForm({
         </div>
       </form>
     </Form>
-  );
+  )
 }

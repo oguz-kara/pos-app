@@ -1,9 +1,9 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { formatCurrency } from "../utils";
+import { useState } from 'react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { formatCurrency } from '../utils'
 import {
   LineChart,
   Line,
@@ -13,20 +13,20 @@ import {
   Tooltip,
   ResponsiveContainer,
   Legend,
-} from "recharts";
+} from 'recharts'
 
 interface SalesTrendItem {
-  date: string;
-  unitsSold: number;
-  revenue: number;
-  cost: number;
-  profit: number;
+  date: string
+  unitsSold: number
+  revenue: number
+  cost: number
+  profit: number
 }
 
 interface ProductSalesChartProps {
-  trend: SalesTrendItem[];
-  days: number;
-  onDaysChange: (days: number) => void;
+  trend: SalesTrendItem[]
+  days: number
+  onDaysChange: (days: number) => void
 }
 
 export function ProductSalesChart({
@@ -34,24 +34,24 @@ export function ProductSalesChart({
   days,
   onDaysChange,
 }: ProductSalesChartProps) {
-  const [view, setView] = useState<"units" | "revenue">("revenue");
+  const [view, setView] = useState<'units' | 'revenue'>('revenue')
 
   // Format chart data
   const chartData = trend.map((item) => ({
-    date: new Date(item.date).toLocaleDateString("tr-TR", {
-      month: "short",
-      day: "numeric",
+    date: new Date(item.date).toLocaleDateString('tr-TR', {
+      month: 'short',
+      day: 'numeric',
     }),
-    "Satış Adedi": item.unitsSold,
+    'Satış Adedi': item.unitsSold,
     Hasılat: item.revenue,
     Maliyet: item.cost,
     Kar: item.profit,
-  }));
+  }))
 
   // Calculate totals
-  const totalUnits = trend.reduce((sum, item) => sum + item.unitsSold, 0);
-  const totalRevenue = trend.reduce((sum, item) => sum + item.revenue, 0);
-  const avgDailySales = trend.length > 0 ? totalRevenue / trend.length : 0;
+  const totalUnits = trend.reduce((sum, item) => sum + item.unitsSold, 0)
+  const totalRevenue = trend.reduce((sum, item) => sum + item.revenue, 0)
+  const avgDailySales = trend.length > 0 ? totalRevenue / trend.length : 0
 
   return (
     <Card className="bg-white shadow-sm">
@@ -64,17 +64,17 @@ export function ProductSalesChart({
             {/* View Toggle */}
             <div className="flex border rounded-md">
               <Button
-                variant={view === "revenue" ? "secondary" : "ghost"}
+                variant={view === 'revenue' ? 'secondary' : 'ghost'}
                 size="sm"
-                onClick={() => setView("revenue")}
+                onClick={() => setView('revenue')}
                 className="rounded-r-none"
               >
                 Hasılat
               </Button>
               <Button
-                variant={view === "units" ? "secondary" : "ghost"}
+                variant={view === 'units' ? 'secondary' : 'ghost'}
                 size="sm"
-                onClick={() => setView("units")}
+                onClick={() => setView('units')}
                 className="rounded-l-none"
               >
                 Adet
@@ -84,7 +84,7 @@ export function ProductSalesChart({
             {/* Time Range Selector */}
             <div className="flex border rounded-md">
               <Button
-                variant={days === 7 ? "secondary" : "ghost"}
+                variant={days === 7 ? 'secondary' : 'ghost'}
                 size="sm"
                 onClick={() => onDaysChange(7)}
                 className="rounded-r-none rounded-l-md"
@@ -92,7 +92,7 @@ export function ProductSalesChart({
                 7 Gün
               </Button>
               <Button
-                variant={days === 30 ? "secondary" : "ghost"}
+                variant={days === 30 ? 'secondary' : 'ghost'}
                 size="sm"
                 onClick={() => onDaysChange(30)}
                 className="rounded-none"
@@ -100,7 +100,7 @@ export function ProductSalesChart({
                 30 Gün
               </Button>
               <Button
-                variant={days === 90 ? "secondary" : "ghost"}
+                variant={days === 90 ? 'secondary' : 'ghost'}
                 size="sm"
                 onClick={() => onDaysChange(90)}
                 className="rounded-l-none rounded-r-md"
@@ -133,7 +133,7 @@ export function ProductSalesChart({
         {/* Chart */}
         {trend.length > 0 ? (
           <ResponsiveContainer width="100%" height={300}>
-            {view === "revenue" ? (
+            {view === 'revenue' ? (
               <LineChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                 <XAxis
@@ -143,11 +143,15 @@ export function ProductSalesChart({
                 />
                 <YAxis tick={{ fontSize: 12 }} stroke="#9ca3af" />
                 <Tooltip
-                  formatter={(value: number) => formatCurrency(value)}
+                  // FIX: Use strict union type 'number | undefined' instead of 'any'.
+                  // We also fallback to 0 using (value ?? 0) to ensure formatCurrency receives a number.
+                  formatter={(value: number | undefined) =>
+                    formatCurrency(value ?? 0)
+                  }
                   contentStyle={{
-                    backgroundColor: "#fff",
-                    border: "1px solid #e5e7eb",
-                    borderRadius: "6px",
+                    backgroundColor: '#fff',
+                    border: '1px solid #e5e7eb',
+                    borderRadius: '6px',
                   }}
                 />
                 <Legend />
@@ -156,21 +160,21 @@ export function ProductSalesChart({
                   dataKey="Hasılat"
                   stroke="#3b82f6"
                   strokeWidth={2}
-                  dot={{ fill: "#3b82f6", r: 3 }}
+                  dot={{ fill: '#3b82f6', r: 3 }}
                 />
                 <Line
                   type="monotone"
                   dataKey="Maliyet"
                   stroke="#ef4444"
                   strokeWidth={2}
-                  dot={{ fill: "#ef4444", r: 3 }}
+                  dot={{ fill: '#ef4444', r: 3 }}
                 />
                 <Line
                   type="monotone"
                   dataKey="Kar"
                   stroke="#22c55e"
                   strokeWidth={2}
-                  dot={{ fill: "#22c55e", r: 3 }}
+                  dot={{ fill: '#22c55e', r: 3 }}
                 />
               </LineChart>
             ) : (
@@ -184,9 +188,9 @@ export function ProductSalesChart({
                 <YAxis tick={{ fontSize: 12 }} stroke="#9ca3af" />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: "#fff",
-                    border: "1px solid #e5e7eb",
-                    borderRadius: "6px",
+                    backgroundColor: '#fff',
+                    border: '1px solid #e5e7eb',
+                    borderRadius: '6px',
                   }}
                 />
                 <Legend />
@@ -195,7 +199,7 @@ export function ProductSalesChart({
                   dataKey="Satış Adedi"
                   stroke="#8b5cf6"
                   strokeWidth={2}
-                  dot={{ fill: "#8b5cf6", r: 3 }}
+                  dot={{ fill: '#8b5cf6', r: 3 }}
                 />
               </LineChart>
             )}
@@ -207,5 +211,5 @@ export function ProductSalesChart({
         )}
       </CardContent>
     </Card>
-  );
+  )
 }

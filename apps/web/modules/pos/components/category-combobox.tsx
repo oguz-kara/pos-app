@@ -1,9 +1,9 @@
-"use client";
+'use client'
 
-import * as React from "react";
-import { Check, ChevronsUpDown, Plus } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import * as React from 'react'
+import { Check, ChevronsUpDown, Plus } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
 import {
   Command,
   CommandEmpty,
@@ -11,67 +11,78 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/components/ui/command";
+} from '@/components/ui/command'
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
-import { useCategoriesQuery, useCreateCategoryMutation } from "@/lib/graphql/generated";
-import { useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
+} from '@/components/ui/popover'
+import {
+  useCategoriesQuery,
+  useCreateCategoryMutation,
+} from '@/lib/graphql/generated'
+import { useQueryClient } from '@tanstack/react-query'
+import { toast } from 'sonner'
 
 interface CategoryComboboxProps {
-  value?: string;
-  onValueChange: (value: string) => void;
-  placeholder?: string;
+  value?: string
+  onValueChange: (value: string) => void
+  placeholder?: string
 }
 
 export function CategoryCombobox({
   value,
   onValueChange,
-  placeholder = "Kategori seçin...",
+  placeholder = 'Kategori seçin...',
 }: CategoryComboboxProps) {
-  const [open, setOpen] = React.useState(false);
-  const [search, setSearch] = React.useState("");
-  const queryClient = useQueryClient();
+  const [open, setOpen] = React.useState(false)
+  const [search, setSearch] = React.useState('')
+  const queryClient = useQueryClient()
 
-  const { data: categoriesData, isLoading } = useCategoriesQuery();
-  const categories = categoriesData?.categories || [];
+  const { data: categoriesData, isLoading } = useCategoriesQuery()
+  const categories = categoriesData?.categories || []
 
   const createCategoryMutation = useCreateCategoryMutation({
     onSuccess: (data) => {
-      toast.success("Kategori oluşturuldu");
-      queryClient.invalidateQueries({ queryKey: ["Categories"] });
-      onValueChange(data.createCategory.id);
-      setOpen(false);
-      setSearch("");
+      toast.success('Kategori oluşturuldu')
+      queryClient.invalidateQueries({ queryKey: ['Categories'] })
+      if (data.createCategory?.id) {
+        onValueChange(data.createCategory.id)
+      }
+      setOpen(false)
+      setSearch('')
     },
-    onError: (error: any) => {
-      toast.error(error.message || "Kategori oluşturulamadı");
+    // FIX 1: Explicitly type error as Error instead of 'any'
+    onError: (error: Error) => {
+      toast.error(error.message || 'Kategori oluşturulamadı')
     },
-  });
+  })
 
-  const selectedCategory = categories.find((cat) => cat.id === value);
+  // Safe find for selected category
+  const selectedCategory = categories.find((cat) => cat.id === value)
 
-  const filteredCategories = categories.filter((cat) =>
-    cat.name.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredCategories = categories.filter(
+    (cat) =>
+      // FIX 2: Guard against null ID/Name in filter logic
+      cat.id &&
+      cat.name &&
+      cat.name.toLowerCase().includes(search.toLowerCase()),
+  )
 
   const handleCreateCategory = async () => {
     if (!search.trim()) {
-      toast.error("Kategori adı boş olamaz");
-      return;
+      toast.error('Kategori adı boş olamaz')
+      return
     }
 
     await createCategoryMutation.mutateAsync({
       input: {
         name: search.trim(),
       },
-    });
-  };
+    })
+  }
 
-  const showCreateButton = search.trim() && filteredCategories.length === 0;
+  const showCreateButton = search.trim() && filteredCategories.length === 0
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -105,17 +116,18 @@ export function CategoryCombobox({
                 {filteredCategories.map((category) => (
                   <CommandItem
                     key={category.id}
-                    value={category.id}
+                    // FIX 3: Fallback to empty string if id is null (satisfies strict string type)
+                    value={category.id || ''}
                     onSelect={(currentValue) => {
-                      onValueChange(currentValue === value ? "" : currentValue);
-                      setOpen(false);
-                      setSearch("");
+                      onValueChange(currentValue === value ? '' : currentValue)
+                      setOpen(false)
+                      setSearch('')
                     }}
                   >
                     <Check
                       className={cn(
-                        "mr-2 h-4 w-4",
-                        value === category.id ? "opacity-100" : "opacity-0"
+                        'mr-2 h-4 w-4',
+                        value === category.id ? 'opacity-100' : 'opacity-0',
                       )}
                     />
                     {category.name}
@@ -133,7 +145,7 @@ export function CategoryCombobox({
                 >
                   <Plus className="mr-2 h-4 w-4" />
                   {createCategoryMutation.isPending
-                    ? "Oluşturuluyor..."
+                    ? 'Oluşturuluyor...'
                     : `"${search}" kategorisini oluştur`}
                 </CommandItem>
               </CommandGroup>
@@ -142,5 +154,5 @@ export function CategoryCombobox({
         </Command>
       </PopoverContent>
     </Popover>
-  );
+  )
 }

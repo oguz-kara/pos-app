@@ -4,12 +4,15 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 
 /**
- * App Layout (No Authentication Required)
+ * App Layout (Protected by Middleware)
  *
  * Provides the main application shell with:
  * - Collapsible sidebar navigation (icon mode by default)
  * - Full-width content area with SidebarInset
- * - No authentication checks
+ *
+ * Authentication: Routes under /app are protected by Next.js middleware
+ * Unauthenticated users are automatically redirected to /login
+ * See: /middleware.ts
  */
 export default function AppLayout({
   children,

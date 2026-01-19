@@ -43,6 +43,8 @@ export default function ProductsPage() {
       id: p.id!,
       name: p.name!,
       barcode: p.barcode ?? null,
+      sku: p.sku ?? null,
+      brand: p.brand ?? null,
       sellingPrice: String(p.sellingPrice!),
       totalStock: p.totalStock ?? undefined,
     }));
@@ -51,6 +53,8 @@ export default function ProductsPage() {
     id: string;
     name: string;
     barcode: string | null;
+    sku: string | null;
+    brand: string | null;
     sellingPrice: string;
     totalStock?: number;
   }) => {

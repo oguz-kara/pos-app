@@ -1,6 +1,6 @@
-import { auth } from "@/lib/auth";
-import { LoginForm } from "./login-form";
-import { RedirectMessage } from "./redirect-message";
+import { auth } from '@/lib/auth'
+import { LoginForm } from './login-form'
+import { RedirectMessage } from './redirect-message'
 
 /**
  * Login Page - Server Component
@@ -14,13 +14,13 @@ import { RedirectMessage } from "./redirect-message";
  */
 export default async function LoginPage() {
   // Server-side session check (no client JS needed)
-  const session = await auth();
+  const session = await auth()
 
   // If user is already logged in, show redirect message
   if (session) {
-    return <RedirectMessage email={session.email} />;
+    return <RedirectMessage email={session.email} />
   }
 
   // Show login form for unauthenticated users
-  return <LoginForm />;
+  return <LoginForm />
 }

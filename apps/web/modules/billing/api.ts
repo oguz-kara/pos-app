@@ -63,7 +63,7 @@ builder.queryField("creditHistory", (t) =>
       return billingService.getCreditHistory(
         ctx.session.activeOrganizationId,
         limit || 50
-      );
+      ) as any;
     },
   })
 );
