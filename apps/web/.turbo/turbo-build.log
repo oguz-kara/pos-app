@@ -1,0 +1,139 @@
+
+> @jetframe/web@0.1.0 build /Users/bussss/projects/pos-app/apps/web
+> cd ../../packages/db && pnpm db:push && cd ../../apps/web && next build
+
+
+> @jetframe/db@0.1.0 db:push /Users/bussss/projects/pos-app/packages/db
+> drizzle-kit push
+
+No config path provided, using default 'drizzle.config.ts'
+Reading config file '/Users/bussss/projects/pos-app/packages/db/drizzle.config.ts'
+[dotenv@17.2.3] injecting env (13) from ../../apps/web/.env -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
+Using 'postgres' driver for database querying
+[⣷] Pulling schema from database...
+[2K[1G[⣯] Pulling schema from database...
+[2K[1G[⣟] Pulling schema from database...
+[2K[1G[⡿] Pulling schema from database...
+[2K[1G[⢿] Pulling schema from database...
+[2K[1G[⣻] Pulling schema from database...
+[2K[1G[⣽] Pulling schema from database...
+[2K[1G[⣷] Pulling schema from database...
+[2K[1G[⣯] Pulling schema from database...
+[2K[1G[⣟] Pulling schema from database...
+[2K[1G[⡿] Pulling schema from database...
+[2K[1G[⢿] Pulling schema from database...
+[2K[1G[⣻] Pulling schema from database...
+[2K[1G[⣽] Pulling schema from database...
+[2K[1G[⣷] Pulling schema from database...
+[2K[1G[⣯] Pulling schema from database...
+[2K[1G[⣟] Pulling schema from database...
+[2K[1G[⡿] Pulling schema from database...
+[2K[1G[⢿] Pulling schema from database...
+[2K[1G[⣻] Pulling schema from database...
+[2K[1G[⣽] Pulling schema from database...
+[2K[1G[✓] Pulling schema from database...
+[i] No changes detected
+   ▲ Next.js 16.0.7 (Turbopack)
+   - Environments: .env
+   - Experiments (use with caution):
+     · clientTraceMetadata
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 23.9s
+   Running next.config.js provided runAfterProductionCompile ...
+ ✓ Completed runAfterProductionCompile in 3219ms
+   Running TypeScript ...
+   Collecting page data using 7 workers ...
+[dotenv@17.2.3] injecting env (0) from ../../../../../../ROOT/apps/web/.env -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
+[dotenv@17.2.3] injecting env (0) from ../../../../../../ROOT/apps/web/.env -- tip: 🔐 prevent building .env in docker: https://dotenvx.com/prebuild
+[dotenv@17.2.3] injecting env (0) from ../../../../../../ROOT/apps/web/.env -- tip: ⚙️  suppress all logs with { quiet: true }
+[dotenv@17.2.3] injecting env (0) from ../../../../../../ROOT/apps/web/.env -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
+[dotenv@17.2.3] injecting env (0) from ../../../../../../ROOT/apps/web/.env -- tip: 🔐 prevent committing .env to code: https://dotenvx.com/precommit
+[dotenv@17.2.3] injecting env (0) from ../../../../../../ROOT/apps/web/.env -- tip: ⚙️  override existing env vars with { override: true }
+[dotenv@17.2.3] injecting env (0) from ../../../../../../ROOT/apps/web/.env -- tip: ⚙️  override existing env vars with { override: true }
+[dotenv@17.2.3] injecting env (0) from ../../../../../../ROOT/apps/web/.env -- tip: ✅ audit secrets and track compliance: https://dotenvx.com/ops
+   Generating static pages using 7 workers (0/25) ...
+   Generating static pages using 7 workers (6/25) 
+{
+  cashSalesData: undefined,
+  cardSalesData: undefined,
+  refundsData: undefined
+}
+   Generating static pages using 7 workers (12/25) 
+[dotenv@17.2.3] injecting env (0) from ../../../../../../ROOT/apps/web/.env -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
+   Generating static pages using 7 workers (18/25) 
+[dotenv@17.2.3] injecting env (0) from ../../../../../../ROOT/apps/web/.env -- tip: ⚙️  specify custom .env file path with { path: '/custom/path/.env' }
+Error getting session: Error: Dynamic server usage: Route /login couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at x (.next/server/chunks/ssr/_54b7dcf8._.js:2:11804)
+    at m (.next/server/chunks/ssr/_54b7dcf8._.js:5:12735)
+    at jA (.next/server/chunks/ssr/_54b7dcf8._.js:395:77427)
+    at f (.next/server/chunks/ssr/[root-of-the-server]__b0f7afb9._.js:2:4084)
+    at stringify (<anonymous>) {
+  description: "Route /login couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+Error getting session: Error: Dynamic server usage: Route / couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at x (.next/server/chunks/ssr/_54b7dcf8._.js:2:11804)
+    at m (.next/server/chunks/ssr/_54b7dcf8._.js:5:12735)
+    at jA (.next/server/chunks/ssr/_54b7dcf8._.js:395:77427)
+    at h (.next/server/chunks/ssr/_0163b0ca._.js:2:32174)
+    at stringify (<anonymous>) {
+  description: "Route / couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+Error getting session: Error: Dynamic server usage: Route /pricing couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at x (.next/server/chunks/ssr/_54b7dcf8._.js:2:11804)
+    at m (.next/server/chunks/ssr/_54b7dcf8._.js:5:12735)
+    at jA (.next/server/chunks/ssr/_54b7dcf8._.js:395:77427)
+    at i (.next/server/chunks/ssr/[root-of-the-server]__cc373825._.js:2:6193)
+    at stringify (<anonymous>) {
+  description: "Route /pricing couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+Error getting session: Error: Dynamic server usage: Route /pricing couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at x (.next/server/chunks/ssr/_54b7dcf8._.js:2:11804)
+    at m (.next/server/chunks/ssr/_54b7dcf8._.js:5:12735)
+    at jA (.next/server/chunks/ssr/_54b7dcf8._.js:395:77427)
+    at h (.next/server/chunks/ssr/_0163b0ca._.js:2:32174)
+    at stringify (<anonymous>) {
+  description: "Route /pricing couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+ ✓ Generating static pages using 7 workers (25/25) in 1291.7ms
+   Finalizing page optimization ...
+
+Route (app)
+┌ ƒ /
+├ ○ /_not-found
+├ ○ /admin
+├ ○ /admin/monitoring
+├ ○ /admin/organizations
+├ ○ /admin/users
+├ ƒ /api/ai/chat
+├ ƒ /api/auth/[...all]
+├ ƒ /api/graphql
+├ ƒ /api/inngest
+├ ƒ /api/webhooks/stripe
+├ ○ /billing
+├ ○ /billing/success
+├ ○ /dashboard
+├ ƒ /login
+├ ○ /pos
+├ ○ /pos/categories
+├ ○ /pos/dashboard
+├ ○ /pos/products
+├ ƒ /pos/products/[id]
+├ ƒ /pos/products/[id]/edit
+├ ○ /pos/products/new
+├ ○ /pos/sales
+├ ƒ /pos/sales/[id]
+├ ○ /pos/stock
+├ ○ /pos/stock/entry
+└ ƒ /pricing
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

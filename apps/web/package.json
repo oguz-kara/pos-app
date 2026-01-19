@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbo --port 3000",
-    "build": "cd ../../packages/db && pnpm db:push && cd ../../apps/web && pnpm schema:generate && pnpm graphql:generate && next build",
+    "build": "cd ../../packages/db && pnpm db:push && cd ../../apps/web && next build",
     "start": "next start --port 3000",
     "lint": "next lint",
     "schema:generate": "tsx scripts/generate-schema.ts",

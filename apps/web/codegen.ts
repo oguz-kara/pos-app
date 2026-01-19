@@ -9,6 +9,7 @@ const config: CodegenConfig = {
   // Use generated schema file instead of introspection
   schema: './lib/graphql/schema.graphql',
   documents: ['modules/**/graphql/documents/**/*.{ts,graphql}'],
+  ignoreNoDocuments: true,
   generates: {
     './lib/graphql/generated.ts': {
       plugins: [
@@ -16,7 +17,10 @@ const config: CodegenConfig = {
         'typescript-operations',
         'typescript-react-query'
       ],
+      skipDocumentsValidation: true,
       config: {
+        skipTypename: false,
+        skipDocumentsValidation: true,
         fetcher: {
           endpoint: graphqlEndpoint,
           fetchParams: {

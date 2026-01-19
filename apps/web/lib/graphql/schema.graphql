@@ -1,0 +1,679 @@
+input AddStockBulkInput {
+  invoiceRef: String
+  items: [AddStockLotInput!]!
+}
+
+input AddStockLotInput {
+  costPrice: Float!
+  notes: String
+  productId: String!
+  purchasedAt: DateTime
+  quantity: Int!
+  supplierId: String
+}
+
+type AdminOrganization {
+  createdAt: DateTime
+  creditBalance: Int
+  id: ID
+  memberCount: Int
+  name: String
+  planId: String
+  slug: String
+  subscriptionStatus: String
+}
+
+type AdminUser {
+  createdAt: DateTime
+  email: String
+  emailVerified: Boolean
+  id: ID
+  name: String
+
+  """Number of organizations this user belongs to"""
+  organizationCount: Int
+}
+
+input AttachProductImageInput {
+  fileId: String!
+  isPrimary: Boolean
+  productId: String!
+}
+
+type BaseError {
+  code: String
+  message: String
+}
+
+type BillingPlan {
+  """Monthly credit grant for hybrid billing"""
+  creditsPerMonth: Int
+  description: String
+  features: [String!]
+  id: ID
+  name: String
+
+  """Monthly price in dollars"""
+  priceMonthly: Int
+
+  """Yearly price in dollars"""
+  priceYearly: Int
+}
+
+type Category {
+  createdAt: DateTime
+  id: ID
+  name: String
+  organizationId: String
+}
+
+type CheckoutResult {
+  """Stripe checkout session ID"""
+  sessionId: String
+
+  """Stripe checkout URL to redirect user to"""
+  url: String
+}
+
+input ConfirmUploadInput {
+  fileId: String!
+  metadata: JSON
+  size: Int!
+}
+
+input CreateCategoryInput {
+  name: String!
+}
+
+input CreateProductInput {
+  barcode: String
+  brand: String
+  categoryId: String
+  description: String
+  name: String!
+  searchName: String
+  sellingPrice: Float!
+  sku: String
+}
+
+input CreateSaleInput {
+  items: [CreateSaleItemInput!]!
+  notes: String
+  paymentMethod: String!
+}
+
+input CreateSaleItemInput {
+  productId: String!
+  quantity: Int!
+  unitPrice: Float!
+}
+
+input CreateSupplierInput {
+  address: String
+  contactPerson: String
+  email: String
+  name: String!
+  notes: String
+  phone: String
+}
+
+type CreditAdjustmentResult {
+  adjustmentAmount: Int
+  newBalance: Int
+  organizationId: ID
+  previousBalance: Int
+  reason: String
+}
+
+type CreditBalance {
+  """Current credit balance"""
+  balance: Int
+
+  """Whether subscription is scheduled to cancel at period end"""
+  cancelAtPeriodEnd: Boolean
+
+  """End date of current billing period"""
+  currentPeriodEnd: DateTime
+
+  """Current subscription plan ID"""
+  planId: String
+
+  """Date when canceled subscription will actually end"""
+  subscriptionEndDate: DateTime
+
+  """Subscription status (active, canceled, etc.)"""
+  subscriptionStatus: String
+}
+
+type CreditPack {
+  credits: Int
+  id: ID
+  name: String
+
+  """Price in dollars"""
+  price: Int
+}
+
+type CreditTransaction {
+  """Credit amount (positive for additions, negative for usage)"""
+  amount: Int
+
+  """Credit balance after this transaction"""
+  balanceAfter: Int
+  createdAt: DateTime
+  description: String
+  id: ID
+  metadata: JSON
+
+  """
+  Transaction type: purchase, usage, refund, adjustment, subscription_grant
+  """
+  type: String
+}
+
+type CustomerPortalResult {
+  """Stripe customer portal URL"""
+  url: String
+}
+
+type DailyReport {
+  cardSales: String
+  cashCounted: String
+  cashSales: String
+  cashVariance: String
+  createdAt: DateTime
+  grossProfit: String
+  id: ID
+  notes: String
+  organizationId: String
+  reportDate: DateTime
+  reportEndTime: DateTime
+  reportStartTime: DateTime
+  totalCost: String
+  totalRefunds: String
+  totalSales: String
+}
+
+type DashboardStats {
+  """New user signups in the last 7 days"""
+  recentSignups: Int
+  totalOrganizations: Int
+  totalUsers: Int
+}
+
+"""
+A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar DateTime
+
+input DeleteFileInput {
+  fileId: String!
+}
+
+input DetachProductImageInput {
+  fileId: String!
+  productId: String!
+}
+
+type ExistingFile {
+  filename: String
+  id: String
+  url: String
+}
+
+"""Uploaded file metadata"""
+type File {
+  contentType: String
+  createdAt: DateTime
+  fileHash: String
+  filename: String
+  id: ID
+  key: String
+  metadata: JSON
+  organizationId: String
+  size: Int
+  updatedAt: DateTime
+  url: String
+  userId: String
+}
+
+type FileUsage {
+  inUse: Boolean
+  productCount: Int
+}
+
+input GenerateDailyReportInput {
+  cashCounted: Float
+  notes: String
+}
+
+input GenerateUploadUrlInput {
+  contentType: String!
+  fileHash: String
+  filename: String!
+}
+
+input GetSignedUrlInput {
+  expiresIn: Int = 3600
+  fileId: String!
+}
+
+type HealthStatus {
+  database: ServiceHealth
+  email: ServiceHealth
+  resend: ServiceHealth
+  stripe: ServiceHealth
+}
+
+"""
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSON
+
+input ListFilesInput {
+  limit: Int = 20
+  offset: Int = 0
+  search: String
+}
+
+"""Paginated list of files with metadata"""
+type ListFilesResponse {
+  files: [File!]
+  hasMore: Boolean
+  total: Int
+}
+
+type LowStockItem {
+  barcode: String
+  currentStock: Int
+  productId: ID
+  productName: String
+}
+
+enum MemberRole {
+  admin
+  member
+  owner
+}
+
+type Mutation {
+  adminAdjustCredits(amount: Int!, organizationId: String!, reason: String!): CreditAdjustmentResult
+  confirmUpload(input: ConfirmUploadInput!): File
+  createCategory(input: CreateCategoryInput!): Category
+  createCheckout(interval: String, planId: String!): CheckoutResult
+  createCreditCheckout(packId: String!): CheckoutResult
+  createCustomerPortal: CustomerPortalResult
+  deleteCategory(id: String!): Boolean
+  deleteFile(input: DeleteFileInput!): Boolean
+  generateUploadUrl(input: GenerateUploadUrlInput!): PresignedUploadUrl
+  getSignedUrl(input: GetSignedUrlInput!): SignedUrl
+  markAllNotificationsRead: Boolean
+  markNotificationRead(notificationId: String!): Notification
+  updateCategory(id: String!, input: UpdateCategoryInput!): Category
+  uploadFile(input: UploadFileInput!): File
+}
+
+type Notification {
+  createdAt: DateTime
+  id: ID
+  link: String
+  message: String
+  organizationId: String
+  read: Boolean
+  readAt: DateTime
+  title: String
+  type: String
+  userId: String
+}
+
+type Organization {
+  id: ID
+  logo: String
+  name: String
+  role: String
+  slug: String
+}
+
+type PaginatedOrganizations {
+  hasMore: Boolean
+  organizations: [AdminOrganization!]
+  page: Int
+  pageSize: Int
+  total: Int
+}
+
+type PaginatedUsers {
+  hasMore: Boolean
+  page: Int
+  pageSize: Int
+  total: Int
+  users: [AdminUser!]
+}
+
+type PartialFile {
+  contentType: String
+  createdAt: DateTime
+  fileHash: String
+  filename: String
+  id: ID
+  size: Int
+  url: String
+}
+
+type PartialProduct {
+  barcode: String
+  categoryId: String
+  createdAt: DateTime
+  id: ID
+  isActive: Boolean
+  name: String
+  organizationId: String
+  sellingPrice: String
+  updatedAt: DateTime
+}
+
+"""Presigned URL for client-side file upload"""
+type PresignedUploadUrl {
+  existingFile: ExistingFile
+  fileId: String
+  isDuplicate: Boolean
+  key: String
+  publicUrl: String
+  uploadUrl: String
+}
+
+type Product {
+  barcode: String
+  brand: String
+  category: Category
+  categoryId: String
+  createdAt: DateTime
+  description: String
+  id: ID
+  isActive: Boolean
+  name: String
+  organizationId: String
+  searchName: String
+  sellingPrice: String
+  sku: String
+  updatedAt: DateTime
+}
+
+type ProductAnalytics {
+  averageSalePrice: Float
+  firstSaleDate: DateTime
+  grossProfit: Float
+  lastSaleDate: DateTime
+  profitMargin: Float
+  refundRate: Float
+  refundedUnits: Int
+  totalCost: Float
+  totalRevenue: Float
+  totalUnitsSold: Int
+  transactionCount: Int
+}
+
+type ProductImage {
+  createdAt: DateTime
+  displayOrder: Int
+  file: PartialFile
+  fileId: String
+  id: ID
+  isPrimary: Boolean
+  productId: String
+  updatedAt: DateTime
+}
+
+type ProductSalesHistoryItem {
+  createdAt: DateTime
+  paymentMethod: String
+  quantity: Int
+  receiptNo: String
+  saleId: String
+  saleType: String
+  subtotal: String
+  unitCost: String
+  unitPrice: String
+}
+
+type ProductSalesTrendItem {
+  cost: Float
+  date: String
+  profit: Float
+  revenue: Float
+  unitsSold: Int
+}
+
+type ProductWithStock {
+  averageCost: Float
+  barcode: String
+  brand: String
+  category: Category
+  categoryId: String
+  createdAt: DateTime
+  description: String
+  id: ID
+  isActive: Boolean
+  name: String
+  organizationId: String
+  searchName: String
+  sellingPrice: String
+  sku: String
+  totalStock: Int
+  updatedAt: DateTime
+}
+
+type Query {
+  adminDashboardStats: DashboardStats
+  adminOrganizations(page: Int = 1, pageSize: Int = 20, search: String): PaginatedOrganizations
+  adminSystemHealth: HealthStatus
+  adminUsers(page: Int = 1, pageSize: Int = 20, search: String): PaginatedUsers
+  billingPlans: [BillingPlan!]
+  categories: [Category!]
+  creditBalance: CreditBalance
+  creditHistory(limit: Int = 50): [CreditTransaction!]
+  creditPacks: [CreditPack!]
+  file(id: String!): File
+  files: [File!]
+  health: String
+  listFiles(input: ListFilesInput): ListFilesResponse
+  notifications(limit: Int = 50): [Notification!]
+  unreadNotificationCount: UnreadCount
+  userOrganizations: [Organization!]
+}
+
+input ReorderProductImagesInput {
+  imageIds: [String!]!
+  productId: String!
+}
+
+type Sale {
+  createdAt: DateTime
+  id: ID
+  notes: String
+  organizationId: String
+  originalSaleId: String
+  paymentMethod: String
+  receiptNo: String
+  totalAmount: String
+  totalCost: String
+  type: String
+}
+
+type SaleItem {
+  createdAt: DateTime
+  id: ID
+  product: PartialProduct
+  productId: String
+  quantity: Int
+  saleId: String
+  subtotal: String
+  unitCost: String
+  unitPrice: String
+}
+
+type SaleWithItems {
+  createdAt: DateTime
+  id: ID
+  items: [SaleItem!]
+  notes: String
+  organizationId: String
+  originalSaleId: String
+  paymentMethod: String
+  receiptNo: String
+  totalAmount: String
+  totalCost: String
+  type: String
+}
+
+type SalesSummary {
+  endDate: DateTime
+  salesCount: Int
+  startDate: DateTime
+  totalCost: Float
+  totalProfit: Float
+  totalRevenue: Float
+}
+
+type SalesTrendItem {
+  cost: Float
+  date: String
+  profit: Float
+  sales: Float
+}
+
+type ServiceHealth {
+  """Response time in milliseconds"""
+  latency: Int
+  message: String
+  status: ServiceHealthStatus
+}
+
+enum ServiceHealthStatus {
+  degraded
+  healthy
+  unhealthy
+}
+
+input SetPrimaryImageInput {
+  fileId: String!
+  productId: String!
+}
+
+"""Temporary signed URL for file access"""
+type SignedUrl {
+  expiresIn: Int
+  url: String
+}
+
+type StockInfo {
+  averageCost: Float
+  lots: [StockLot!]
+  productId: String
+  totalStock: Int
+}
+
+type StockLog {
+  createdAt: DateTime
+  id: ID
+  lotId: String
+  notes: String
+  organizationId: String
+  product: PartialProduct
+  productId: String
+  quantity: Int
+  referenceId: String
+  referenceType: String
+  type: String
+}
+
+type StockLot {
+  costPrice: String
+  createdAt: DateTime
+  id: ID
+  notes: String
+  organizationId: String
+  productId: String
+  purchasedAt: DateTime
+  quantity: Int
+  remaining: Int
+  supplier: String
+  supplierId: String
+}
+
+enum SubscriptionStatus {
+  active
+  canceled
+  incomplete
+  past_due
+  trialing
+}
+
+type Supplier {
+  address: String
+  contactPerson: String
+  createdAt: DateTime
+  email: String
+  id: ID
+  name: String
+  notes: String
+  organizationId: String
+  phone: String
+  updatedAt: DateTime
+}
+
+type TodaysPulse {
+  grossProfit: Float
+  totalCost: Float
+  totalRefunds: Float
+  totalSales: Float
+  transactionCount: Int
+}
+
+type TopProduct {
+  productId: ID
+  productName: String
+  quantitySold: Int
+  revenue: Float
+}
+
+type UnreadCount {
+  count: Int
+}
+
+input UpdateCategoryInput {
+  name: String
+}
+
+input UpdateProductInput {
+  barcode: String
+  brand: String
+  categoryId: String
+  description: String
+  isActive: Boolean
+  name: String
+  searchName: String
+  sellingPrice: Float
+  sku: String
+}
+
+input UpdateSupplierInput {
+  address: String
+  contactPerson: String
+  email: String
+  name: String
+  notes: String
+  phone: String
+}
+
+input UploadFileInput {
+  base64Data: String!
+  contentType: String!
+  filename: String!
+  size: Int!
+}
+
+enum UserRole {
+  admin
+  user
+}
