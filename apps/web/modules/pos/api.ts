@@ -846,11 +846,9 @@ export const ProductSalesTrendItemType = builder
 builder.queryField('categories', (t) =>
   t.field({
     type: [CategoryType],
-    authScopes: { member: true },
     resolve: async (_parent, _args, ctx: Context) => {
-      const orgId = ctx.organization?.id
-      if (!orgId) throw new Error('Organization context required')
-      return posService.listCategories(orgId)
+      if (!ctx.session) throw new Error('Not authenticated')
+      return posService.getCategories(ctx.session.activeOrganizationId)
     },
   }),
 )
@@ -858,12 +856,10 @@ builder.queryField('categories', (t) =>
 builder.mutationField('createCategory', (t) =>
   t.field({
     type: CategoryType,
-    authScopes: { member: true },
     args: { input: t.arg({ type: CreateCategoryInput, required: true }) },
     resolve: async (_parent, { input }, ctx: Context) => {
-      const orgId = ctx.organization?.id
-      if (!orgId) throw new Error('Organization context required')
-      return posService.createCategory(orgId, input)
+      if (!ctx.session) throw new Error('Not authenticated')
+      return posService.createCategory(ctx.session.activeOrganizationId, input)
     },
   }),
 )
@@ -871,27 +867,28 @@ builder.mutationField('createCategory', (t) =>
 builder.mutationField('updateCategory', (t) =>
   t.field({
     type: CategoryType,
-    authScopes: { member: true },
     args: {
       id: t.arg.string({ required: true }),
       input: t.arg({ type: UpdateCategoryInput, required: true }),
     },
     resolve: async (_parent, { id, input }, ctx: Context) => {
-      const orgId = ctx.organization?.id
-      if (!orgId) throw new Error('Organization context required')
-      return posService.updateCategory(orgId, id, input)
+      if (!ctx.session) throw new Error('Not authenticated')
+      // Filter out null values - convert to undefined for service layer
+      const cleanInput = {
+        ...input,
+        name: input.name ?? undefined,
+      }
+      return posService.updateCategory(ctx.session.activeOrganizationId, id, cleanInput)
     },
   }),
 )
 
 builder.mutationField('deleteCategory', (t) =>
   t.boolean({
-    authScopes: { member: true },
     args: { id: t.arg.string({ required: true }) },
     resolve: async (_parent, { id }, ctx: Context) => {
-      const orgId = ctx.organization?.id
-      if (!orgId) throw new Error('Organization context required')
-      await posService.deleteCategory(orgId, id)
+      if (!ctx.session) throw new Error('Not authenticated')
+      await posService.deleteCategory(ctx.session.activeOrganizationId, id)
       return true
     },
   }),
