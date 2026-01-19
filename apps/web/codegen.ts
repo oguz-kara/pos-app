@@ -1,7 +1,13 @@
 import type { CodegenConfig } from '@graphql-codegen/cli';
 
+// Use environment variable or fallback to localhost
+const graphqlEndpoint = process.env.NEXT_PUBLIC_APP_URL
+  ? `${process.env.NEXT_PUBLIC_APP_URL}/api/graphql`
+  : 'http://localhost:3000/api/graphql';
+
 const config: CodegenConfig = {
-  schema: 'http://localhost:3000/api/graphql',
+  // Use generated schema file instead of introspection
+  schema: './lib/graphql/schema.graphql',
   documents: ['modules/**/graphql/documents/**/*.{ts,graphql}'],
   generates: {
     './lib/graphql/generated.ts': {
@@ -12,7 +18,7 @@ const config: CodegenConfig = {
       ],
       config: {
         fetcher: {
-          endpoint: 'http://localhost:3000/api/graphql',
+          endpoint: graphqlEndpoint,
           fetchParams: {
             headers: {
               'Content-Type': 'application/json',

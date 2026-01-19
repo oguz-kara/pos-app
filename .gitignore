@@ -1,1 +1,5 @@
 node_modules
+
+# Generated GraphQL types and schema (regenerated during build)
+apps/web/lib/graphql/generated.ts
+apps/web/lib/graphql/schema.graphql
