@@ -17,7 +17,8 @@
   "scripts": {
     "db:generate": "drizzle-kit generate",
     "db:push": "drizzle-kit push",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "db:migrate": "tsx migrate.ts"
   },
   "dependencies": {
     "dotenv": "^17.2.3",
@@ -28,6 +29,7 @@
   "devDependencies": {
     "@types/node": "^22.0.0",
     "drizzle-kit": "^0.28.1",
+    "tsx": "^4.19.2",
     "typescript": "^5.6.0"
   }
 }
