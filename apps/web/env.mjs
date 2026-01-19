@@ -15,7 +15,7 @@ export const env = createEnv({
 
     // Auth
     BETTER_AUTH_SECRET: z.string().min(32),
-    BETTER_AUTH_URL: z.string().url().optional(),
+    BETTER_AUTH_URL: z.string().url(),
 
     // OAuth Providers
     GOOGLE_CLIENT_ID: z.string().optional(),

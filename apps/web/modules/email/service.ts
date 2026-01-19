@@ -15,7 +15,7 @@ import { createEmailProvider } from "@jetframe/email";
 import { MagicLinkEmail, WelcomeEmail } from "@jetframe/email";
 import { EmailSendError } from "@/modules/shared/errors";
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL!;
 
 /**
  * Send magic link email for passwordless authentication
