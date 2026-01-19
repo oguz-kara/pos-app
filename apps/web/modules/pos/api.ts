@@ -1,4 +1,6 @@
 import { builder } from '@/lib/graphql/builder'
+import type { Context } from '@/lib/graphql/context'
+import * as posService from './service'
 
 /**
  * POS GraphQL Schema
@@ -835,3 +837,62 @@ export const ProductSalesTrendItemType = builder
       profit: t.exposeFloat('profit'),
     }),
   })
+
+// ========================================
+// QUERIES & MUTATIONS
+// ========================================
+
+// Categories
+builder.queryField('categories', (t) =>
+  t.field({
+    type: [CategoryType],
+    authScopes: { member: true },
+    resolve: async (_parent, _args, ctx: Context) => {
+      const orgId = ctx.organization?.id
+      if (!orgId) throw new Error('Organization context required')
+      return posService.listCategories(orgId)
+    },
+  }),
+)
+
+builder.mutationField('createCategory', (t) =>
+  t.field({
+    type: CategoryType,
+    authScopes: { member: true },
+    args: { input: t.arg({ type: CreateCategoryInput, required: true }) },
+    resolve: async (_parent, { input }, ctx: Context) => {
+      const orgId = ctx.organization?.id
+      if (!orgId) throw new Error('Organization context required')
+      return posService.createCategory(orgId, input)
+    },
+  }),
+)
+
+builder.mutationField('updateCategory', (t) =>
+  t.field({
+    type: CategoryType,
+    authScopes: { member: true },
+    args: {
+      id: t.arg.string({ required: true }),
+      input: t.arg({ type: UpdateCategoryInput, required: true }),
+    },
+    resolve: async (_parent, { id, input }, ctx: Context) => {
+      const orgId = ctx.organization?.id
+      if (!orgId) throw new Error('Organization context required')
+      return posService.updateCategory(orgId, id, input)
+    },
+  }),
+)
+
+builder.mutationField('deleteCategory', (t) =>
+  t.boolean({
+    authScopes: { member: true },
+    args: { id: t.arg.string({ required: true }) },
+    resolve: async (_parent, { id }, ctx: Context) => {
+      const orgId = ctx.organization?.id
+      if (!orgId) throw new Error('Organization context required')
+      await posService.deleteCategory(orgId, id)
+      return true
+    },
+  }),
+)
