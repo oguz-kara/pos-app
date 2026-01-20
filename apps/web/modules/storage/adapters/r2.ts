@@ -62,6 +62,11 @@ export class R2Adapter implements StorageProvider {
           Body: params.file,
           ContentType: params.contentType,
           Metadata: params.metadata,
+          /**
+           * Note: R2 does NOT support S3 ACLs (public-read, etc.)
+           * Public access must be configured at the bucket level in Cloudflare dashboard
+           * See docs/R2_PUBLIC_ACCESS_SETUP.md for instructions
+           */
         }),
       )
 
@@ -118,6 +123,11 @@ export class R2Adapter implements StorageProvider {
         Bucket: this.bucket,
         Key: params.key,
         ContentType: params.contentType,
+        /**
+         * Note: R2 does NOT support S3 ACLs (public-read, etc.)
+         * Public access must be configured at the bucket level in Cloudflare dashboard
+         * See docs/R2_PUBLIC_ACCESS_SETUP.md for instructions
+         */
       })
       return await getSignedUrl(this.client, command, {
         expiresIn: params.expiresIn || 3600,
