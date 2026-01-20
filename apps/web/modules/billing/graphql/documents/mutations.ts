@@ -5,7 +5,7 @@
  * These will be used to generate React Query hooks.
  */
 
-import { gql } from "graphql-request";
+import { gql } from 'graphql-request'
 
 export const CREATE_CHECKOUT = gql`
   mutation CreateCheckout($planId: String!, $interval: String) {
@@ -14,7 +14,7 @@ export const CREATE_CHECKOUT = gql`
       sessionId
     }
   }
-`;
+`
 
 export const CREATE_CREDIT_CHECKOUT = gql`
   mutation CreateCreditCheckout($packId: String!) {
@@ -23,7 +23,7 @@ export const CREATE_CREDIT_CHECKOUT = gql`
       sessionId
     }
   }
-`;
+`
 
 export const CREATE_CUSTOMER_PORTAL = gql`
   mutation CreateCustomerPortal {
@@ -31,4 +31,4 @@ export const CREATE_CUSTOMER_PORTAL = gql`
       url
     }
   }
-`;
+`

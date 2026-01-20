@@ -297,19 +297,34 @@ enum MemberRole {
 }
 
 type Mutation {
+  addStockBulk(input: AddStockBulkInput!): [StockLot!]
+  addStockLot(input: AddStockLotInput!): StockLot
   adminAdjustCredits(amount: Int!, organizationId: String!, reason: String!): CreditAdjustmentResult
+  attachProductImage(input: AttachProductImageInput!): ProductImage
   confirmUpload(input: ConfirmUploadInput!): File
   createCategory(input: CreateCategoryInput!): Category
   createCheckout(interval: String, planId: String!): CheckoutResult
   createCreditCheckout(packId: String!): CheckoutResult
   createCustomerPortal: CustomerPortalResult
+  createProduct(input: CreateProductInput!): Product
+  createSale(input: CreateSaleInput!): SaleWithItems
+  createSupplier(input: CreateSupplierInput!): Supplier
   deleteCategory(id: String!): Boolean
   deleteFile(input: DeleteFileInput!): Boolean
+  deleteProduct(id: String!): Boolean
+  deleteSupplier(id: String!): Boolean
+  detachProductImage(input: DetachProductImageInput!): Boolean
+  generateDailyReport(input: GenerateDailyReportInput!): DailyReport
   generateUploadUrl(input: GenerateUploadUrlInput!): PresignedUploadUrl
   getSignedUrl(input: GetSignedUrlInput!): SignedUrl
   markAllNotificationsRead: Boolean
   markNotificationRead(notificationId: String!): Notification
+  refundSaleItem(saleItemId: String!): Sale
+  reorderProductImages(input: ReorderProductImagesInput!): Boolean
+  setPrimaryImage(input: SetPrimaryImageInput!): Boolean
   updateCategory(id: String!, input: UpdateCategoryInput!): Category
+  updateProduct(id: String!, input: UpdateProductInput!): Product
+  updateSupplier(id: String!, input: UpdateSupplierInput!): Supplier
   uploadFile(input: UploadFileInput!): File
 }
 
@@ -473,11 +488,35 @@ type Query {
   creditBalance: CreditBalance
   creditHistory(limit: Int = 50): [CreditTransaction!]
   creditPacks: [CreditPack!]
+  dailyReports(endDate: DateTime, limit: Int, startDate: DateTime): [DailyReport!]
+  dashboardLowStock(threshold: Int): [LowStockItem!]
   file(id: String!): File
+  fileUsage(fileId: String!): FileUsage
   files: [File!]
   health: String
   listFiles(input: ListFilesInput): ListFilesResponse
   notifications(limit: Int = 50): [Notification!]
+  product(id: String!): Product
+  productAnalytics(endDate: DateTime, productId: String!, startDate: DateTime): ProductAnalytics
+  productImages(productId: String!): [ProductImage!]
+  productSalesHistory(endDate: DateTime, limit: Int, productId: String!, startDate: DateTime): [ProductSalesHistoryItem!]
+  productSalesTrend(days: Int!, productId: String!): [ProductSalesTrendItem!]
+  productStock(productId: String!): StockInfo
+  productWithAnalytics(days: Int, productId: String!): Product
+  products(categoryId: String, isActive: Boolean, search: String): [Product!]
+  productsWithStock(categoryId: String, lowStockOnly: Boolean, search: String, threshold: Int): [ProductWithStock!]
+  sale(id: String!): SaleWithItems
+  salesHistory(endDate: DateTime, limit: Int, paymentMethod: String, startDate: DateTime, type: String): [SaleWithItems!]
+  salesTrend(days: Int): [SalesTrendItem!]
+  stockLogs(endDate: DateTime, limit: Int, productId: String, startDate: DateTime, type: String): [StockLog!]
+  stockLots(productId: String!): [StockLot!]
+  supplier(id: String!): Supplier
+  suppliers: [Supplier!]
+  todaysCardSales(endDate: DateTime!, startDate: DateTime!): SalesSummary
+  todaysCashSales(endDate: DateTime!, startDate: DateTime!): SalesSummary
+  todaysPulse: TodaysPulse
+  todaysRefunds(endDate: DateTime!, startDate: DateTime!): SalesSummary
+  topProducts(endDate: DateTime, limit: Int, startDate: DateTime): [TopProduct!]
   unreadNotificationCount: UnreadCount
   userOrganizations: [Organization!]
 }

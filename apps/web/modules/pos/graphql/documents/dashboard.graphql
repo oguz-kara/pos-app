@@ -27,7 +27,7 @@ query TopProducts($limit: Int, $startDate: DateTime, $endDate: DateTime) {
 }
 
 query DashboardLowStock($threshold: Int) {
-  lowStockProducts(threshold: $threshold) {
+  dashboardLowStock(threshold: $threshold) {
     productId
     productName
     currentStock

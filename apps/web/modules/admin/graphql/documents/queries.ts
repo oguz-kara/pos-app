@@ -1,4 +1,4 @@
-import { gql } from 'graphql-request';
+import { gql } from 'graphql-request'
 
 /**
  * Get all users (admin only)
@@ -20,7 +20,7 @@ export const GET_ADMIN_USERS = gql`
       hasMore
     }
   }
-`;
+`
 
 /**
  * Get all organizations (admin only)
@@ -44,7 +44,7 @@ export const GET_ADMIN_ORGANIZATIONS = gql`
       hasMore
     }
   }
-`;
+`
 
 /**
  * Get dashboard statistics (admin only)
@@ -57,7 +57,7 @@ export const GET_ADMIN_DASHBOARD_STATS = gql`
       recentSignups
     }
   }
-`;
+`
 
 /**
  * Get system health status (admin only)
@@ -87,4 +87,4 @@ export const GET_ADMIN_SYSTEM_HEALTH = gql`
       }
     }
   }
-`;
+`

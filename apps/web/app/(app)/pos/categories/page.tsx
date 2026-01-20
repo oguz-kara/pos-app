@@ -17,9 +17,9 @@ import { toast } from "sonner";
  */
 export default function CategoriesPage() {
   const { data, isLoading, refetch } = useCategoriesQuery();
-  const createCategory = useCreateCategoryMutation();
-  const updateCategory = useUpdateCategoryMutation();
-  const deleteCategory = useDeleteCategoryMutation();
+  const createCategoryMutation = useCreateCategoryMutation();
+  const updateCategoryMutation = useUpdateCategoryMutation();
+  const deleteCategoryMutation = useDeleteCategoryMutation();
 
   const categories = (data?.categories || [])
     .filter((c): c is NonNullable<typeof c> => c != null && c.id != null && c.name != null)
@@ -31,7 +31,7 @@ export default function CategoriesPage() {
 
   const handleCreate = async (formData: { name: string }) => {
     try {
-      await createCategory.mutateAsync({ input: formData });
+      await createCategoryMutation.mutateAsync({ input: formData });
       toast.success("Kategori oluşturuldu");
       refetch();
     } catch (error) {
@@ -42,7 +42,7 @@ export default function CategoriesPage() {
 
   const handleUpdate = async (id: string, formData: { name: string }) => {
     try {
-      await updateCategory.mutateAsync({ id, input: formData });
+      await updateCategoryMutation.mutateAsync({ id, input: formData });
       toast.success("Kategori güncellendi");
       refetch();
     } catch (error) {
@@ -53,7 +53,7 @@ export default function CategoriesPage() {
 
   const handleDelete = async (id: string) => {
     try {
-      await deleteCategory.mutateAsync({ id });
+      await deleteCategoryMutation.mutateAsync({ id });
       toast.success("Kategori silindi");
       refetch();
     } catch (error) {
@@ -77,6 +77,9 @@ export default function CategoriesPage() {
         onUpdateCategory={handleUpdate}
         onDeleteCategory={handleDelete}
         isLoading={isLoading}
+        isCreating={createCategoryMutation.isPending}
+        isUpdating={updateCategoryMutation.isPending}
+        isDeleting={deleteCategoryMutation.isPending}
       />
     </div>
   );

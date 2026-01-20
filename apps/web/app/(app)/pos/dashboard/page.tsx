@@ -54,7 +54,7 @@ export default function DashboardPage() {
   const pulse = pulseData?.todaysPulse;
   const salesTrend = trendData?.salesTrend || [];
   const topProducts = topProductsData?.topProducts || [];
-  const lowStockProducts = lowStockData?.lowStockProducts || [];
+  const lowStockProducts = lowStockData?.dashboardLowStock || [];
 
   // Format sales trend data for recharts
   const chartData = salesTrend

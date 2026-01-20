@@ -8,7 +8,7 @@
 
 No config path provided, using default 'drizzle.config.ts'
 Reading config file '/Users/bussss/projects/pos-app/packages/db/drizzle.config.ts'
-[dotenv@17.2.3] injecting env (13) from ../../apps/web/.env -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
+[dotenv@17.2.3] injecting env (13) from ../../apps/web/.env -- tip: 🔄 add secrets lifecycle management: https://dotenvx.com/ops
 Using 'postgres' driver for database querying
 [⣷] Pulling schema from database...
 [2K[1G[⣯] Pulling schema from database...
@@ -29,8 +29,6 @@ Using 'postgres' driver for database querying
 [2K[1G[⣟] Pulling schema from database...
 [2K[1G[⡿] Pulling schema from database...
 [2K[1G[⢿] Pulling schema from database...
-[2K[1G[⣻] Pulling schema from database...
-[2K[1G[⣽] Pulling schema from database...
 [2K[1G[✓] Pulling schema from database...
 [i] No changes detected
    ▲ Next.js 16.0.7 (Turbopack)
@@ -39,19 +37,18 @@ Using 'postgres' driver for database querying
      · clientTraceMetadata
 
    Creating an optimized production build ...
- ✓ Compiled successfully in 23.9s
+ ✓ Compiled successfully in 36.0s
    Running next.config.js provided runAfterProductionCompile ...
- ✓ Completed runAfterProductionCompile in 3219ms
+ ✓ Completed runAfterProductionCompile in 4161ms
    Running TypeScript ...
    Collecting page data using 7 workers ...
-[dotenv@17.2.3] injecting env (0) from ../../../../../../ROOT/apps/web/.env -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
+[dotenv@17.2.3] injecting env (0) from ../../../../../../ROOT/apps/web/.env -- tip: 👥 sync secrets across teammates & machines: https://dotenvx.com/ops
+[dotenv@17.2.3] injecting env (0) from ../../../../../../ROOT/apps/web/.env -- tip: ⚙️  write to custom object with { processEnv: myObject }
+[dotenv@17.2.3] injecting env (0) from ../../../../../../ROOT/apps/web/.env -- tip: ⚙️  write to custom object with { processEnv: myObject }
+[dotenv@17.2.3] injecting env (0) from ../../../../../../ROOT/apps/web/.env -- tip: 🔄 add secrets lifecycle management: https://dotenvx.com/ops
 [dotenv@17.2.3] injecting env (0) from ../../../../../../ROOT/apps/web/.env -- tip: 🔐 prevent building .env in docker: https://dotenvx.com/prebuild
-[dotenv@17.2.3] injecting env (0) from ../../../../../../ROOT/apps/web/.env -- tip: ⚙️  suppress all logs with { quiet: true }
-[dotenv@17.2.3] injecting env (0) from ../../../../../../ROOT/apps/web/.env -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
-[dotenv@17.2.3] injecting env (0) from ../../../../../../ROOT/apps/web/.env -- tip: 🔐 prevent committing .env to code: https://dotenvx.com/precommit
-[dotenv@17.2.3] injecting env (0) from ../../../../../../ROOT/apps/web/.env -- tip: ⚙️  override existing env vars with { override: true }
-[dotenv@17.2.3] injecting env (0) from ../../../../../../ROOT/apps/web/.env -- tip: ⚙️  override existing env vars with { override: true }
-[dotenv@17.2.3] injecting env (0) from ../../../../../../ROOT/apps/web/.env -- tip: ✅ audit secrets and track compliance: https://dotenvx.com/ops
+[dotenv@17.2.3] injecting env (0) from ../../../../../../ROOT/apps/web/.env -- tip: 🔐 prevent building .env in docker: https://dotenvx.com/prebuild
+[dotenv@17.2.3] injecting env (0) from ../../../../../../ROOT/apps/web/.env -- tip: ⚙️  enable debug logging with { debug: true }
    Generating static pages using 7 workers (0/25) ...
    Generating static pages using 7 workers (6/25) 
 {
@@ -60,9 +57,9 @@ Using 'postgres' driver for database querying
   refundsData: undefined
 }
    Generating static pages using 7 workers (12/25) 
-[dotenv@17.2.3] injecting env (0) from ../../../../../../ROOT/apps/web/.env -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
+[dotenv@17.2.3] injecting env (0) from ../../../../../../ROOT/apps/web/.env -- tip: 🔐 prevent committing .env to code: https://dotenvx.com/precommit
    Generating static pages using 7 workers (18/25) 
-[dotenv@17.2.3] injecting env (0) from ../../../../../../ROOT/apps/web/.env -- tip: ⚙️  specify custom .env file path with { path: '/custom/path/.env' }
+[dotenv@17.2.3] injecting env (0) from ../../../../../../ROOT/apps/web/.env -- tip: 🔐 prevent building .env in docker: https://dotenvx.com/prebuild
 Error getting session: Error: Dynamic server usage: Route /login couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
     at x (.next/server/chunks/ssr/_54b7dcf8._.js:2:11804)
     at m (.next/server/chunks/ssr/_54b7dcf8._.js:5:12735)
@@ -99,7 +96,7 @@ Error getting session: Error: Dynamic server usage: Route /pricing couldn't be r
   description: "Route /pricing couldn't be rendered statically because it used `headers`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
   digest: 'DYNAMIC_SERVER_USAGE'
 }
- ✓ Generating static pages using 7 workers (25/25) in 1291.7ms
+ ✓ Generating static pages using 7 workers (25/25) in 1573.3ms
    Finalizing page optimization ...
 
 Route (app)

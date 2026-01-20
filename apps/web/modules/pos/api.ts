@@ -893,3 +893,741 @@ builder.mutationField('deleteCategory', (t) =>
     },
   }),
 )
+
+// Products
+builder.queryField('products', (t) =>
+  t.field({
+    type: [ProductType],
+    args: {
+      categoryId: t.arg.string({ required: false }),
+      search: t.arg.string({ required: false }),
+      isActive: t.arg.boolean({ required: false }),
+    },
+    resolve: async (_parent, args, ctx: Context) => {
+      if (!ctx.session) throw new Error('Not authenticated')
+      return posService.getProducts(ctx.session.activeOrganizationId, {
+        categoryId: args.categoryId ?? undefined,
+        search: args.search ?? undefined,
+        isActive: args.isActive ?? undefined,
+      })
+    },
+  }),
+)
+
+builder.queryField('product', (t) =>
+  t.field({
+    type: ProductType,
+    args: { id: t.arg.string({ required: true }) },
+    resolve: async (_parent, { id }, ctx: Context) => {
+      if (!ctx.session) throw new Error('Not authenticated')
+      return posService.getProduct(ctx.session.activeOrganizationId, id)
+    },
+  }),
+)
+
+builder.queryField('productsWithStock', (t) =>
+  t.field({
+    type: [ProductWithStockType],
+    args: {
+      categoryId: t.arg.string({ required: false }),
+      search: t.arg.string({ required: false }),
+      lowStockOnly: t.arg.boolean({ required: false }),
+      threshold: t.arg.int({ required: false }),
+    },
+    resolve: async (_parent, args, ctx: Context) => {
+      if (!ctx.session) throw new Error('Not authenticated')
+      return posService.getProductsWithStock(ctx.session.activeOrganizationId, {
+        categoryId: args.categoryId ?? undefined,
+        search: args.search ?? undefined,
+        lowStockOnly: args.lowStockOnly ?? undefined,
+        threshold: args.threshold ?? undefined,
+      })
+    },
+  }),
+)
+
+builder.mutationField('createProduct', (t) =>
+  t.field({
+    type: ProductType,
+    args: { input: t.arg({ type: CreateProductInput, required: true }) },
+    resolve: async (_parent, { input }, ctx: Context) => {
+      if (!ctx.session) throw new Error('Not authenticated')
+      return posService.createProduct(ctx.session.activeOrganizationId, {
+        name: input.name,
+        searchName: input.searchName || undefined,
+        barcode: input.barcode || undefined,
+        sku: input.sku || undefined,
+        brand: input.brand || undefined,
+        description: input.description || undefined,
+        sellingPrice: input.sellingPrice.toString(),
+        categoryId: input.categoryId || undefined,
+      })
+    },
+  }),
+)
+
+builder.mutationField('updateProduct', (t) =>
+  t.field({
+    type: ProductType,
+    args: {
+      id: t.arg.string({ required: true }),
+      input: t.arg({ type: UpdateProductInput, required: true }),
+    },
+    resolve: async (_parent, { id, input }, ctx: Context) => {
+      if (!ctx.session) throw new Error('Not authenticated')
+      const updateData: Partial<{
+        name: string
+        searchName: string | undefined
+        barcode: string | undefined
+        sku: string | undefined
+        brand: string | undefined
+        description: string | undefined
+        sellingPrice: string
+        categoryId: string | undefined
+        isActive: boolean
+      }> = {}
+      if (input.name !== undefined && input.name !== null) updateData.name = input.name
+      if (input.searchName !== undefined) updateData.searchName = input.searchName || undefined
+      if (input.barcode !== undefined) updateData.barcode = input.barcode || undefined
+      if (input.sku !== undefined) updateData.sku = input.sku || undefined
+      if (input.brand !== undefined) updateData.brand = input.brand || undefined
+      if (input.description !== undefined) updateData.description = input.description || undefined
+      if (input.sellingPrice !== undefined && input.sellingPrice !== null) updateData.sellingPrice = input.sellingPrice.toString()
+      if (input.categoryId !== undefined) updateData.categoryId = input.categoryId || undefined
+      if (input.isActive !== undefined && input.isActive !== null) updateData.isActive = input.isActive
+      return posService.updateProduct(ctx.session.activeOrganizationId, id, updateData)
+    },
+  }),
+)
+
+builder.mutationField('deleteProduct', (t) =>
+  t.boolean({
+    args: { id: t.arg.string({ required: true }) },
+    resolve: async (_parent, { id }, ctx: Context) => {
+      if (!ctx.session) throw new Error('Not authenticated')
+      await posService.deleteProduct(ctx.session.activeOrganizationId, id)
+      return true
+    },
+  }),
+)
+
+// ========================================
+// STOCK QUERIES & MUTATIONS
+// ========================================
+
+builder.queryField('productStock', (t) =>
+  t.field({
+    type: StockInfoType,
+    args: { productId: t.arg.string({ required: true }) },
+    resolve: async (_parent, { productId }, ctx: Context) => {
+      if (!ctx.session) throw new Error('Not authenticated')
+      return posService.getProductStock(productId, ctx.session.activeOrganizationId)
+    },
+  }),
+)
+
+builder.queryField('stockLots', (t) =>
+  t.field({
+    type: [StockLotType],
+    args: { productId: t.arg.string({ required: true }) },
+    resolve: async (_parent, { productId }, ctx: Context) => {
+      if (!ctx.session) throw new Error('Not authenticated')
+      return posService.getStockLots(productId, ctx.session.activeOrganizationId)
+    },
+  }),
+)
+
+builder.queryField('stockLogs', (t) =>
+  t.field({
+    type: [StockLogType],
+    args: {
+      productId: t.arg.string({ required: false }),
+      type: t.arg.string({ required: false }),
+      startDate: t.arg({ type: 'DateTime', required: false }),
+      endDate: t.arg({ type: 'DateTime', required: false }),
+      limit: t.arg.int({ required: false }),
+    },
+    resolve: async (_parent, args, ctx: Context) => {
+      if (!ctx.session) throw new Error('Not authenticated')
+      return posService.getStockLogs(ctx.session.activeOrganizationId, {
+        productId: args.productId ?? undefined,
+        type: args.type ?? undefined,
+        startDate: args.startDate ?? undefined,
+        endDate: args.endDate ?? undefined,
+        limit: args.limit ?? undefined,
+      })
+    },
+  }),
+)
+
+builder.mutationField('addStockLot', (t) =>
+  t.field({
+    type: StockLotType,
+    args: { input: t.arg({ type: AddStockLotInput, required: true }) },
+    resolve: async (_parent, { input }, ctx: Context) => {
+      if (!ctx.session) throw new Error('Not authenticated')
+      return posService.addStockLot(ctx.session.activeOrganizationId, {
+        productId: input.productId,
+        quantity: input.quantity,
+        costPrice: input.costPrice.toString(),
+        purchasedAt: input.purchasedAt ?? new Date(),
+        supplierId: input.supplierId || undefined,
+        notes: input.notes || undefined,
+      })
+    },
+  }),
+)
+
+builder.mutationField('addStockBulk', (t) =>
+  t.field({
+    type: [StockLotType],
+    args: { input: t.arg({ type: AddStockBulkInput, required: true }) },
+    resolve: async (_parent, { input }, ctx: Context) => {
+      if (!ctx.session) throw new Error('Not authenticated')
+      return posService.addStockBulk(ctx.session.activeOrganizationId, {
+        items: input.items.map((item) => ({
+          productId: item.productId,
+          quantity: item.quantity,
+          costPrice: item.costPrice,
+          supplierId: item.supplierId ?? undefined,
+          notes: item.notes ?? undefined,
+          purchasedAt: item.purchasedAt ?? new Date(),
+        })),
+        invoiceRef: input.invoiceRef ?? undefined,
+      })
+    },
+  }),
+)
+
+// ========================================
+// SUPPLIER QUERIES & MUTATIONS
+// ========================================
+
+builder.queryField('suppliers', (t) =>
+  t.field({
+    type: [SupplierType],
+    resolve: async (_parent, _args, ctx: Context) => {
+      if (!ctx.session) throw new Error('Not authenticated')
+      return posService.getSuppliers(ctx.session.activeOrganizationId)
+    },
+  }),
+)
+
+builder.queryField('supplier', (t) =>
+  t.field({
+    type: SupplierType,
+    nullable: true,
+    args: { id: t.arg.string({ required: true }) },
+    resolve: async (_parent, { id }, ctx: Context) => {
+      if (!ctx.session) throw new Error('Not authenticated')
+      return posService.getSupplier(id, ctx.session.activeOrganizationId)
+    },
+  }),
+)
+
+builder.mutationField('createSupplier', (t) =>
+  t.field({
+    type: SupplierType,
+    args: { input: t.arg({ type: CreateSupplierInput, required: true }) },
+    resolve: async (_parent, { input }, ctx: Context) => {
+      if (!ctx.session) throw new Error('Not authenticated')
+      const data: {
+        name: string
+        contactPerson?: string
+        phone?: string
+        email?: string
+        address?: string
+        notes?: string
+      } = { name: input.name }
+      if (input.contactPerson) data.contactPerson = input.contactPerson
+      if (input.phone) data.phone = input.phone
+      if (input.email) data.email = input.email
+      if (input.address) data.address = input.address
+      if (input.notes) data.notes = input.notes
+      return posService.createSupplier(ctx.session.activeOrganizationId, data)
+    },
+  }),
+)
+
+builder.mutationField('updateSupplier', (t) =>
+  t.field({
+    type: SupplierType,
+    args: {
+      id: t.arg.string({ required: true }),
+      input: t.arg({ type: UpdateSupplierInput, required: true }),
+    },
+    resolve: async (_parent, { id, input }, ctx: Context) => {
+      if (!ctx.session) throw new Error('Not authenticated')
+      const data: Partial<{
+        name: string
+        contactPerson: string | null
+        phone: string | null
+        email: string | null
+        address: string | null
+        notes: string | null
+      }> = {}
+      if (input.name) data.name = input.name
+      if (input.contactPerson !== undefined) data.contactPerson = input.contactPerson
+      if (input.phone !== undefined) data.phone = input.phone
+      if (input.email !== undefined) data.email = input.email
+      if (input.address !== undefined) data.address = input.address
+      if (input.notes !== undefined) data.notes = input.notes
+      return posService.updateSupplier(id, ctx.session.activeOrganizationId, data)
+    },
+  }),
+)
+
+builder.mutationField('deleteSupplier', (t) =>
+  t.boolean({
+    args: { id: t.arg.string({ required: true }) },
+    resolve: async (_parent, { id }, ctx: Context) => {
+      if (!ctx.session) throw new Error('Not authenticated')
+      await posService.deleteSupplier(id, ctx.session.activeOrganizationId)
+      return true
+    },
+  }),
+)
+
+// ========================================
+// SALES QUERIES & MUTATIONS
+// ========================================
+
+builder.queryField('sale', (t) =>
+  t.field({
+    type: SaleWithItemsType,
+    nullable: true,
+    args: { id: t.arg.string({ required: true }) },
+    resolve: async (_parent, { id }, ctx: Context) => {
+      if (!ctx.session) throw new Error('Not authenticated')
+      const sale = await posService.getSale(id, ctx.session.activeOrganizationId)
+      if (!sale) return null
+      // Type assertion: service returns correct runtime shape, structural types don't fully align
+      return sale as unknown as typeof SaleWithItemsType.$inferType | null
+    },
+  }),
+)
+
+builder.queryField('salesHistory', (t) =>
+  t.field({
+    type: [SaleWithItemsType],
+    args: {
+      startDate: t.arg({ type: 'DateTime', required: false }),
+      endDate: t.arg({ type: 'DateTime', required: false }),
+      paymentMethod: t.arg.string({ required: false }),
+      type: t.arg.string({ required: false }),
+      limit: t.arg.int({ required: false }),
+    },
+    resolve: async (_parent, args, ctx: Context) => {
+      if (!ctx.session) throw new Error('Not authenticated')
+      const history = await posService.getSalesHistory(ctx.session.activeOrganizationId, {
+        startDate: args.startDate ?? undefined,
+        endDate: args.endDate ?? undefined,
+        paymentMethod: args.paymentMethod ?? undefined,
+        type: args.type ?? undefined,
+        limit: args.limit ?? undefined,
+      })
+      // Type assertion: service returns correct runtime shape, structural types don't fully align
+      return history as unknown as typeof SaleWithItemsType.$inferType[]
+    },
+  }),
+)
+
+builder.queryField('salesTrend', (t) =>
+  t.field({
+    type: [SalesTrendItemType],
+    args: { days: t.arg.int({ required: false }) },
+    resolve: async (_parent, { days }, ctx: Context) => {
+      if (!ctx.session) throw new Error('Not authenticated')
+      return posService.getSalesTrend(ctx.session.activeOrganizationId, days ?? 7)
+    },
+  }),
+)
+
+builder.mutationField('createSale', (t) =>
+  t.field({
+    type: SaleWithItemsType,
+    args: { input: t.arg({ type: CreateSaleInput, required: true }) },
+    resolve: async (_parent, { input }, ctx: Context) => {
+      if (!ctx.session) throw new Error('Not authenticated')
+      const sale = await posService.createSale(ctx.session.activeOrganizationId, {
+        items: input.items.map((item) => ({
+          productId: item.productId,
+          quantity: item.quantity,
+          unitPrice: item.unitPrice,
+        })),
+        paymentMethod: input.paymentMethod as 'cash' | 'card',
+        notes: input.notes ?? undefined,
+      })
+      // Type assertion: service returns correct runtime shape, structural types don't fully align
+      return sale as unknown as typeof SaleWithItemsType.$inferType
+    },
+  }),
+)
+
+builder.mutationField('refundSaleItem', (t) =>
+  t.field({
+    type: SaleType,
+    args: { saleItemId: t.arg.string({ required: true }) },
+    resolve: async (_parent, { saleItemId }, ctx: Context) => {
+      if (!ctx.session) throw new Error('Not authenticated')
+      const refund = await posService.processSaleRefund(ctx.session.activeOrganizationId, saleItemId)
+      // Type assertion: service returns correct runtime shape, structural types don't fully align
+      return refund as unknown as typeof SaleType.$inferType
+    },
+  }),
+)
+
+// ========================================
+// DASHBOARD & REPORTS
+// ========================================
+
+builder.queryField('todaysPulse', (t) =>
+  t.field({
+    type: TodaysPulseType,
+    resolve: async (_parent, _args, ctx: Context) => {
+      if (!ctx.session) throw new Error('Not authenticated')
+      return posService.getTodaysPulse(ctx.session.activeOrganizationId)
+    },
+  }),
+)
+
+builder.queryField('topProducts', (t) =>
+  t.field({
+    type: [TopProductType],
+    args: {
+      limit: t.arg.int({ required: false }),
+      startDate: t.arg({ type: 'DateTime', required: false }),
+      endDate: t.arg({ type: 'DateTime', required: false }),
+    },
+    resolve: async (_parent, args, ctx: Context) => {
+      if (!ctx.session) throw new Error('Not authenticated')
+      return posService.getTopProducts(
+        ctx.session.activeOrganizationId,
+        args.limit ?? 5,
+        args.startDate ?? undefined,
+        args.endDate ?? undefined,
+      )
+    },
+  }),
+)
+
+builder.queryField('dashboardLowStock', (t) =>
+  t.field({
+    type: [LowStockItemType],
+    args: { threshold: t.arg.int({ required: false }) },
+    resolve: async (_parent, { threshold }, ctx: Context) => {
+      if (!ctx.session) throw new Error('Not authenticated')
+      return posService.getLowStockProducts(ctx.session.activeOrganizationId, threshold ?? 10)
+    },
+  }),
+)
+
+builder.queryField('dailyReports', (t) =>
+  t.field({
+    type: [DailyReportType],
+    args: {
+      startDate: t.arg({ type: 'DateTime', required: false }),
+      endDate: t.arg({ type: 'DateTime', required: false }),
+      limit: t.arg.int({ required: false }),
+    },
+    resolve: async (_parent, args, ctx: Context) => {
+      if (!ctx.session) throw new Error('Not authenticated')
+      return posService.getDailyReports(ctx.session.activeOrganizationId, {
+        startDate: args.startDate ?? undefined,
+        endDate: args.endDate ?? undefined,
+        limit: args.limit ?? undefined,
+      })
+    },
+  }),
+)
+
+builder.mutationField('generateDailyReport', (t) =>
+  t.field({
+    type: DailyReportType,
+    args: { input: t.arg({ type: GenerateDailyReportInput, required: true }) },
+    resolve: async (_parent, { input }, ctx: Context) => {
+      if (!ctx.session) throw new Error('Not authenticated')
+      return posService.generateDailyReport(ctx.session.activeOrganizationId, {
+        cashCounted: input.cashCounted ?? undefined,
+        notes: input.notes ?? undefined,
+      })
+    },
+  }),
+)
+
+builder.queryField('todaysCashSales', (t) =>
+  t.field({
+    type: SalesSummaryType,
+    args: {
+      startDate: t.arg({ type: 'DateTime', required: true }),
+      endDate: t.arg({ type: 'DateTime', required: true }),
+    },
+    resolve: async (_parent, { startDate, endDate }, ctx: Context) => {
+      if (!ctx.session) throw new Error('Not authenticated')
+      const history = await posService.getSalesHistory(ctx.session.activeOrganizationId, {
+        startDate,
+        endDate,
+        paymentMethod: 'cash',
+        type: 'SALE',
+      })
+
+      let totalRevenue = 0
+      let totalCost = 0
+
+      for (const sale of history) {
+        totalRevenue += parseFloat(sale.totalAmount)
+        totalCost += parseFloat(sale.totalCost)
+      }
+
+      return {
+        totalRevenue,
+        totalCost,
+        totalProfit: totalRevenue - totalCost,
+        salesCount: history.length,
+        startDate,
+        endDate,
+      }
+    },
+  }),
+)
+
+builder.queryField('todaysCardSales', (t) =>
+  t.field({
+    type: SalesSummaryType,
+    args: {
+      startDate: t.arg({ type: 'DateTime', required: true }),
+      endDate: t.arg({ type: 'DateTime', required: true }),
+    },
+    resolve: async (_parent, { startDate, endDate }, ctx: Context) => {
+      if (!ctx.session) throw new Error('Not authenticated')
+      const history = await posService.getSalesHistory(ctx.session.activeOrganizationId, {
+        startDate,
+        endDate,
+        paymentMethod: 'card',
+        type: 'SALE',
+      })
+
+      let totalRevenue = 0
+      let totalCost = 0
+
+      for (const sale of history) {
+        totalRevenue += parseFloat(sale.totalAmount)
+        totalCost += parseFloat(sale.totalCost)
+      }
+
+      return {
+        totalRevenue,
+        totalCost,
+        totalProfit: totalRevenue - totalCost,
+        salesCount: history.length,
+        startDate,
+        endDate,
+      }
+    },
+  }),
+)
+
+builder.queryField('todaysRefunds', (t) =>
+  t.field({
+    type: SalesSummaryType,
+    args: {
+      startDate: t.arg({ type: 'DateTime', required: true }),
+      endDate: t.arg({ type: 'DateTime', required: true }),
+    },
+    resolve: async (_parent, { startDate, endDate }, ctx: Context) => {
+      if (!ctx.session) throw new Error('Not authenticated')
+      const history = await posService.getSalesHistory(ctx.session.activeOrganizationId, {
+        startDate,
+        endDate,
+        type: 'REFUND',
+      })
+
+      let totalRevenue = 0
+      let totalCost = 0
+
+      for (const sale of history) {
+        totalRevenue += Math.abs(parseFloat(sale.totalAmount))
+        totalCost += Math.abs(parseFloat(sale.totalCost))
+      }
+
+      return {
+        totalRevenue,
+        totalCost,
+        totalProfit: totalRevenue - totalCost,
+        salesCount: history.length,
+        startDate,
+        endDate,
+      }
+    },
+  }),
+)
+
+// ========================================
+// PRODUCT ANALYTICS
+// ========================================
+
+builder.queryField('productAnalytics', (t) =>
+  t.field({
+    type: ProductAnalyticsType,
+    args: {
+      productId: t.arg.string({ required: true }),
+      startDate: t.arg({ type: 'DateTime', required: false }),
+      endDate: t.arg({ type: 'DateTime', required: false }),
+    },
+    resolve: async (_parent, { productId, startDate, endDate }, ctx: Context) => {
+      if (!ctx.session) throw new Error('Not authenticated')
+      return posService.getProductAnalytics(productId, ctx.session.activeOrganizationId, {
+        startDate: startDate ?? undefined,
+        endDate: endDate ?? undefined,
+      })
+    },
+  }),
+)
+
+builder.queryField('productSalesHistory', (t) =>
+  t.field({
+    type: [ProductSalesHistoryItemType],
+    args: {
+      productId: t.arg.string({ required: true }),
+      startDate: t.arg({ type: 'DateTime', required: false }),
+      endDate: t.arg({ type: 'DateTime', required: false }),
+      limit: t.arg.int({ required: false }),
+    },
+    resolve: async (_parent, args, ctx: Context) => {
+      if (!ctx.session) throw new Error('Not authenticated')
+      return posService.getProductSalesHistory(
+        args.productId,
+        ctx.session.activeOrganizationId,
+        {
+          startDate: args.startDate ?? undefined,
+          endDate: args.endDate ?? undefined,
+          limit: args.limit ?? undefined,
+        },
+      )
+    },
+  }),
+)
+
+builder.queryField('productSalesTrend', (t) =>
+  t.field({
+    type: [ProductSalesTrendItemType],
+    args: {
+      productId: t.arg.string({ required: true }),
+      days: t.arg.int({ required: true }),
+    },
+    resolve: async (_parent, { productId, days }, ctx: Context) => {
+      if (!ctx.session) throw new Error('Not authenticated')
+      return posService.getProductSalesTrend(
+        productId,
+        ctx.session.activeOrganizationId,
+        days,
+      )
+    },
+  }),
+)
+
+builder.queryField('productWithAnalytics', (t) =>
+  t.field({
+    type: ProductType,
+    nullable: true,
+    args: {
+      productId: t.arg.string({ required: true }),
+      days: t.arg.int({ required: false }),
+    },
+    resolve: async (_parent, { productId }, ctx: Context) => {
+      if (!ctx.session) throw new Error('Not authenticated')
+      // This query is just a convenience wrapper that returns the product
+      // The client can call productAnalytics and productStock separately
+      return posService.getProduct(productId, ctx.session.activeOrganizationId)
+    },
+  }),
+)
+
+// ========================================
+// PRODUCT IMAGES
+// ========================================
+
+builder.queryField('productImages', (t) =>
+  t.field({
+    type: [ProductImageType],
+    args: { productId: t.arg.string({ required: true }) },
+    resolve: async (_parent, { productId }, ctx: Context) => {
+      if (!ctx.session) throw new Error('Not authenticated')
+      const { getProductImages } = await import('./services/asset-service')
+      return getProductImages(ctx.session.activeOrganizationId, productId)
+    },
+  }),
+)
+
+builder.mutationField('attachProductImage', (t) =>
+  t.field({
+    type: ProductImageType,
+    args: { input: t.arg({ type: AttachProductImageInput, required: true }) },
+    resolve: async (_parent, { input }, ctx: Context) => {
+      if (!ctx.session) throw new Error('Not authenticated')
+      const { attachImageToProduct } = await import('./services/asset-service')
+      return attachImageToProduct(ctx.session.activeOrganizationId, {
+        productId: input.productId,
+        fileId: input.fileId,
+        isPrimary: input.isPrimary ?? false,
+      })
+    },
+  }),
+)
+
+builder.mutationField('detachProductImage', (t) =>
+  t.boolean({
+    args: { input: t.arg({ type: DetachProductImageInput, required: true }) },
+    resolve: async (_parent, { input }, ctx: Context) => {
+      if (!ctx.session) throw new Error('Not authenticated')
+      const { detachImageFromProduct } = await import('./services/asset-service')
+      await detachImageFromProduct(ctx.session.activeOrganizationId, {
+        productId: input.productId,
+        fileId: input.fileId,
+      })
+      return true
+    },
+  }),
+)
+
+builder.mutationField('setPrimaryImage', (t) =>
+  t.boolean({
+    args: { input: t.arg({ type: SetPrimaryImageInput, required: true }) },
+    resolve: async (_parent, { input }, ctx: Context) => {
+      if (!ctx.session) throw new Error('Not authenticated')
+      const { setPrimaryImage } = await import('./services/asset-service')
+      await setPrimaryImage(ctx.session.activeOrganizationId, {
+        productId: input.productId,
+        fileId: input.fileId,
+      })
+      return true
+    },
+  }),
+)
+
+builder.mutationField('reorderProductImages', (t) =>
+  t.boolean({
+    args: { input: t.arg({ type: ReorderProductImagesInput, required: true }) },
+    resolve: async (_parent, { input }, ctx: Context) => {
+      if (!ctx.session) throw new Error('Not authenticated')
+      const { reorderProductImages } = await import('./services/asset-service')
+      await reorderProductImages(ctx.session.activeOrganizationId, {
+        productId: input.productId,
+        imageIds: input.imageIds,
+      })
+      return true
+    },
+  }),
+)
+
+builder.queryField('fileUsage', (t) =>
+  t.field({
+    type: FileUsageType,
+    args: { fileId: t.arg.string({ required: true }) },
+    resolve: async (_parent, { fileId }, ctx: Context) => {
+      if (!ctx.session) throw new Error('Not authenticated')
+      const { isFileInUse } = await import('./services/asset-service')
+      return isFileInUse(ctx.session.activeOrganizationId, fileId)
+    },
+  }),
+)

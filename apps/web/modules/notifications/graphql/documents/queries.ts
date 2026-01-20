@@ -2,7 +2,7 @@
  * Notification GraphQL Queries
  */
 
-import { gql } from "graphql-request";
+import { gql } from 'graphql-request'
 
 export const GET_NOTIFICATIONS = gql`
   query GetNotifications($limit: Int) {
@@ -17,7 +17,7 @@ export const GET_NOTIFICATIONS = gql`
       readAt
     }
   }
-`;
+`
 
 export const GET_UNREAD_COUNT = gql`
   query GetUnreadNotificationCount {
@@ -25,4 +25,4 @@ export const GET_UNREAD_COUNT = gql`
       count
     }
   }
-`;
+`

@@ -137,8 +137,8 @@ export async function updateCategory(
 }
 
 export async function deleteCategory(
-  id: string,
   organizationId: string,
+  id: string,
 ): Promise<boolean> {
   const result = await db
     .delete(categories)
@@ -156,13 +156,21 @@ export async function createProduct(
   organizationId: string,
   data: NewProduct,
 ): Promise<Product> {
+  // Prepare data, removing searchName if it's empty to let the DB trigger handle it
+  const insertData: any = {
+    ...data,
+    organizationId,
+    updatedAt: new Date(),
+  }
+
+  // If searchName is empty or not provided, remove it to let the DB trigger set it
+  if (!insertData.searchName || insertData.searchName.trim() === '') {
+    delete insertData.searchName
+  }
+
   const [product] = await db
     .insert(products)
-    .values({
-      ...data,
-      organizationId,
-      updatedAt: new Date(),
-    })
+    .values(insertData)
     .returning()
   return product!
 }
@@ -359,12 +367,20 @@ export async function updateProduct(
   organizationId: string,
   data: Partial<NewProduct>,
 ): Promise<Product> {
+  // Prepare update data, removing searchName if it's empty to let the DB trigger handle it
+  const updateData: any = {
+    ...data,
+    updatedAt: new Date(),
+  }
+
+  // If searchName is empty or not provided, remove it to let the DB trigger set it
+  if (updateData.searchName !== undefined && (!updateData.searchName || updateData.searchName.trim() === '')) {
+    delete updateData.searchName
+  }
+
   const [updated] = await db
     .update(products)
-    .set({
-      ...data,
-      updatedAt: new Date(),
-    })
+    .set(updateData)
     .where(
       and(eq(products.id, id), eq(products.organizationId, organizationId)),
     )
@@ -461,7 +477,7 @@ export async function getProductStock(
  */
 export async function addStockLot(
   organizationId: string,
-  data: NewStockLot,
+  data: Omit<NewStockLot, 'remaining'>,
 ): Promise<StockLot> {
   const [lot] = await db
     .insert(stockLots)

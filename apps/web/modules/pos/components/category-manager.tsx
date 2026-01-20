@@ -20,10 +20,11 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Plus, Pencil, Trash2 } from "lucide-react";
+import { Plus, Pencil, Trash2, Loader2 } from "lucide-react";
 import { TR } from "../constants";
 
 // We'll replace these with generated hooks after running codegen
@@ -46,15 +47,22 @@ export function CategoryManager({
   onUpdateCategory,
   onDeleteCategory,
   isLoading,
+  isCreating,
+  isUpdating,
+  isDeleting,
 }: {
   categories: Category[];
   onCreateCategory: (data: CategoryFormValues) => Promise<void>;
   onUpdateCategory: (id: string, data: CategoryFormValues) => Promise<void>;
   onDeleteCategory: (id: string) => Promise<void>;
   isLoading?: boolean;
+  isCreating?: boolean;
+  isUpdating?: boolean;
+  isDeleting?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const form = useForm<CategoryFormValues>({
     resolver: zodResolver(categorySchema),
@@ -87,9 +95,12 @@ export function CategoryManager({
   const handleDelete = async (id: string) => {
     if (confirm("Bu kategoriyi silmek istediğinizden emin misiniz?")) {
       try {
+        setDeletingId(id);
         await onDeleteCategory(id);
       } catch (error) {
         console.error("Error deleting category:", error);
+      } finally {
+        setDeletingId(null);
       }
     }
   };
@@ -146,11 +157,15 @@ export function CategoryManager({
                     type="button"
                     variant="outline"
                     onClick={() => handleOpenChange(false)}
+                    disabled={isCreating || isUpdating}
                   >
                     {TR.cancel}
                   </Button>
-                  <Button type="submit" disabled={isLoading}>
-                    {TR.save}
+                  <Button
+                    type="submit"
+                    disabled={isCreating || isUpdating}
+                  >
+                    {isCreating || isUpdating ? "Kaydediliyor..." : TR.save}
                   </Button>
                 </DialogFooter>
               </form>
@@ -160,7 +175,24 @@ export function CategoryManager({
       </div>
 
       <div className="grid gap-4">
-        {categories?.length === 0 ? (
+        {isLoading ? (
+          // Skeleton loader
+          Array.from({ length: 5 }).map((_, index) => (
+            <div
+              key={index}
+              className="flex items-center justify-between p-4 border rounded-lg"
+            >
+              <div className="flex-1">
+                <Skeleton className="h-6 w-[40%]" />
+                <Skeleton className="h-4 w-[25%] mt-2" />
+              </div>
+              <div className="flex gap-2">
+                <Skeleton className="h-10 w-10" />
+                <Skeleton className="h-10 w-10" />
+              </div>
+            </div>
+          ))
+        ) : categories?.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">
             {TR.noData}
           </div>
@@ -181,6 +213,7 @@ export function CategoryManager({
                   variant="outline"
                   size="icon"
                   onClick={() => handleEdit(category)}
+                  disabled={isDeleting && deletingId === category.id}
                 >
                   <Pencil className="h-4 w-4" />
                 </Button>
@@ -188,8 +221,13 @@ export function CategoryManager({
                   variant="outline"
                   size="icon"
                   onClick={() => handleDelete(category.id)}
+                  disabled={isDeleting && deletingId === category.id}
                 >
-                  <Trash2 className="h-4 w-4" />
+                  {isDeleting && deletingId === category.id ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Trash2 className="h-4 w-4" />
+                  )}
                 </Button>
               </div>
             </div>

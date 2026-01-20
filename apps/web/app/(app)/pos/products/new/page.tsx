@@ -39,7 +39,7 @@ const productSchema = z.object({
   sku: z.string().max(100).optional(),
   brand: z.string().max(255).optional(),
   description: z.string().max(1000).optional(),
-  sellingPrice: z.coerce.number().min(0.01, "Satış fiyatı 0'dan büyük olmalı"),
+  sellingPrice: z.number().min(0.01, "Satış fiyatı 0'dan büyük olmalı"),
   categoryId: z.string().optional(),
 })
 
@@ -60,7 +60,7 @@ export default function ProductCreatePage() {
   // Attach product image mutation
   const attachImageMutation = useAttachProductImageMutation()
 
-  const form = useForm({
+  const form = useForm<ProductFormValues>({
     resolver: zodResolver(productSchema),
     defaultValues: {
       name: '',
@@ -76,8 +76,10 @@ export default function ProductCreatePage() {
 
   // Handle form submission
   const handleSubmit = async (data: ProductFormValues) => {
+    console.log('Form submitted with data:', data)
     try {
       // Step 1: Create the product
+      console.log('Creating product...')
       const result = await createProductMutation.mutateAsync({
         input: {
           name: data.name,
@@ -117,11 +119,13 @@ export default function ProductCreatePage() {
       }
 
       // Success!
+      console.log('Product created successfully:', productId)
       toast.success('Ürün oluşturuldu')
       queryClient.invalidateQueries({ queryKey: ['Products'] })
       queryClient.invalidateQueries({ queryKey: ['ProductsWithStock'] })
       router.push('/pos/products')
     } catch (error: any) {
+      console.error('Error creating product:', error)
       toast.error(error.message || 'Oluşturma başarısız')
     }
   }
@@ -372,10 +376,15 @@ export default function ProductCreatePage() {
                               <Input
                                 type="number"
                                 step="0.01"
+                                min="0.01"
                                 placeholder="0.00"
                                 className="h-11 text-lg"
-                                value={typeof field.value === 'number' ? field.value : 0}
-                                onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : 0)}
+                                {...field}
+                                value={field.value || 0}
+                                onChange={(e) => {
+                                  const value = e.target.value
+                                  field.onChange(value === '' ? 0 : parseFloat(value))
+                                }}
                               />
                             </FormControl>
                             <FormMessage />

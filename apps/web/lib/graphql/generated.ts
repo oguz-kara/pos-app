@@ -30,7 +30,7 @@ export type Incremental<T> =
 
 function fetcher<TData, TVariables>(query: string, variables?: TVariables) {
   return async (): Promise<TData> => {
-    const endpoint = process.env.NEXT_PUBLIC_APP_URL ? `${process.env.NEXT_PUBLIC_APP_URL}/api/graphql` : '/api/graphql'; const res = await fetch(endpoint, {
+    const res = await fetch('http://localhost:3000/api/graphql', {
       method: 'POST',
       ...{
         headers: { 'Content-Type': 'application/json' },
@@ -57,7 +57,9 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean }
   Int: { input: number; output: number }
   Float: { input: number; output: number }
+  /** A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
   DateTime: { input: any; output: any }
+  /** The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
   JSON: { input: any; output: any }
 }
 
@@ -542,6 +544,30 @@ export type PaginatedUsers = {
   users?: Maybe<Array<AdminUser>>
 }
 
+export type PartialFile = {
+  __typename?: 'PartialFile'
+  contentType?: Maybe<Scalars['String']['output']>
+  createdAt?: Maybe<Scalars['DateTime']['output']>
+  fileHash?: Maybe<Scalars['String']['output']>
+  filename?: Maybe<Scalars['String']['output']>
+  id?: Maybe<Scalars['ID']['output']>
+  size?: Maybe<Scalars['Int']['output']>
+  url?: Maybe<Scalars['String']['output']>
+}
+
+export type PartialProduct = {
+  __typename?: 'PartialProduct'
+  barcode?: Maybe<Scalars['String']['output']>
+  categoryId?: Maybe<Scalars['String']['output']>
+  createdAt?: Maybe<Scalars['DateTime']['output']>
+  id?: Maybe<Scalars['ID']['output']>
+  isActive?: Maybe<Scalars['Boolean']['output']>
+  name?: Maybe<Scalars['String']['output']>
+  organizationId?: Maybe<Scalars['String']['output']>
+  sellingPrice?: Maybe<Scalars['String']['output']>
+  updatedAt?: Maybe<Scalars['DateTime']['output']>
+}
+
 /** Presigned URL for client-side file upload */
 export type PresignedUploadUrl = {
   __typename?: 'PresignedUploadUrl'
@@ -590,7 +616,7 @@ export type ProductImage = {
   __typename?: 'ProductImage'
   createdAt?: Maybe<Scalars['DateTime']['output']>
   displayOrder?: Maybe<Scalars['Int']['output']>
-  file?: Maybe<File>
+  file?: Maybe<PartialFile>
   fileId?: Maybe<Scalars['String']['output']>
   id?: Maybe<Scalars['ID']['output']>
   isPrimary?: Maybe<Scalars['Boolean']['output']>
@@ -652,12 +678,12 @@ export type Query = {
   creditHistory?: Maybe<Array<CreditTransaction>>
   creditPacks?: Maybe<Array<CreditPack>>
   dailyReports?: Maybe<Array<DailyReport>>
+  dashboardLowStock?: Maybe<Array<LowStockItem>>
   file?: Maybe<File>
   fileUsage?: Maybe<FileUsage>
   files?: Maybe<Array<File>>
   health?: Maybe<Scalars['String']['output']>
   listFiles?: Maybe<ListFilesResponse>
-  lowStockProducts?: Maybe<Array<LowStockItem>>
   notifications?: Maybe<Array<Notification>>
   product?: Maybe<Product>
   productAnalytics?: Maybe<ProductAnalytics>
@@ -665,18 +691,20 @@ export type Query = {
   productSalesHistory?: Maybe<Array<ProductSalesHistoryItem>>
   productSalesTrend?: Maybe<Array<ProductSalesTrendItem>>
   productStock?: Maybe<StockInfo>
+  productWithAnalytics?: Maybe<Product>
   products?: Maybe<Array<Product>>
   productsWithStock?: Maybe<Array<ProductWithStock>>
   sale?: Maybe<SaleWithItems>
-  sales?: Maybe<Array<Sale>>
   salesHistory?: Maybe<Array<SaleWithItems>>
-  salesSummary?: Maybe<SalesSummary>
   salesTrend?: Maybe<Array<SalesTrendItem>>
   stockLogs?: Maybe<Array<StockLog>>
   stockLots?: Maybe<Array<StockLot>>
   supplier?: Maybe<Supplier>
   suppliers?: Maybe<Array<Supplier>>
+  todaysCardSales?: Maybe<SalesSummary>
+  todaysCashSales?: Maybe<SalesSummary>
   todaysPulse?: Maybe<TodaysPulse>
+  todaysRefunds?: Maybe<SalesSummary>
   topProducts?: Maybe<Array<TopProduct>>
   unreadNotificationCount?: Maybe<UnreadCount>
   userOrganizations?: Maybe<Array<Organization>>
@@ -704,6 +732,10 @@ export type QueryDailyReportsArgs = {
   startDate?: InputMaybe<Scalars['DateTime']['input']>
 }
 
+export type QueryDashboardLowStockArgs = {
+  threshold?: InputMaybe<Scalars['Int']['input']>
+}
+
 export type QueryFileArgs = {
   id: Scalars['String']['input']
 }
@@ -716,10 +748,6 @@ export type QueryListFilesArgs = {
   input?: InputMaybe<ListFilesInput>
 }
 
-export type QueryLowStockProductsArgs = {
-  threshold?: InputMaybe<Scalars['Int']['input']>
-}
-
 export type QueryNotificationsArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>
 }
@@ -729,7 +757,6 @@ export type QueryProductArgs = {
 }
 
 export type QueryProductAnalyticsArgs = {
-  days?: InputMaybe<Scalars['Int']['input']>
   endDate?: InputMaybe<Scalars['DateTime']['input']>
   productId: Scalars['String']['input']
   startDate?: InputMaybe<Scalars['DateTime']['input']>
@@ -755,6 +782,11 @@ export type QueryProductStockArgs = {
   productId: Scalars['String']['input']
 }
 
+export type QueryProductWithAnalyticsArgs = {
+  days?: InputMaybe<Scalars['Int']['input']>
+  productId: Scalars['String']['input']
+}
+
 export type QueryProductsArgs = {
   categoryId?: InputMaybe<Scalars['String']['input']>
   isActive?: InputMaybe<Scalars['Boolean']['input']>
@@ -772,22 +804,12 @@ export type QuerySaleArgs = {
   id: Scalars['String']['input']
 }
 
-export type QuerySalesArgs = {
-  endDate?: InputMaybe<Scalars['DateTime']['input']>
-  startDate?: InputMaybe<Scalars['DateTime']['input']>
-}
-
 export type QuerySalesHistoryArgs = {
   endDate?: InputMaybe<Scalars['DateTime']['input']>
   limit?: InputMaybe<Scalars['Int']['input']>
   paymentMethod?: InputMaybe<Scalars['String']['input']>
   startDate?: InputMaybe<Scalars['DateTime']['input']>
   type?: InputMaybe<Scalars['String']['input']>
-}
-
-export type QuerySalesSummaryArgs = {
-  endDate: Scalars['DateTime']['input']
-  startDate: Scalars['DateTime']['input']
 }
 
 export type QuerySalesTrendArgs = {
@@ -808,6 +830,21 @@ export type QueryStockLotsArgs = {
 
 export type QuerySupplierArgs = {
   id: Scalars['String']['input']
+}
+
+export type QueryTodaysCardSalesArgs = {
+  endDate: Scalars['DateTime']['input']
+  startDate: Scalars['DateTime']['input']
+}
+
+export type QueryTodaysCashSalesArgs = {
+  endDate: Scalars['DateTime']['input']
+  startDate: Scalars['DateTime']['input']
+}
+
+export type QueryTodaysRefundsArgs = {
+  endDate: Scalars['DateTime']['input']
+  startDate: Scalars['DateTime']['input']
 }
 
 export type QueryTopProductsArgs = {
@@ -839,7 +876,7 @@ export type SaleItem = {
   __typename?: 'SaleItem'
   createdAt?: Maybe<Scalars['DateTime']['output']>
   id?: Maybe<Scalars['ID']['output']>
-  product?: Maybe<Product>
+  product?: Maybe<PartialProduct>
   productId?: Maybe<Scalars['String']['output']>
   quantity?: Maybe<Scalars['Int']['output']>
   saleId?: Maybe<Scalars['String']['output']>
@@ -922,7 +959,7 @@ export type StockLog = {
   lotId?: Maybe<Scalars['String']['output']>
   notes?: Maybe<Scalars['String']['output']>
   organizationId?: Maybe<Scalars['String']['output']>
-  product?: Maybe<Product>
+  product?: Maybe<PartialProduct>
   productId?: Maybe<Scalars['String']['output']>
   quantity?: Maybe<Scalars['Int']['output']>
   referenceId?: Maybe<Scalars['String']['output']>
@@ -1419,7 +1456,7 @@ export type DashboardLowStockQueryVariables = Exact<{
 
 export type DashboardLowStockQuery = {
   __typename?: 'Query'
-  lowStockProducts?: Array<{
+  dashboardLowStock?: Array<{
     __typename?: 'LowStockItem'
     productId?: string | null
     productName?: string | null
@@ -1567,7 +1604,7 @@ export type ProductImagesQuery = {
     createdAt?: any | null
     updatedAt?: any | null
     file?: {
-      __typename?: 'File'
+      __typename?: 'PartialFile'
       id?: string | null
       filename?: string | null
       contentType?: string | null
@@ -1870,7 +1907,7 @@ export type SaleQuery = {
       subtotal?: string | null
       createdAt?: any | null
       product?: {
-        __typename?: 'Product'
+        __typename?: 'PartialProduct'
         id?: string | null
         name?: string | null
         barcode?: string | null
@@ -1959,7 +1996,7 @@ export type SalesHistoryQuery = {
       subtotal?: string | null
       createdAt?: any | null
       product?: {
-        __typename?: 'Product'
+        __typename?: 'PartialProduct'
         id?: string | null
         name?: string | null
         barcode?: string | null
@@ -2124,7 +2161,7 @@ export type StockLogsQuery = {
     notes?: string | null
     createdAt?: any | null
     product?: {
-      __typename?: 'Product'
+      __typename?: 'PartialProduct'
       id?: string | null
       name?: string | null
       barcode?: string | null
@@ -4088,7 +4125,7 @@ useTopProductsQuery.fetcher = (variables?: TopProductsQueryVariables) =>
 
 export const DashboardLowStockDocument = `
     query DashboardLowStock($threshold: Int) {
-  lowStockProducts(threshold: $threshold) {
+  dashboardLowStock(threshold: $threshold) {
     productId
     productName
     currentStock
