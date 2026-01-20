@@ -878,7 +878,7 @@ builder.mutationField('updateCategory', (t) =>
         ...input,
         name: input.name ?? undefined,
       }
-      return posService.updateCategory(ctx.session.activeOrganizationId, id, cleanInput)
+      return posService.updateCategory(id, ctx.session.activeOrganizationId, cleanInput)
     },
   }),
 )
