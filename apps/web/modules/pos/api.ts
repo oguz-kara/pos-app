@@ -920,7 +920,7 @@ builder.queryField('product', (t) =>
     args: { id: t.arg.string({ required: true }) },
     resolve: async (_parent, { id }, ctx: Context) => {
       if (!ctx.session) throw new Error('Not authenticated')
-      return posService.getProduct(ctx.session.activeOrganizationId, id)
+      return posService.getProduct(id, ctx.session.activeOrganizationId)
     },
   }),
 )
@@ -995,7 +995,7 @@ builder.mutationField('updateProduct', (t) =>
       if (input.sellingPrice !== undefined && input.sellingPrice !== null) updateData.sellingPrice = input.sellingPrice.toString()
       if (input.categoryId !== undefined) updateData.categoryId = input.categoryId || undefined
       if (input.isActive !== undefined && input.isActive !== null) updateData.isActive = input.isActive
-      return posService.updateProduct(ctx.session.activeOrganizationId, id, updateData)
+      return posService.updateProduct(id, ctx.session.activeOrganizationId, updateData)
     },
   }),
 )
@@ -1005,7 +1005,7 @@ builder.mutationField('deleteProduct', (t) =>
     args: { id: t.arg.string({ required: true }) },
     resolve: async (_parent, { id }, ctx: Context) => {
       if (!ctx.session) throw new Error('Not authenticated')
-      await posService.deleteProduct(ctx.session.activeOrganizationId, id)
+      await posService.deleteProduct(id, ctx.session.activeOrganizationId)
       return true
     },
   }),

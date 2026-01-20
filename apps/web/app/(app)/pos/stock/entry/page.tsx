@@ -21,6 +21,7 @@ import { ProductSearchList } from "@/modules/pos/components/product-search-list"
 import { SupplierCombobox } from "@/modules/pos/components/supplier-combobox";
 import { StockEntryModal } from "@/modules/pos/components/stock-entry-modal";
 import { useProductsWithStockQuery, useAddStockBulkMutation } from "@/lib/graphql/generated";
+import { useQueryClient } from "@tanstack/react-query";
 
 type Product = {
   id: string;
@@ -44,6 +45,7 @@ type InvoiceItem = {
  */
 export default function StockEntryPage() {
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   // Header fields
   const [supplierId, setSupplierId] = useState<string | undefined>();
@@ -240,12 +242,19 @@ export default function StockEntryPage() {
       });
 
       toast.success("Stok girişi tamamlandı!");
+
+      // Invalidate all stock-related queries to refresh the UI
+      await queryClient.invalidateQueries({ queryKey: ['ProductsWithStock'] });
+      await queryClient.invalidateQueries({ queryKey: ['ProductStock'] });
+      await queryClient.invalidateQueries({ queryKey: ['StockLogs'] });
+      await queryClient.invalidateQueries({ queryKey: ['StockLots'] });
+
       router.push("/pos/stock");
     } catch (error) {
       console.error("Stock entry error:", error);
       toast.error("Stok girişi sırasında hata oluştu");
     }
-  }, [items, supplierId, invoiceDate, referenceNo, router, addStockBulk]);
+  }, [items, supplierId, invoiceDate, referenceNo, router, addStockBulk, queryClient]);
 
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
   const totalCost = items.reduce(
