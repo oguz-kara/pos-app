@@ -19,6 +19,15 @@ import {
 } from "@/lib/graphql/generated";
 import { toast } from "sonner";
 
+/**
+ * UUID validation helper
+ */
+const isValidUUID = (id: string): boolean => {
+  const uuidRegex =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  return uuidRegex.test(id);
+};
+
 export type UploadedFile = {
   fileId: string;
   url: string;
@@ -127,10 +136,23 @@ export function AssetUploader({
         throw new Error('Failed to generate upload URL');
       }
 
+      // Validate fileId if present
+      if (generateUploadUrl.fileId && !isValidUUID(generateUploadUrl.fileId)) {
+        throw new Error(`Invalid file ID received from server: ${generateUploadUrl.fileId}`);
+      }
+
       // Step 4: Check for duplicate
       if (generateUploadUrl.isDuplicate && generateUploadUrl.existingFile) {
+        const existingFileId = generateUploadUrl.existingFile.id!;
+
+        // Validate existing file ID
+        if (!isValidUUID(existingFileId)) {
+          console.error(`Invalid existing file ID: ${existingFileId}`);
+          throw new Error('Duplicate file has invalid ID');
+        }
+
         setDuplicateInfo({
-          fileId: generateUploadUrl.existingFile.id!,
+          fileId: existingFileId,
           filename: generateUploadUrl.existingFile.filename!,
           url: generateUploadUrl.existingFile.url!,
         });
@@ -139,7 +161,11 @@ export function AssetUploader({
       }
 
       // Store the pending file ID for cleanup if upload fails
-      setPendingFileId(generateUploadUrl.fileId ?? null);
+      const fileId = generateUploadUrl.fileId ?? null;
+      if (fileId && !isValidUUID(fileId)) {
+        throw new Error(`Invalid file ID format: ${fileId}`);
+      }
+      setPendingFileId(fileId);
       setProgress(40);
 
       if (!generateUploadUrl.uploadUrl) {

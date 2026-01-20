@@ -73,10 +73,17 @@ export function MediaLibrary({
   // Delete mutation
   const deleteMutation = useDeleteFileMutation()
 
-  // Check usage
+  // UUID validation helper
+  const isValidUUID = (id: string) => {
+    const uuidRegex =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+    return uuidRegex.test(id)
+  }
+
+  // Check usage - only if fileToDelete is a valid UUID
   const { data: usageData, isLoading: isCheckingUsage } = useFileUsageQuery(
     { fileId: fileToDelete || '' },
-    { enabled: !!fileToDelete },
+    { enabled: !!fileToDelete && isValidUUID(fileToDelete) },
   )
 
   const fileUsage = usageData?.fileUsage
@@ -105,12 +112,26 @@ export function MediaLibrary({
 
   // Handle delete
   const handleDeleteClick = (fileId: string) => {
+    // Validate UUID before setting
+    if (!isValidUUID(fileId)) {
+      console.error(`Cannot delete file with invalid UUID: ${fileId}`)
+      toast.error('Geçersiz görsel kimliği')
+      return
+    }
     setFileToDelete(fileId)
     setDeleteDialogOpen(true)
   }
 
   const confirmDelete = async () => {
     if (!fileToDelete) return
+
+    // Double-check UUID is valid before deleting
+    if (!isValidUUID(fileToDelete)) {
+      toast.error('Geçersiz görsel kimliği')
+      setDeleteDialogOpen(false)
+      setFileToDelete(null)
+      return
+    }
 
     try {
       await deleteMutation.mutateAsync({
@@ -173,12 +194,20 @@ export function MediaLibrary({
                 // 1. Guard Clause: Skip files that are functionally broken (no ID or URL)
                 if (!file?.id || !file?.url) return null
 
+                // 2. Guard Clause: Skip files with invalid UUIDs (corrupted data)
+                if (!isValidUUID(file.id)) {
+                  console.warn(
+                    `Skipping file with invalid UUID: ${file.id} (${file.filename})`,
+                  )
+                  return null
+                }
+
                 return (
                   <ImagePreview
                     key={file.id}
                     id={file.id}
                     url={file.url}
-                    // 2. Fallback Fix: If filename is null/undefined, use an empty string or default
+                    // 3. Fallback Fix: If filename is null/undefined, use an empty string or default
                     // This satisfies TypeScript's strict string requirement.
                     filename={file.filename || 'Untitled'}
                     selected={selectedIds.includes(file.id)}

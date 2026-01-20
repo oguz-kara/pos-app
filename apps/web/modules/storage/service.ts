@@ -19,6 +19,28 @@ import { nanoid } from "nanoid";
 import type { FileRecord } from "./types";
 
 /**
+ * UUID validation regex
+ */
+const UUID_REGEX =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/**
+ * Validate that a string is a valid UUID
+ */
+function isValidUUID(id: string): boolean {
+  return UUID_REGEX.test(id);
+}
+
+/**
+ * Validate UUID and throw error if invalid
+ */
+function validateUUID(id: string, fieldName: string): void {
+  if (!isValidUUID(id)) {
+    throw new Error(`Invalid UUID format for ${fieldName}: "${id}"`);
+  }
+}
+
+/**
  * Upload a file to storage and save metadata to database
  */
 export async function uploadFile(
@@ -82,6 +104,9 @@ export async function deleteFile(
   orgId: string,
   fileId: string
 ): Promise<void> {
+  // Validate fileId (orgId is from auth provider, not a UUID)
+  validateUUID(fileId, "fileId");
+
   // Find file record
   const file = await db.query.files.findFirst({
     where: and(eq(files.id, fileId), eq(files.organizationId, orgId)),
@@ -112,6 +137,9 @@ export async function getFile(
   orgId: string,
   fileId: string
 ): Promise<FileRecord> {
+  // Validate fileId (orgId is from auth provider, not a UUID)
+  validateUUID(fileId, "fileId");
+
   const file = await db.query.files.findFirst({
     where: and(eq(files.id, fileId), eq(files.organizationId, orgId)),
   });
@@ -299,6 +327,10 @@ export async function confirmUpload(
     metadata?: Record<string, any>;
   }
 ): Promise<FileRecord> {
+  // Validate fileId (getFile will also validate, but validate early for better errors)
+  // Note: orgId is from auth provider, not a UUID
+  validateUUID(fileId, "fileId");
+
   // Verify file exists and belongs to org
   const file = await getFile(orgId, fileId);
 

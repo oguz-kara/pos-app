@@ -11,6 +11,28 @@
 import { db, eq, and, asc, productImages, products, files } from '@jetframe/db'
 import { NotFoundError } from '@/modules/shared/errors'
 
+/**
+ * UUID validation regex
+ */
+const UUID_REGEX =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
+/**
+ * Validate that a string is a valid UUID
+ */
+function isValidUUID(id: string): boolean {
+  return UUID_REGEX.test(id)
+}
+
+/**
+ * Validate UUID and throw error if invalid
+ */
+function validateUUID(id: string, fieldName: string): void {
+  if (!isValidUUID(id)) {
+    throw new Error(`Invalid UUID format for ${fieldName}: "${id}"`)
+  }
+}
+
 export type ProductImageWithFile = {
   id: string
   productId: string
@@ -41,6 +63,10 @@ export async function attachImageToProduct(
     isPrimary?: boolean
   },
 ): Promise<ProductImageWithFile> {
+  // Validate UUIDs (orgId is from auth provider, not a UUID)
+  validateUUID(params.productId, 'productId')
+  validateUUID(params.fileId, 'fileId')
+
   // Verify product exists and belongs to org
   const product = await db.query.products.findFirst({
     where: and(
@@ -259,6 +285,9 @@ export async function isFileInUse(
   orgId: string,
   fileId: string,
 ): Promise<{ inUse: boolean; productCount: number }> {
+  // Validate fileId (orgId is from auth provider, not a UUID)
+  validateUUID(fileId, 'fileId')
+
   // Verify file belongs to org
   const file = await db.query.files.findFirst({
     where: and(eq(files.id, fileId), eq(files.organizationId, orgId)),

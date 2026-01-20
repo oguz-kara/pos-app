@@ -32,7 +32,27 @@ export function AssetManager({
 }: AssetManagerProps) {
   const [libraryRefreshTrigger, setLibraryRefreshTrigger] = useState(0)
 
-  const { featuredImageId, galleryImageIds = [] } = value
+  // UUID validation helper
+  const isValidUUID = (id: string) => {
+    const uuidRegex =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+    return uuidRegex.test(id)
+  }
+
+  // Filter out any invalid UUIDs from the value
+  const cleanedFeaturedImageId =
+    value.featuredImageId && isValidUUID(value.featuredImageId)
+      ? value.featuredImageId
+      : undefined
+  const cleanedGalleryImageIds = (value.galleryImageIds || []).filter(
+    (id) => id && isValidUUID(id),
+  )
+
+  const { featuredImageId, galleryImageIds } = {
+    featuredImageId: cleanedFeaturedImageId,
+    galleryImageIds: cleanedGalleryImageIds,
+  }
+
   const allSelectedIds = [
     ...(featuredImageId ? [featuredImageId] : []),
     ...galleryImageIds,

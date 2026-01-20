@@ -18,9 +18,9 @@ export const files = pgTable(
   "files",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    organizationId: uuid("organization_id").notNull(),
+    organizationId: text("organization_id").notNull(),
     // Foreign key: references organizations(id) ON DELETE CASCADE
-    userId: uuid("user_id").notNull(),
+    userId: text("user_id").notNull(),
     // Foreign key: references users(id)
     key: text("key").notNull().unique(), // Storage key (path in object storage)
     filename: text("filename").notNull(), // Original filename
