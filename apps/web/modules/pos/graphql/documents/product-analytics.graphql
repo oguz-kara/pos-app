@@ -38,7 +38,7 @@ query ProductSalesTrend($productId: String!, $days: Int!) {
   }
 }
 
-query ProductWithAnalytics($productId: String!, $days: Int) {
+query ProductWithAnalytics($productId: String!, $startDate: DateTime, $endDate: DateTime) {
   product(id: $productId) {
     id
     name
@@ -71,7 +71,7 @@ query ProductWithAnalytics($productId: String!, $days: Int) {
       createdAt
     }
   }
-  productAnalytics(productId: $productId, days: $days) {
+  productAnalytics(productId: $productId, startDate: $startDate, endDate: $endDate) {
     totalRevenue
     totalUnitsSold
     totalCost

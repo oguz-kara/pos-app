@@ -7,6 +7,7 @@ import {
   UseInfiniteQueryOptions,
   InfiniteData,
 } from '@tanstack/react-query'
+import { createGraphQLFetcher } from '@/lib/graphql/client'
 export type Maybe<T> = T | null
 export type InputMaybe<T> = Maybe<T>
 export type Exact<T extends { [key: string]: unknown }> = {
@@ -27,29 +28,6 @@ export type Incremental<T> =
   | {
       [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never
     }
-
-function fetcher<TData, TVariables>(query: string, variables?: TVariables) {
-  return async (): Promise<TData> => {
-    const res = await fetch('http://localhost:3000/api/graphql', {
-      method: 'POST',
-      ...{
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-      },
-      body: JSON.stringify({ query, variables }),
-    })
-
-    const json = await res.json()
-
-    if (json.errors) {
-      const { message } = json.errors[0]
-
-      throw new Error(message)
-    }
-
-    return json.data
-  }
-}
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: { input: string; output: string }
@@ -1531,7 +1509,8 @@ export type ProductSalesTrendQuery = {
 
 export type ProductWithAnalyticsQueryVariables = Exact<{
   productId: Scalars['String']['input']
-  days?: InputMaybe<Scalars['Int']['input']>
+  startDate?: InputMaybe<Scalars['DateTime']['input']>
+  endDate?: InputMaybe<Scalars['DateTime']['input']>
 }>
 
 export type ProductWithAnalyticsQuery = {
@@ -2365,21 +2344,22 @@ export const useAdminAdjustCreditsMutation = <
   >({
     mutationKey: ['AdminAdjustCredits'],
     mutationFn: (variables?: AdminAdjustCreditsMutationVariables) =>
-      fetcher<AdminAdjustCreditsMutation, AdminAdjustCreditsMutationVariables>(
-        AdminAdjustCreditsDocument,
-        variables,
-      )(),
+      createGraphQLFetcher<
+        AdminAdjustCreditsMutation,
+        AdminAdjustCreditsMutationVariables
+      >(AdminAdjustCreditsDocument, variables)(),
     ...options,
   })
 }
 
 useAdminAdjustCreditsMutation.fetcher = (
   variables: AdminAdjustCreditsMutationVariables,
+  options?: RequestInit['headers'],
 ) =>
-  fetcher<AdminAdjustCreditsMutation, AdminAdjustCreditsMutationVariables>(
-    AdminAdjustCreditsDocument,
-    variables,
-  )
+  createGraphQLFetcher<
+    AdminAdjustCreditsMutation,
+    AdminAdjustCreditsMutationVariables
+  >(AdminAdjustCreditsDocument, variables, options)
 
 export const GetAdminUsersDocument = `
     query GetAdminUsers($page: Int, $pageSize: Int, $search: String) {
@@ -2417,10 +2397,10 @@ export const useGetAdminUsersQuery = <
       variables === undefined
         ? ['GetAdminUsers']
         : ['GetAdminUsers', variables],
-    queryFn: fetcher<GetAdminUsersQuery, GetAdminUsersQueryVariables>(
-      GetAdminUsersDocument,
-      variables,
-    ),
+    queryFn: createGraphQLFetcher<
+      GetAdminUsersQuery,
+      GetAdminUsersQueryVariables
+    >(GetAdminUsersDocument, variables),
     ...options,
   })
 }
@@ -2453,7 +2433,7 @@ export const useInfiniteGetAdminUsersQuery = <
             ? ['GetAdminUsers.infinite']
             : ['GetAdminUsers.infinite', variables],
         queryFn: (metaData) =>
-          fetcher<GetAdminUsersQuery, GetAdminUsersQueryVariables>(
+          createGraphQLFetcher<GetAdminUsersQuery, GetAdminUsersQueryVariables>(
             GetAdminUsersDocument,
             { ...variables, ...(metaData.pageParam ?? {}) },
           )(),
@@ -2470,10 +2450,14 @@ useInfiniteGetAdminUsersQuery.getKey = (
     ? ['GetAdminUsers.infinite']
     : ['GetAdminUsers.infinite', variables]
 
-useGetAdminUsersQuery.fetcher = (variables?: GetAdminUsersQueryVariables) =>
-  fetcher<GetAdminUsersQuery, GetAdminUsersQueryVariables>(
+useGetAdminUsersQuery.fetcher = (
+  variables?: GetAdminUsersQueryVariables,
+  options?: RequestInit['headers'],
+) =>
+  createGraphQLFetcher<GetAdminUsersQuery, GetAdminUsersQueryVariables>(
     GetAdminUsersDocument,
     variables,
+    options,
   )
 
 export const GetAdminOrganizationsDocument = `
@@ -2518,7 +2502,7 @@ export const useGetAdminOrganizationsQuery = <
       variables === undefined
         ? ['GetAdminOrganizations']
         : ['GetAdminOrganizations', variables],
-    queryFn: fetcher<
+    queryFn: createGraphQLFetcher<
       GetAdminOrganizationsQuery,
       GetAdminOrganizationsQueryVariables
     >(GetAdminOrganizationsDocument, variables),
@@ -2558,7 +2542,7 @@ export const useInfiniteGetAdminOrganizationsQuery = <
             ? ['GetAdminOrganizations.infinite']
             : ['GetAdminOrganizations.infinite', variables],
         queryFn: (metaData) =>
-          fetcher<
+          createGraphQLFetcher<
             GetAdminOrganizationsQuery,
             GetAdminOrganizationsQueryVariables
           >(GetAdminOrganizationsDocument, {
@@ -2580,11 +2564,12 @@ useInfiniteGetAdminOrganizationsQuery.getKey = (
 
 useGetAdminOrganizationsQuery.fetcher = (
   variables?: GetAdminOrganizationsQueryVariables,
+  options?: RequestInit['headers'],
 ) =>
-  fetcher<GetAdminOrganizationsQuery, GetAdminOrganizationsQueryVariables>(
-    GetAdminOrganizationsDocument,
-    variables,
-  )
+  createGraphQLFetcher<
+    GetAdminOrganizationsQuery,
+    GetAdminOrganizationsQueryVariables
+  >(GetAdminOrganizationsDocument, variables, options)
 
 export const GetAdminDashboardStatsDocument = `
     query GetAdminDashboardStats {
@@ -2617,7 +2602,7 @@ export const useGetAdminDashboardStatsQuery = <
       variables === undefined
         ? ['GetAdminDashboardStats']
         : ['GetAdminDashboardStats', variables],
-    queryFn: fetcher<
+    queryFn: createGraphQLFetcher<
       GetAdminDashboardStatsQuery,
       GetAdminDashboardStatsQueryVariables
     >(GetAdminDashboardStatsDocument, variables),
@@ -2657,7 +2642,7 @@ export const useInfiniteGetAdminDashboardStatsQuery = <
             ? ['GetAdminDashboardStats.infinite']
             : ['GetAdminDashboardStats.infinite', variables],
         queryFn: (metaData) =>
-          fetcher<
+          createGraphQLFetcher<
             GetAdminDashboardStatsQuery,
             GetAdminDashboardStatsQueryVariables
           >(GetAdminDashboardStatsDocument, {
@@ -2679,11 +2664,12 @@ useInfiniteGetAdminDashboardStatsQuery.getKey = (
 
 useGetAdminDashboardStatsQuery.fetcher = (
   variables?: GetAdminDashboardStatsQueryVariables,
+  options?: RequestInit['headers'],
 ) =>
-  fetcher<GetAdminDashboardStatsQuery, GetAdminDashboardStatsQueryVariables>(
-    GetAdminDashboardStatsDocument,
-    variables,
-  )
+  createGraphQLFetcher<
+    GetAdminDashboardStatsQuery,
+    GetAdminDashboardStatsQueryVariables
+  >(GetAdminDashboardStatsDocument, variables, options)
 
 export const GetAdminSystemHealthDocument = `
     query GetAdminSystemHealth {
@@ -2733,7 +2719,7 @@ export const useGetAdminSystemHealthQuery = <
       variables === undefined
         ? ['GetAdminSystemHealth']
         : ['GetAdminSystemHealth', variables],
-    queryFn: fetcher<
+    queryFn: createGraphQLFetcher<
       GetAdminSystemHealthQuery,
       GetAdminSystemHealthQueryVariables
     >(GetAdminSystemHealthDocument, variables),
@@ -2773,7 +2759,7 @@ export const useInfiniteGetAdminSystemHealthQuery = <
             ? ['GetAdminSystemHealth.infinite']
             : ['GetAdminSystemHealth.infinite', variables],
         queryFn: (metaData) =>
-          fetcher<
+          createGraphQLFetcher<
             GetAdminSystemHealthQuery,
             GetAdminSystemHealthQueryVariables
           >(GetAdminSystemHealthDocument, {
@@ -2795,11 +2781,12 @@ useInfiniteGetAdminSystemHealthQuery.getKey = (
 
 useGetAdminSystemHealthQuery.fetcher = (
   variables?: GetAdminSystemHealthQueryVariables,
+  options?: RequestInit['headers'],
 ) =>
-  fetcher<GetAdminSystemHealthQuery, GetAdminSystemHealthQueryVariables>(
-    GetAdminSystemHealthDocument,
-    variables,
-  )
+  createGraphQLFetcher<
+    GetAdminSystemHealthQuery,
+    GetAdminSystemHealthQueryVariables
+  >(GetAdminSystemHealthDocument, variables, options)
 
 export const CreateCheckoutDocument = `
     mutation CreateCheckout($planId: String!, $interval: String) {
@@ -2826,20 +2813,22 @@ export const useCreateCheckoutMutation = <TError = unknown, TContext = unknown>(
   >({
     mutationKey: ['CreateCheckout'],
     mutationFn: (variables?: CreateCheckoutMutationVariables) =>
-      fetcher<CreateCheckoutMutation, CreateCheckoutMutationVariables>(
-        CreateCheckoutDocument,
-        variables,
-      )(),
+      createGraphQLFetcher<
+        CreateCheckoutMutation,
+        CreateCheckoutMutationVariables
+      >(CreateCheckoutDocument, variables)(),
     ...options,
   })
 }
 
 useCreateCheckoutMutation.fetcher = (
   variables: CreateCheckoutMutationVariables,
+  options?: RequestInit['headers'],
 ) =>
-  fetcher<CreateCheckoutMutation, CreateCheckoutMutationVariables>(
+  createGraphQLFetcher<CreateCheckoutMutation, CreateCheckoutMutationVariables>(
     CreateCheckoutDocument,
     variables,
+    options,
   )
 
 export const CreateCreditCheckoutDocument = `
@@ -2870,7 +2859,7 @@ export const useCreateCreditCheckoutMutation = <
   >({
     mutationKey: ['CreateCreditCheckout'],
     mutationFn: (variables?: CreateCreditCheckoutMutationVariables) =>
-      fetcher<
+      createGraphQLFetcher<
         CreateCreditCheckoutMutation,
         CreateCreditCheckoutMutationVariables
       >(CreateCreditCheckoutDocument, variables)(),
@@ -2880,11 +2869,12 @@ export const useCreateCreditCheckoutMutation = <
 
 useCreateCreditCheckoutMutation.fetcher = (
   variables: CreateCreditCheckoutMutationVariables,
+  options?: RequestInit['headers'],
 ) =>
-  fetcher<CreateCreditCheckoutMutation, CreateCreditCheckoutMutationVariables>(
-    CreateCreditCheckoutDocument,
-    variables,
-  )
+  createGraphQLFetcher<
+    CreateCreditCheckoutMutation,
+    CreateCreditCheckoutMutationVariables
+  >(CreateCreditCheckoutDocument, variables, options)
 
 export const CreateCustomerPortalDocument = `
     mutation CreateCustomerPortal {
@@ -2913,7 +2903,7 @@ export const useCreateCustomerPortalMutation = <
   >({
     mutationKey: ['CreateCustomerPortal'],
     mutationFn: (variables?: CreateCustomerPortalMutationVariables) =>
-      fetcher<
+      createGraphQLFetcher<
         CreateCustomerPortalMutation,
         CreateCustomerPortalMutationVariables
       >(CreateCustomerPortalDocument, variables)(),
@@ -2923,11 +2913,12 @@ export const useCreateCustomerPortalMutation = <
 
 useCreateCustomerPortalMutation.fetcher = (
   variables?: CreateCustomerPortalMutationVariables,
+  options?: RequestInit['headers'],
 ) =>
-  fetcher<CreateCustomerPortalMutation, CreateCustomerPortalMutationVariables>(
-    CreateCustomerPortalDocument,
-    variables,
-  )
+  createGraphQLFetcher<
+    CreateCustomerPortalMutation,
+    CreateCustomerPortalMutationVariables
+  >(CreateCustomerPortalDocument, variables, options)
 
 export const GetCreditBalanceDocument = `
     query GetCreditBalance {
@@ -2959,10 +2950,10 @@ export const useGetCreditBalanceQuery = <
       variables === undefined
         ? ['GetCreditBalance']
         : ['GetCreditBalance', variables],
-    queryFn: fetcher<GetCreditBalanceQuery, GetCreditBalanceQueryVariables>(
-      GetCreditBalanceDocument,
-      variables,
-    ),
+    queryFn: createGraphQLFetcher<
+      GetCreditBalanceQuery,
+      GetCreditBalanceQueryVariables
+    >(GetCreditBalanceDocument, variables),
     ...options,
   })
 }
@@ -2999,10 +2990,13 @@ export const useInfiniteGetCreditBalanceQuery = <
             ? ['GetCreditBalance.infinite']
             : ['GetCreditBalance.infinite', variables],
         queryFn: (metaData) =>
-          fetcher<GetCreditBalanceQuery, GetCreditBalanceQueryVariables>(
-            GetCreditBalanceDocument,
-            { ...variables, ...(metaData.pageParam ?? {}) },
-          )(),
+          createGraphQLFetcher<
+            GetCreditBalanceQuery,
+            GetCreditBalanceQueryVariables
+          >(GetCreditBalanceDocument, {
+            ...variables,
+            ...(metaData.pageParam ?? {}),
+          })(),
         ...restOptions,
       }
     })(),
@@ -3018,10 +3012,12 @@ useInfiniteGetCreditBalanceQuery.getKey = (
 
 useGetCreditBalanceQuery.fetcher = (
   variables?: GetCreditBalanceQueryVariables,
+  options?: RequestInit['headers'],
 ) =>
-  fetcher<GetCreditBalanceQuery, GetCreditBalanceQueryVariables>(
+  createGraphQLFetcher<GetCreditBalanceQuery, GetCreditBalanceQueryVariables>(
     GetCreditBalanceDocument,
     variables,
+    options,
   )
 
 export const GetCreditHistoryDocument = `
@@ -3055,10 +3051,10 @@ export const useGetCreditHistoryQuery = <
       variables === undefined
         ? ['GetCreditHistory']
         : ['GetCreditHistory', variables],
-    queryFn: fetcher<GetCreditHistoryQuery, GetCreditHistoryQueryVariables>(
-      GetCreditHistoryDocument,
-      variables,
-    ),
+    queryFn: createGraphQLFetcher<
+      GetCreditHistoryQuery,
+      GetCreditHistoryQueryVariables
+    >(GetCreditHistoryDocument, variables),
     ...options,
   })
 }
@@ -3095,10 +3091,13 @@ export const useInfiniteGetCreditHistoryQuery = <
             ? ['GetCreditHistory.infinite']
             : ['GetCreditHistory.infinite', variables],
         queryFn: (metaData) =>
-          fetcher<GetCreditHistoryQuery, GetCreditHistoryQueryVariables>(
-            GetCreditHistoryDocument,
-            { ...variables, ...(metaData.pageParam ?? {}) },
-          )(),
+          createGraphQLFetcher<
+            GetCreditHistoryQuery,
+            GetCreditHistoryQueryVariables
+          >(GetCreditHistoryDocument, {
+            ...variables,
+            ...(metaData.pageParam ?? {}),
+          })(),
         ...restOptions,
       }
     })(),
@@ -3114,10 +3113,12 @@ useInfiniteGetCreditHistoryQuery.getKey = (
 
 useGetCreditHistoryQuery.fetcher = (
   variables?: GetCreditHistoryQueryVariables,
+  options?: RequestInit['headers'],
 ) =>
-  fetcher<GetCreditHistoryQuery, GetCreditHistoryQueryVariables>(
+  createGraphQLFetcher<GetCreditHistoryQuery, GetCreditHistoryQueryVariables>(
     GetCreditHistoryDocument,
     variables,
+    options,
   )
 
 export const GetBillingPlansDocument = `
@@ -3151,10 +3152,10 @@ export const useGetBillingPlansQuery = <
       variables === undefined
         ? ['GetBillingPlans']
         : ['GetBillingPlans', variables],
-    queryFn: fetcher<GetBillingPlansQuery, GetBillingPlansQueryVariables>(
-      GetBillingPlansDocument,
-      variables,
-    ),
+    queryFn: createGraphQLFetcher<
+      GetBillingPlansQuery,
+      GetBillingPlansQueryVariables
+    >(GetBillingPlansDocument, variables),
     ...options,
   })
 }
@@ -3187,10 +3188,13 @@ export const useInfiniteGetBillingPlansQuery = <
             ? ['GetBillingPlans.infinite']
             : ['GetBillingPlans.infinite', variables],
         queryFn: (metaData) =>
-          fetcher<GetBillingPlansQuery, GetBillingPlansQueryVariables>(
-            GetBillingPlansDocument,
-            { ...variables, ...(metaData.pageParam ?? {}) },
-          )(),
+          createGraphQLFetcher<
+            GetBillingPlansQuery,
+            GetBillingPlansQueryVariables
+          >(GetBillingPlansDocument, {
+            ...variables,
+            ...(metaData.pageParam ?? {}),
+          })(),
         ...restOptions,
       }
     })(),
@@ -3204,10 +3208,14 @@ useInfiniteGetBillingPlansQuery.getKey = (
     ? ['GetBillingPlans.infinite']
     : ['GetBillingPlans.infinite', variables]
 
-useGetBillingPlansQuery.fetcher = (variables?: GetBillingPlansQueryVariables) =>
-  fetcher<GetBillingPlansQuery, GetBillingPlansQueryVariables>(
+useGetBillingPlansQuery.fetcher = (
+  variables?: GetBillingPlansQueryVariables,
+  options?: RequestInit['headers'],
+) =>
+  createGraphQLFetcher<GetBillingPlansQuery, GetBillingPlansQueryVariables>(
     GetBillingPlansDocument,
     variables,
+    options,
   )
 
 export const GetCreditPacksDocument = `
@@ -3238,10 +3246,10 @@ export const useGetCreditPacksQuery = <
       variables === undefined
         ? ['GetCreditPacks']
         : ['GetCreditPacks', variables],
-    queryFn: fetcher<GetCreditPacksQuery, GetCreditPacksQueryVariables>(
-      GetCreditPacksDocument,
-      variables,
-    ),
+    queryFn: createGraphQLFetcher<
+      GetCreditPacksQuery,
+      GetCreditPacksQueryVariables
+    >(GetCreditPacksDocument, variables),
     ...options,
   })
 }
@@ -3274,10 +3282,13 @@ export const useInfiniteGetCreditPacksQuery = <
             ? ['GetCreditPacks.infinite']
             : ['GetCreditPacks.infinite', variables],
         queryFn: (metaData) =>
-          fetcher<GetCreditPacksQuery, GetCreditPacksQueryVariables>(
-            GetCreditPacksDocument,
-            { ...variables, ...(metaData.pageParam ?? {}) },
-          )(),
+          createGraphQLFetcher<
+            GetCreditPacksQuery,
+            GetCreditPacksQueryVariables
+          >(GetCreditPacksDocument, {
+            ...variables,
+            ...(metaData.pageParam ?? {}),
+          })(),
         ...restOptions,
       }
     })(),
@@ -3291,10 +3302,14 @@ useInfiniteGetCreditPacksQuery.getKey = (
     ? ['GetCreditPacks.infinite']
     : ['GetCreditPacks.infinite', variables]
 
-useGetCreditPacksQuery.fetcher = (variables?: GetCreditPacksQueryVariables) =>
-  fetcher<GetCreditPacksQuery, GetCreditPacksQueryVariables>(
+useGetCreditPacksQuery.fetcher = (
+  variables?: GetCreditPacksQueryVariables,
+  options?: RequestInit['headers'],
+) =>
+  createGraphQLFetcher<GetCreditPacksQuery, GetCreditPacksQueryVariables>(
     GetCreditPacksDocument,
     variables,
+    options,
   )
 
 export const MarkNotificationReadDocument = `
@@ -3326,7 +3341,7 @@ export const useMarkNotificationReadMutation = <
   >({
     mutationKey: ['MarkNotificationRead'],
     mutationFn: (variables?: MarkNotificationReadMutationVariables) =>
-      fetcher<
+      createGraphQLFetcher<
         MarkNotificationReadMutation,
         MarkNotificationReadMutationVariables
       >(MarkNotificationReadDocument, variables)(),
@@ -3336,11 +3351,12 @@ export const useMarkNotificationReadMutation = <
 
 useMarkNotificationReadMutation.fetcher = (
   variables: MarkNotificationReadMutationVariables,
+  options?: RequestInit['headers'],
 ) =>
-  fetcher<MarkNotificationReadMutation, MarkNotificationReadMutationVariables>(
-    MarkNotificationReadDocument,
-    variables,
-  )
+  createGraphQLFetcher<
+    MarkNotificationReadMutation,
+    MarkNotificationReadMutationVariables
+  >(MarkNotificationReadDocument, variables, options)
 
 export const MarkAllNotificationsReadDocument = `
     mutation MarkAllNotificationsRead {
@@ -3367,7 +3383,7 @@ export const useMarkAllNotificationsReadMutation = <
   >({
     mutationKey: ['MarkAllNotificationsRead'],
     mutationFn: (variables?: MarkAllNotificationsReadMutationVariables) =>
-      fetcher<
+      createGraphQLFetcher<
         MarkAllNotificationsReadMutation,
         MarkAllNotificationsReadMutationVariables
       >(MarkAllNotificationsReadDocument, variables)(),
@@ -3377,11 +3393,12 @@ export const useMarkAllNotificationsReadMutation = <
 
 useMarkAllNotificationsReadMutation.fetcher = (
   variables?: MarkAllNotificationsReadMutationVariables,
+  options?: RequestInit['headers'],
 ) =>
-  fetcher<
+  createGraphQLFetcher<
     MarkAllNotificationsReadMutation,
     MarkAllNotificationsReadMutationVariables
-  >(MarkAllNotificationsReadDocument, variables)
+  >(MarkAllNotificationsReadDocument, variables, options)
 
 export const GetNotificationsDocument = `
     query GetNotifications($limit: Int) {
@@ -3415,10 +3432,10 @@ export const useGetNotificationsQuery = <
       variables === undefined
         ? ['GetNotifications']
         : ['GetNotifications', variables],
-    queryFn: fetcher<GetNotificationsQuery, GetNotificationsQueryVariables>(
-      GetNotificationsDocument,
-      variables,
-    ),
+    queryFn: createGraphQLFetcher<
+      GetNotificationsQuery,
+      GetNotificationsQueryVariables
+    >(GetNotificationsDocument, variables),
     ...options,
   })
 }
@@ -3455,10 +3472,13 @@ export const useInfiniteGetNotificationsQuery = <
             ? ['GetNotifications.infinite']
             : ['GetNotifications.infinite', variables],
         queryFn: (metaData) =>
-          fetcher<GetNotificationsQuery, GetNotificationsQueryVariables>(
-            GetNotificationsDocument,
-            { ...variables, ...(metaData.pageParam ?? {}) },
-          )(),
+          createGraphQLFetcher<
+            GetNotificationsQuery,
+            GetNotificationsQueryVariables
+          >(GetNotificationsDocument, {
+            ...variables,
+            ...(metaData.pageParam ?? {}),
+          })(),
         ...restOptions,
       }
     })(),
@@ -3474,10 +3494,12 @@ useInfiniteGetNotificationsQuery.getKey = (
 
 useGetNotificationsQuery.fetcher = (
   variables?: GetNotificationsQueryVariables,
+  options?: RequestInit['headers'],
 ) =>
-  fetcher<GetNotificationsQuery, GetNotificationsQueryVariables>(
+  createGraphQLFetcher<GetNotificationsQuery, GetNotificationsQueryVariables>(
     GetNotificationsDocument,
     variables,
+    options,
   )
 
 export const GetUnreadNotificationCountDocument = `
@@ -3509,7 +3531,7 @@ export const useGetUnreadNotificationCountQuery = <
       variables === undefined
         ? ['GetUnreadNotificationCount']
         : ['GetUnreadNotificationCount', variables],
-    queryFn: fetcher<
+    queryFn: createGraphQLFetcher<
       GetUnreadNotificationCountQuery,
       GetUnreadNotificationCountQueryVariables
     >(GetUnreadNotificationCountDocument, variables),
@@ -3549,7 +3571,7 @@ export const useInfiniteGetUnreadNotificationCountQuery = <
             ? ['GetUnreadNotificationCount.infinite']
             : ['GetUnreadNotificationCount.infinite', variables],
         queryFn: (metaData) =>
-          fetcher<
+          createGraphQLFetcher<
             GetUnreadNotificationCountQuery,
             GetUnreadNotificationCountQueryVariables
           >(GetUnreadNotificationCountDocument, {
@@ -3571,11 +3593,12 @@ useInfiniteGetUnreadNotificationCountQuery.getKey = (
 
 useGetUnreadNotificationCountQuery.fetcher = (
   variables?: GetUnreadNotificationCountQueryVariables,
+  options?: RequestInit['headers'],
 ) =>
-  fetcher<
+  createGraphQLFetcher<
     GetUnreadNotificationCountQuery,
     GetUnreadNotificationCountQueryVariables
-  >(GetUnreadNotificationCountDocument, variables)
+  >(GetUnreadNotificationCountDocument, variables, options)
 
 export const GetUserOrganizationsDocument = `
     query GetUserOrganizations {
@@ -3610,7 +3633,7 @@ export const useGetUserOrganizationsQuery = <
       variables === undefined
         ? ['GetUserOrganizations']
         : ['GetUserOrganizations', variables],
-    queryFn: fetcher<
+    queryFn: createGraphQLFetcher<
       GetUserOrganizationsQuery,
       GetUserOrganizationsQueryVariables
     >(GetUserOrganizationsDocument, variables),
@@ -3650,7 +3673,7 @@ export const useInfiniteGetUserOrganizationsQuery = <
             ? ['GetUserOrganizations.infinite']
             : ['GetUserOrganizations.infinite', variables],
         queryFn: (metaData) =>
-          fetcher<
+          createGraphQLFetcher<
             GetUserOrganizationsQuery,
             GetUserOrganizationsQueryVariables
           >(GetUserOrganizationsDocument, {
@@ -3672,11 +3695,12 @@ useInfiniteGetUserOrganizationsQuery.getKey = (
 
 useGetUserOrganizationsQuery.fetcher = (
   variables?: GetUserOrganizationsQueryVariables,
+  options?: RequestInit['headers'],
 ) =>
-  fetcher<GetUserOrganizationsQuery, GetUserOrganizationsQueryVariables>(
-    GetUserOrganizationsDocument,
-    variables,
-  )
+  createGraphQLFetcher<
+    GetUserOrganizationsQuery,
+    GetUserOrganizationsQueryVariables
+  >(GetUserOrganizationsDocument, variables, options)
 
 export const CategoriesDocument = `
     query Categories {
@@ -3701,7 +3725,7 @@ export const useCategoriesQuery = <TData = CategoriesQuery, TError = unknown>(
   return useQuery<CategoriesQuery, TError, TData>({
     queryKey:
       variables === undefined ? ['Categories'] : ['Categories', variables],
-    queryFn: fetcher<CategoriesQuery, CategoriesQueryVariables>(
+    queryFn: createGraphQLFetcher<CategoriesQuery, CategoriesQueryVariables>(
       CategoriesDocument,
       variables,
     ),
@@ -3737,7 +3761,7 @@ export const useInfiniteCategoriesQuery = <
             ? ['Categories.infinite']
             : ['Categories.infinite', variables],
         queryFn: (metaData) =>
-          fetcher<CategoriesQuery, CategoriesQueryVariables>(
+          createGraphQLFetcher<CategoriesQuery, CategoriesQueryVariables>(
             CategoriesDocument,
             { ...variables, ...(metaData.pageParam ?? {}) },
           )(),
@@ -3752,10 +3776,14 @@ useInfiniteCategoriesQuery.getKey = (variables?: CategoriesQueryVariables) =>
     ? ['Categories.infinite']
     : ['Categories.infinite', variables]
 
-useCategoriesQuery.fetcher = (variables?: CategoriesQueryVariables) =>
-  fetcher<CategoriesQuery, CategoriesQueryVariables>(
+useCategoriesQuery.fetcher = (
+  variables?: CategoriesQueryVariables,
+  options?: RequestInit['headers'],
+) =>
+  createGraphQLFetcher<CategoriesQuery, CategoriesQueryVariables>(
     CategoriesDocument,
     variables,
+    options,
   )
 
 export const CreateCategoryDocument = `
@@ -3785,20 +3813,22 @@ export const useCreateCategoryMutation = <TError = unknown, TContext = unknown>(
   >({
     mutationKey: ['CreateCategory'],
     mutationFn: (variables?: CreateCategoryMutationVariables) =>
-      fetcher<CreateCategoryMutation, CreateCategoryMutationVariables>(
-        CreateCategoryDocument,
-        variables,
-      )(),
+      createGraphQLFetcher<
+        CreateCategoryMutation,
+        CreateCategoryMutationVariables
+      >(CreateCategoryDocument, variables)(),
     ...options,
   })
 }
 
 useCreateCategoryMutation.fetcher = (
   variables: CreateCategoryMutationVariables,
+  options?: RequestInit['headers'],
 ) =>
-  fetcher<CreateCategoryMutation, CreateCategoryMutationVariables>(
+  createGraphQLFetcher<CreateCategoryMutation, CreateCategoryMutationVariables>(
     CreateCategoryDocument,
     variables,
+    options,
   )
 
 export const UpdateCategoryDocument = `
@@ -3828,20 +3858,22 @@ export const useUpdateCategoryMutation = <TError = unknown, TContext = unknown>(
   >({
     mutationKey: ['UpdateCategory'],
     mutationFn: (variables?: UpdateCategoryMutationVariables) =>
-      fetcher<UpdateCategoryMutation, UpdateCategoryMutationVariables>(
-        UpdateCategoryDocument,
-        variables,
-      )(),
+      createGraphQLFetcher<
+        UpdateCategoryMutation,
+        UpdateCategoryMutationVariables
+      >(UpdateCategoryDocument, variables)(),
     ...options,
   })
 }
 
 useUpdateCategoryMutation.fetcher = (
   variables: UpdateCategoryMutationVariables,
+  options?: RequestInit['headers'],
 ) =>
-  fetcher<UpdateCategoryMutation, UpdateCategoryMutationVariables>(
+  createGraphQLFetcher<UpdateCategoryMutation, UpdateCategoryMutationVariables>(
     UpdateCategoryDocument,
     variables,
+    options,
   )
 
 export const DeleteCategoryDocument = `
@@ -3866,20 +3898,22 @@ export const useDeleteCategoryMutation = <TError = unknown, TContext = unknown>(
   >({
     mutationKey: ['DeleteCategory'],
     mutationFn: (variables?: DeleteCategoryMutationVariables) =>
-      fetcher<DeleteCategoryMutation, DeleteCategoryMutationVariables>(
-        DeleteCategoryDocument,
-        variables,
-      )(),
+      createGraphQLFetcher<
+        DeleteCategoryMutation,
+        DeleteCategoryMutationVariables
+      >(DeleteCategoryDocument, variables)(),
     ...options,
   })
 }
 
 useDeleteCategoryMutation.fetcher = (
   variables: DeleteCategoryMutationVariables,
+  options?: RequestInit['headers'],
 ) =>
-  fetcher<DeleteCategoryMutation, DeleteCategoryMutationVariables>(
+  createGraphQLFetcher<DeleteCategoryMutation, DeleteCategoryMutationVariables>(
     DeleteCategoryDocument,
     variables,
+    options,
   )
 
 export const TodaysPulseDocument = `
@@ -3906,7 +3940,7 @@ export const useTodaysPulseQuery = <TData = TodaysPulseQuery, TError = unknown>(
   return useQuery<TodaysPulseQuery, TError, TData>({
     queryKey:
       variables === undefined ? ['TodaysPulse'] : ['TodaysPulse', variables],
-    queryFn: fetcher<TodaysPulseQuery, TodaysPulseQueryVariables>(
+    queryFn: createGraphQLFetcher<TodaysPulseQuery, TodaysPulseQueryVariables>(
       TodaysPulseDocument,
       variables,
     ),
@@ -3942,7 +3976,7 @@ export const useInfiniteTodaysPulseQuery = <
             ? ['TodaysPulse.infinite']
             : ['TodaysPulse.infinite', variables],
         queryFn: (metaData) =>
-          fetcher<TodaysPulseQuery, TodaysPulseQueryVariables>(
+          createGraphQLFetcher<TodaysPulseQuery, TodaysPulseQueryVariables>(
             TodaysPulseDocument,
             { ...variables, ...(metaData.pageParam ?? {}) },
           )(),
@@ -3957,10 +3991,14 @@ useInfiniteTodaysPulseQuery.getKey = (variables?: TodaysPulseQueryVariables) =>
     ? ['TodaysPulse.infinite']
     : ['TodaysPulse.infinite', variables]
 
-useTodaysPulseQuery.fetcher = (variables?: TodaysPulseQueryVariables) =>
-  fetcher<TodaysPulseQuery, TodaysPulseQueryVariables>(
+useTodaysPulseQuery.fetcher = (
+  variables?: TodaysPulseQueryVariables,
+  options?: RequestInit['headers'],
+) =>
+  createGraphQLFetcher<TodaysPulseQuery, TodaysPulseQueryVariables>(
     TodaysPulseDocument,
     variables,
+    options,
   )
 
 export const SalesTrendDocument = `
@@ -3986,7 +4024,7 @@ export const useSalesTrendQuery = <TData = SalesTrendQuery, TError = unknown>(
   return useQuery<SalesTrendQuery, TError, TData>({
     queryKey:
       variables === undefined ? ['SalesTrend'] : ['SalesTrend', variables],
-    queryFn: fetcher<SalesTrendQuery, SalesTrendQueryVariables>(
+    queryFn: createGraphQLFetcher<SalesTrendQuery, SalesTrendQueryVariables>(
       SalesTrendDocument,
       variables,
     ),
@@ -4022,7 +4060,7 @@ export const useInfiniteSalesTrendQuery = <
             ? ['SalesTrend.infinite']
             : ['SalesTrend.infinite', variables],
         queryFn: (metaData) =>
-          fetcher<SalesTrendQuery, SalesTrendQueryVariables>(
+          createGraphQLFetcher<SalesTrendQuery, SalesTrendQueryVariables>(
             SalesTrendDocument,
             { ...variables, ...(metaData.pageParam ?? {}) },
           )(),
@@ -4037,10 +4075,14 @@ useInfiniteSalesTrendQuery.getKey = (variables?: SalesTrendQueryVariables) =>
     ? ['SalesTrend.infinite']
     : ['SalesTrend.infinite', variables]
 
-useSalesTrendQuery.fetcher = (variables?: SalesTrendQueryVariables) =>
-  fetcher<SalesTrendQuery, SalesTrendQueryVariables>(
+useSalesTrendQuery.fetcher = (
+  variables?: SalesTrendQueryVariables,
+  options?: RequestInit['headers'],
+) =>
+  createGraphQLFetcher<SalesTrendQuery, SalesTrendQueryVariables>(
     SalesTrendDocument,
     variables,
+    options,
   )
 
 export const TopProductsDocument = `
@@ -4066,7 +4108,7 @@ export const useTopProductsQuery = <TData = TopProductsQuery, TError = unknown>(
   return useQuery<TopProductsQuery, TError, TData>({
     queryKey:
       variables === undefined ? ['TopProducts'] : ['TopProducts', variables],
-    queryFn: fetcher<TopProductsQuery, TopProductsQueryVariables>(
+    queryFn: createGraphQLFetcher<TopProductsQuery, TopProductsQueryVariables>(
       TopProductsDocument,
       variables,
     ),
@@ -4102,7 +4144,7 @@ export const useInfiniteTopProductsQuery = <
             ? ['TopProducts.infinite']
             : ['TopProducts.infinite', variables],
         queryFn: (metaData) =>
-          fetcher<TopProductsQuery, TopProductsQueryVariables>(
+          createGraphQLFetcher<TopProductsQuery, TopProductsQueryVariables>(
             TopProductsDocument,
             { ...variables, ...(metaData.pageParam ?? {}) },
           )(),
@@ -4117,10 +4159,14 @@ useInfiniteTopProductsQuery.getKey = (variables?: TopProductsQueryVariables) =>
     ? ['TopProducts.infinite']
     : ['TopProducts.infinite', variables]
 
-useTopProductsQuery.fetcher = (variables?: TopProductsQueryVariables) =>
-  fetcher<TopProductsQuery, TopProductsQueryVariables>(
+useTopProductsQuery.fetcher = (
+  variables?: TopProductsQueryVariables,
+  options?: RequestInit['headers'],
+) =>
+  createGraphQLFetcher<TopProductsQuery, TopProductsQueryVariables>(
     TopProductsDocument,
     variables,
+    options,
   )
 
 export const DashboardLowStockDocument = `
@@ -4155,10 +4201,10 @@ export const useDashboardLowStockQuery = <
       variables === undefined
         ? ['DashboardLowStock']
         : ['DashboardLowStock', variables],
-    queryFn: fetcher<DashboardLowStockQuery, DashboardLowStockQueryVariables>(
-      DashboardLowStockDocument,
-      variables,
-    ),
+    queryFn: createGraphQLFetcher<
+      DashboardLowStockQuery,
+      DashboardLowStockQueryVariables
+    >(DashboardLowStockDocument, variables),
     ...options,
   })
 }
@@ -4195,10 +4241,13 @@ export const useInfiniteDashboardLowStockQuery = <
             ? ['DashboardLowStock.infinite']
             : ['DashboardLowStock.infinite', variables],
         queryFn: (metaData) =>
-          fetcher<DashboardLowStockQuery, DashboardLowStockQueryVariables>(
-            DashboardLowStockDocument,
-            { ...variables, ...(metaData.pageParam ?? {}) },
-          )(),
+          createGraphQLFetcher<
+            DashboardLowStockQuery,
+            DashboardLowStockQueryVariables
+          >(DashboardLowStockDocument, {
+            ...variables,
+            ...(metaData.pageParam ?? {}),
+          })(),
         ...restOptions,
       }
     })(),
@@ -4214,10 +4263,12 @@ useInfiniteDashboardLowStockQuery.getKey = (
 
 useDashboardLowStockQuery.fetcher = (
   variables?: DashboardLowStockQueryVariables,
+  options?: RequestInit['headers'],
 ) =>
-  fetcher<DashboardLowStockQuery, DashboardLowStockQueryVariables>(
+  createGraphQLFetcher<DashboardLowStockQuery, DashboardLowStockQueryVariables>(
     DashboardLowStockDocument,
     variables,
+    options,
   )
 
 export const ProductSalesHistoryDocument = `
@@ -4259,7 +4310,7 @@ export const useProductSalesHistoryQuery = <
 ) => {
   return useQuery<ProductSalesHistoryQuery, TError, TData>({
     queryKey: ['ProductSalesHistory', variables],
-    queryFn: fetcher<
+    queryFn: createGraphQLFetcher<
       ProductSalesHistoryQuery,
       ProductSalesHistoryQueryVariables
     >(ProductSalesHistoryDocument, variables),
@@ -4296,10 +4347,13 @@ export const useInfiniteProductSalesHistoryQuery = <
           variables,
         ],
         queryFn: (metaData) =>
-          fetcher<ProductSalesHistoryQuery, ProductSalesHistoryQueryVariables>(
-            ProductSalesHistoryDocument,
-            { ...variables, ...(metaData.pageParam ?? {}) },
-          )(),
+          createGraphQLFetcher<
+            ProductSalesHistoryQuery,
+            ProductSalesHistoryQueryVariables
+          >(ProductSalesHistoryDocument, {
+            ...variables,
+            ...(metaData.pageParam ?? {}),
+          })(),
         ...restOptions,
       }
     })(),
@@ -4312,11 +4366,12 @@ useInfiniteProductSalesHistoryQuery.getKey = (
 
 useProductSalesHistoryQuery.fetcher = (
   variables: ProductSalesHistoryQueryVariables,
+  options?: RequestInit['headers'],
 ) =>
-  fetcher<ProductSalesHistoryQuery, ProductSalesHistoryQueryVariables>(
-    ProductSalesHistoryDocument,
-    variables,
-  )
+  createGraphQLFetcher<
+    ProductSalesHistoryQuery,
+    ProductSalesHistoryQueryVariables
+  >(ProductSalesHistoryDocument, variables, options)
 
 export const ProductAnalyticsDocument = `
     query ProductAnalytics($productId: String!, $startDate: DateTime, $endDate: DateTime) {
@@ -4354,10 +4409,10 @@ export const useProductAnalyticsQuery = <
 ) => {
   return useQuery<ProductAnalyticsQuery, TError, TData>({
     queryKey: ['ProductAnalytics', variables],
-    queryFn: fetcher<ProductAnalyticsQuery, ProductAnalyticsQueryVariables>(
-      ProductAnalyticsDocument,
-      variables,
-    ),
+    queryFn: createGraphQLFetcher<
+      ProductAnalyticsQuery,
+      ProductAnalyticsQueryVariables
+    >(ProductAnalyticsDocument, variables),
     ...options,
   })
 }
@@ -4388,10 +4443,13 @@ export const useInfiniteProductAnalyticsQuery = <
       return {
         queryKey: optionsQueryKey ?? ['ProductAnalytics.infinite', variables],
         queryFn: (metaData) =>
-          fetcher<ProductAnalyticsQuery, ProductAnalyticsQueryVariables>(
-            ProductAnalyticsDocument,
-            { ...variables, ...(metaData.pageParam ?? {}) },
-          )(),
+          createGraphQLFetcher<
+            ProductAnalyticsQuery,
+            ProductAnalyticsQueryVariables
+          >(ProductAnalyticsDocument, {
+            ...variables,
+            ...(metaData.pageParam ?? {}),
+          })(),
         ...restOptions,
       }
     })(),
@@ -4404,10 +4462,12 @@ useInfiniteProductAnalyticsQuery.getKey = (
 
 useProductAnalyticsQuery.fetcher = (
   variables: ProductAnalyticsQueryVariables,
+  options?: RequestInit['headers'],
 ) =>
-  fetcher<ProductAnalyticsQuery, ProductAnalyticsQueryVariables>(
+  createGraphQLFetcher<ProductAnalyticsQuery, ProductAnalyticsQueryVariables>(
     ProductAnalyticsDocument,
     variables,
+    options,
   )
 
 export const ProductSalesTrendDocument = `
@@ -4440,10 +4500,10 @@ export const useProductSalesTrendQuery = <
 ) => {
   return useQuery<ProductSalesTrendQuery, TError, TData>({
     queryKey: ['ProductSalesTrend', variables],
-    queryFn: fetcher<ProductSalesTrendQuery, ProductSalesTrendQueryVariables>(
-      ProductSalesTrendDocument,
-      variables,
-    ),
+    queryFn: createGraphQLFetcher<
+      ProductSalesTrendQuery,
+      ProductSalesTrendQueryVariables
+    >(ProductSalesTrendDocument, variables),
     ...options,
   })
 }
@@ -4474,10 +4534,13 @@ export const useInfiniteProductSalesTrendQuery = <
       return {
         queryKey: optionsQueryKey ?? ['ProductSalesTrend.infinite', variables],
         queryFn: (metaData) =>
-          fetcher<ProductSalesTrendQuery, ProductSalesTrendQueryVariables>(
-            ProductSalesTrendDocument,
-            { ...variables, ...(metaData.pageParam ?? {}) },
-          )(),
+          createGraphQLFetcher<
+            ProductSalesTrendQuery,
+            ProductSalesTrendQueryVariables
+          >(ProductSalesTrendDocument, {
+            ...variables,
+            ...(metaData.pageParam ?? {}),
+          })(),
         ...restOptions,
       }
     })(),
@@ -4490,14 +4553,16 @@ useInfiniteProductSalesTrendQuery.getKey = (
 
 useProductSalesTrendQuery.fetcher = (
   variables: ProductSalesTrendQueryVariables,
+  options?: RequestInit['headers'],
 ) =>
-  fetcher<ProductSalesTrendQuery, ProductSalesTrendQueryVariables>(
+  createGraphQLFetcher<ProductSalesTrendQuery, ProductSalesTrendQueryVariables>(
     ProductSalesTrendDocument,
     variables,
+    options,
   )
 
 export const ProductWithAnalyticsDocument = `
-    query ProductWithAnalytics($productId: String!, $days: Int) {
+    query ProductWithAnalytics($productId: String!, $startDate: DateTime, $endDate: DateTime) {
   product(id: $productId) {
     id
     name
@@ -4530,7 +4595,11 @@ export const ProductWithAnalyticsDocument = `
       createdAt
     }
   }
-  productAnalytics(productId: $productId, days: $days) {
+  productAnalytics(
+    productId: $productId
+    startDate: $startDate
+    endDate: $endDate
+  ) {
     totalRevenue
     totalUnitsSold
     totalCost
@@ -4564,7 +4633,7 @@ export const useProductWithAnalyticsQuery = <
 ) => {
   return useQuery<ProductWithAnalyticsQuery, TError, TData>({
     queryKey: ['ProductWithAnalytics', variables],
-    queryFn: fetcher<
+    queryFn: createGraphQLFetcher<
       ProductWithAnalyticsQuery,
       ProductWithAnalyticsQueryVariables
     >(ProductWithAnalyticsDocument, variables),
@@ -4601,7 +4670,7 @@ export const useInfiniteProductWithAnalyticsQuery = <
           variables,
         ],
         queryFn: (metaData) =>
-          fetcher<
+          createGraphQLFetcher<
             ProductWithAnalyticsQuery,
             ProductWithAnalyticsQueryVariables
           >(ProductWithAnalyticsDocument, {
@@ -4620,11 +4689,12 @@ useInfiniteProductWithAnalyticsQuery.getKey = (
 
 useProductWithAnalyticsQuery.fetcher = (
   variables: ProductWithAnalyticsQueryVariables,
+  options?: RequestInit['headers'],
 ) =>
-  fetcher<ProductWithAnalyticsQuery, ProductWithAnalyticsQueryVariables>(
-    ProductWithAnalyticsDocument,
-    variables,
-  )
+  createGraphQLFetcher<
+    ProductWithAnalyticsQuery,
+    ProductWithAnalyticsQueryVariables
+  >(ProductWithAnalyticsDocument, variables, options)
 
 export const ProductImagesDocument = `
     query ProductImages($productId: String!) {
@@ -4663,10 +4733,10 @@ export const useProductImagesQuery = <
 ) => {
   return useQuery<ProductImagesQuery, TError, TData>({
     queryKey: ['ProductImages', variables],
-    queryFn: fetcher<ProductImagesQuery, ProductImagesQueryVariables>(
-      ProductImagesDocument,
-      variables,
-    ),
+    queryFn: createGraphQLFetcher<
+      ProductImagesQuery,
+      ProductImagesQueryVariables
+    >(ProductImagesDocument, variables),
     ...options,
   })
 }
@@ -4698,7 +4768,7 @@ export const useInfiniteProductImagesQuery = <
       return {
         queryKey: optionsQueryKey ?? ['ProductImages.infinite', variables],
         queryFn: (metaData) =>
-          fetcher<ProductImagesQuery, ProductImagesQueryVariables>(
+          createGraphQLFetcher<ProductImagesQuery, ProductImagesQueryVariables>(
             ProductImagesDocument,
             { ...variables, ...(metaData.pageParam ?? {}) },
           )(),
@@ -4712,10 +4782,14 @@ useInfiniteProductImagesQuery.getKey = (
   variables: ProductImagesQueryVariables,
 ) => ['ProductImages.infinite', variables]
 
-useProductImagesQuery.fetcher = (variables: ProductImagesQueryVariables) =>
-  fetcher<ProductImagesQuery, ProductImagesQueryVariables>(
+useProductImagesQuery.fetcher = (
+  variables: ProductImagesQueryVariables,
+  options?: RequestInit['headers'],
+) =>
+  createGraphQLFetcher<ProductImagesQuery, ProductImagesQueryVariables>(
     ProductImagesDocument,
     variables,
+    options,
   )
 
 export const AttachProductImageDocument = `
@@ -4749,21 +4823,22 @@ export const useAttachProductImageMutation = <
   >({
     mutationKey: ['AttachProductImage'],
     mutationFn: (variables?: AttachProductImageMutationVariables) =>
-      fetcher<AttachProductImageMutation, AttachProductImageMutationVariables>(
-        AttachProductImageDocument,
-        variables,
-      )(),
+      createGraphQLFetcher<
+        AttachProductImageMutation,
+        AttachProductImageMutationVariables
+      >(AttachProductImageDocument, variables)(),
     ...options,
   })
 }
 
 useAttachProductImageMutation.fetcher = (
   variables: AttachProductImageMutationVariables,
+  options?: RequestInit['headers'],
 ) =>
-  fetcher<AttachProductImageMutation, AttachProductImageMutationVariables>(
-    AttachProductImageDocument,
-    variables,
-  )
+  createGraphQLFetcher<
+    AttachProductImageMutation,
+    AttachProductImageMutationVariables
+  >(AttachProductImageDocument, variables, options)
 
 export const DetachProductImageDocument = `
     mutation DetachProductImage($input: DetachProductImageInput!) {
@@ -4790,21 +4865,22 @@ export const useDetachProductImageMutation = <
   >({
     mutationKey: ['DetachProductImage'],
     mutationFn: (variables?: DetachProductImageMutationVariables) =>
-      fetcher<DetachProductImageMutation, DetachProductImageMutationVariables>(
-        DetachProductImageDocument,
-        variables,
-      )(),
+      createGraphQLFetcher<
+        DetachProductImageMutation,
+        DetachProductImageMutationVariables
+      >(DetachProductImageDocument, variables)(),
     ...options,
   })
 }
 
 useDetachProductImageMutation.fetcher = (
   variables: DetachProductImageMutationVariables,
+  options?: RequestInit['headers'],
 ) =>
-  fetcher<DetachProductImageMutation, DetachProductImageMutationVariables>(
-    DetachProductImageDocument,
-    variables,
-  )
+  createGraphQLFetcher<
+    DetachProductImageMutation,
+    DetachProductImageMutationVariables
+  >(DetachProductImageDocument, variables, options)
 
 export const SetPrimaryImageDocument = `
     mutation SetPrimaryImage($input: SetPrimaryImageInput!) {
@@ -4831,21 +4907,22 @@ export const useSetPrimaryImageMutation = <
   >({
     mutationKey: ['SetPrimaryImage'],
     mutationFn: (variables?: SetPrimaryImageMutationVariables) =>
-      fetcher<SetPrimaryImageMutation, SetPrimaryImageMutationVariables>(
-        SetPrimaryImageDocument,
-        variables,
-      )(),
+      createGraphQLFetcher<
+        SetPrimaryImageMutation,
+        SetPrimaryImageMutationVariables
+      >(SetPrimaryImageDocument, variables)(),
     ...options,
   })
 }
 
 useSetPrimaryImageMutation.fetcher = (
   variables: SetPrimaryImageMutationVariables,
+  options?: RequestInit['headers'],
 ) =>
-  fetcher<SetPrimaryImageMutation, SetPrimaryImageMutationVariables>(
-    SetPrimaryImageDocument,
-    variables,
-  )
+  createGraphQLFetcher<
+    SetPrimaryImageMutation,
+    SetPrimaryImageMutationVariables
+  >(SetPrimaryImageDocument, variables, options)
 
 export const ReorderProductImagesDocument = `
     mutation ReorderProductImages($input: ReorderProductImagesInput!) {
@@ -4872,7 +4949,7 @@ export const useReorderProductImagesMutation = <
   >({
     mutationKey: ['ReorderProductImages'],
     mutationFn: (variables?: ReorderProductImagesMutationVariables) =>
-      fetcher<
+      createGraphQLFetcher<
         ReorderProductImagesMutation,
         ReorderProductImagesMutationVariables
       >(ReorderProductImagesDocument, variables)(),
@@ -4882,11 +4959,12 @@ export const useReorderProductImagesMutation = <
 
 useReorderProductImagesMutation.fetcher = (
   variables: ReorderProductImagesMutationVariables,
+  options?: RequestInit['headers'],
 ) =>
-  fetcher<ReorderProductImagesMutation, ReorderProductImagesMutationVariables>(
-    ReorderProductImagesDocument,
-    variables,
-  )
+  createGraphQLFetcher<
+    ReorderProductImagesMutation,
+    ReorderProductImagesMutationVariables
+  >(ReorderProductImagesDocument, variables, options)
 
 export const FileUsageDocument = `
     query FileUsage($fileId: String!) {
@@ -4905,7 +4983,7 @@ export const useFileUsageQuery = <TData = FileUsageQuery, TError = unknown>(
 ) => {
   return useQuery<FileUsageQuery, TError, TData>({
     queryKey: ['FileUsage', variables],
-    queryFn: fetcher<FileUsageQuery, FileUsageQueryVariables>(
+    queryFn: createGraphQLFetcher<FileUsageQuery, FileUsageQueryVariables>(
       FileUsageDocument,
       variables,
     ),
@@ -4940,10 +5018,10 @@ export const useInfiniteFileUsageQuery = <
       return {
         queryKey: optionsQueryKey ?? ['FileUsage.infinite', variables],
         queryFn: (metaData) =>
-          fetcher<FileUsageQuery, FileUsageQueryVariables>(FileUsageDocument, {
-            ...variables,
-            ...(metaData.pageParam ?? {}),
-          })(),
+          createGraphQLFetcher<FileUsageQuery, FileUsageQueryVariables>(
+            FileUsageDocument,
+            { ...variables, ...(metaData.pageParam ?? {}) },
+          )(),
         ...restOptions,
       }
     })(),
@@ -4955,8 +5033,15 @@ useInfiniteFileUsageQuery.getKey = (variables: FileUsageQueryVariables) => [
   variables,
 ]
 
-useFileUsageQuery.fetcher = (variables: FileUsageQueryVariables) =>
-  fetcher<FileUsageQuery, FileUsageQueryVariables>(FileUsageDocument, variables)
+useFileUsageQuery.fetcher = (
+  variables: FileUsageQueryVariables,
+  options?: RequestInit['headers'],
+) =>
+  createGraphQLFetcher<FileUsageQuery, FileUsageQueryVariables>(
+    FileUsageDocument,
+    variables,
+    options,
+  )
 
 export const ProductsDocument = `
     query Products($categoryId: String, $search: String, $isActive: Boolean) {
@@ -4990,7 +5075,7 @@ export const useProductsQuery = <TData = ProductsQuery, TError = unknown>(
 ) => {
   return useQuery<ProductsQuery, TError, TData>({
     queryKey: variables === undefined ? ['Products'] : ['Products', variables],
-    queryFn: fetcher<ProductsQuery, ProductsQueryVariables>(
+    queryFn: createGraphQLFetcher<ProductsQuery, ProductsQueryVariables>(
       ProductsDocument,
       variables,
     ),
@@ -5022,10 +5107,10 @@ export const useInfiniteProductsQuery = <
             ? ['Products.infinite']
             : ['Products.infinite', variables],
         queryFn: (metaData) =>
-          fetcher<ProductsQuery, ProductsQueryVariables>(ProductsDocument, {
-            ...variables,
-            ...(metaData.pageParam ?? {}),
-          })(),
+          createGraphQLFetcher<ProductsQuery, ProductsQueryVariables>(
+            ProductsDocument,
+            { ...variables, ...(metaData.pageParam ?? {}) },
+          )(),
         ...restOptions,
       }
     })(),
@@ -5037,8 +5122,15 @@ useInfiniteProductsQuery.getKey = (variables?: ProductsQueryVariables) =>
     ? ['Products.infinite']
     : ['Products.infinite', variables]
 
-useProductsQuery.fetcher = (variables?: ProductsQueryVariables) =>
-  fetcher<ProductsQuery, ProductsQueryVariables>(ProductsDocument, variables)
+useProductsQuery.fetcher = (
+  variables?: ProductsQueryVariables,
+  options?: RequestInit['headers'],
+) =>
+  createGraphQLFetcher<ProductsQuery, ProductsQueryVariables>(
+    ProductsDocument,
+    variables,
+    options,
+  )
 
 export const ProductDocument = `
     query Product($id: String!) {
@@ -5072,7 +5164,7 @@ export const useProductQuery = <TData = ProductQuery, TError = unknown>(
 ) => {
   return useQuery<ProductQuery, TError, TData>({
     queryKey: ['Product', variables],
-    queryFn: fetcher<ProductQuery, ProductQueryVariables>(
+    queryFn: createGraphQLFetcher<ProductQuery, ProductQueryVariables>(
       ProductDocument,
       variables,
     ),
@@ -5103,10 +5195,10 @@ export const useInfiniteProductQuery = <
       return {
         queryKey: optionsQueryKey ?? ['Product.infinite', variables],
         queryFn: (metaData) =>
-          fetcher<ProductQuery, ProductQueryVariables>(ProductDocument, {
-            ...variables,
-            ...(metaData.pageParam ?? {}),
-          })(),
+          createGraphQLFetcher<ProductQuery, ProductQueryVariables>(
+            ProductDocument,
+            { ...variables, ...(metaData.pageParam ?? {}) },
+          )(),
         ...restOptions,
       }
     })(),
@@ -5118,8 +5210,15 @@ useInfiniteProductQuery.getKey = (variables: ProductQueryVariables) => [
   variables,
 ]
 
-useProductQuery.fetcher = (variables: ProductQueryVariables) =>
-  fetcher<ProductQuery, ProductQueryVariables>(ProductDocument, variables)
+useProductQuery.fetcher = (
+  variables: ProductQueryVariables,
+  options?: RequestInit['headers'],
+) =>
+  createGraphQLFetcher<ProductQuery, ProductQueryVariables>(
+    ProductDocument,
+    variables,
+    options,
+  )
 
 export const ProductsWithStockDocument = `
     query ProductsWithStock($categoryId: String, $search: String, $lowStockOnly: Boolean, $threshold: Int) {
@@ -5173,10 +5272,10 @@ export const useProductsWithStockQuery = <
       variables === undefined
         ? ['ProductsWithStock']
         : ['ProductsWithStock', variables],
-    queryFn: fetcher<ProductsWithStockQuery, ProductsWithStockQueryVariables>(
-      ProductsWithStockDocument,
-      variables,
-    ),
+    queryFn: createGraphQLFetcher<
+      ProductsWithStockQuery,
+      ProductsWithStockQueryVariables
+    >(ProductsWithStockDocument, variables),
     ...options,
   })
 }
@@ -5213,10 +5312,13 @@ export const useInfiniteProductsWithStockQuery = <
             ? ['ProductsWithStock.infinite']
             : ['ProductsWithStock.infinite', variables],
         queryFn: (metaData) =>
-          fetcher<ProductsWithStockQuery, ProductsWithStockQueryVariables>(
-            ProductsWithStockDocument,
-            { ...variables, ...(metaData.pageParam ?? {}) },
-          )(),
+          createGraphQLFetcher<
+            ProductsWithStockQuery,
+            ProductsWithStockQueryVariables
+          >(ProductsWithStockDocument, {
+            ...variables,
+            ...(metaData.pageParam ?? {}),
+          })(),
         ...restOptions,
       }
     })(),
@@ -5232,10 +5334,12 @@ useInfiniteProductsWithStockQuery.getKey = (
 
 useProductsWithStockQuery.fetcher = (
   variables?: ProductsWithStockQueryVariables,
+  options?: RequestInit['headers'],
 ) =>
-  fetcher<ProductsWithStockQuery, ProductsWithStockQueryVariables>(
+  createGraphQLFetcher<ProductsWithStockQuery, ProductsWithStockQueryVariables>(
     ProductsWithStockDocument,
     variables,
+    options,
   )
 
 export const CreateProductDocument = `
@@ -5274,20 +5378,22 @@ export const useCreateProductMutation = <TError = unknown, TContext = unknown>(
   >({
     mutationKey: ['CreateProduct'],
     mutationFn: (variables?: CreateProductMutationVariables) =>
-      fetcher<CreateProductMutation, CreateProductMutationVariables>(
-        CreateProductDocument,
-        variables,
-      )(),
+      createGraphQLFetcher<
+        CreateProductMutation,
+        CreateProductMutationVariables
+      >(CreateProductDocument, variables)(),
     ...options,
   })
 }
 
 useCreateProductMutation.fetcher = (
   variables: CreateProductMutationVariables,
+  options?: RequestInit['headers'],
 ) =>
-  fetcher<CreateProductMutation, CreateProductMutationVariables>(
+  createGraphQLFetcher<CreateProductMutation, CreateProductMutationVariables>(
     CreateProductDocument,
     variables,
+    options,
   )
 
 export const UpdateProductDocument = `
@@ -5326,20 +5432,22 @@ export const useUpdateProductMutation = <TError = unknown, TContext = unknown>(
   >({
     mutationKey: ['UpdateProduct'],
     mutationFn: (variables?: UpdateProductMutationVariables) =>
-      fetcher<UpdateProductMutation, UpdateProductMutationVariables>(
-        UpdateProductDocument,
-        variables,
-      )(),
+      createGraphQLFetcher<
+        UpdateProductMutation,
+        UpdateProductMutationVariables
+      >(UpdateProductDocument, variables)(),
     ...options,
   })
 }
 
 useUpdateProductMutation.fetcher = (
   variables: UpdateProductMutationVariables,
+  options?: RequestInit['headers'],
 ) =>
-  fetcher<UpdateProductMutation, UpdateProductMutationVariables>(
+  createGraphQLFetcher<UpdateProductMutation, UpdateProductMutationVariables>(
     UpdateProductDocument,
     variables,
+    options,
   )
 
 export const DeleteProductDocument = `
@@ -5364,20 +5472,22 @@ export const useDeleteProductMutation = <TError = unknown, TContext = unknown>(
   >({
     mutationKey: ['DeleteProduct'],
     mutationFn: (variables?: DeleteProductMutationVariables) =>
-      fetcher<DeleteProductMutation, DeleteProductMutationVariables>(
-        DeleteProductDocument,
-        variables,
-      )(),
+      createGraphQLFetcher<
+        DeleteProductMutation,
+        DeleteProductMutationVariables
+      >(DeleteProductDocument, variables)(),
     ...options,
   })
 }
 
 useDeleteProductMutation.fetcher = (
   variables: DeleteProductMutationVariables,
+  options?: RequestInit['headers'],
 ) =>
-  fetcher<DeleteProductMutation, DeleteProductMutationVariables>(
+  createGraphQLFetcher<DeleteProductMutation, DeleteProductMutationVariables>(
     DeleteProductDocument,
     variables,
+    options,
   )
 
 export const DailyReportsDocument = `
@@ -5417,10 +5527,10 @@ export const useDailyReportsQuery = <
   return useQuery<DailyReportsQuery, TError, TData>({
     queryKey:
       variables === undefined ? ['DailyReports'] : ['DailyReports', variables],
-    queryFn: fetcher<DailyReportsQuery, DailyReportsQueryVariables>(
-      DailyReportsDocument,
-      variables,
-    ),
+    queryFn: createGraphQLFetcher<
+      DailyReportsQuery,
+      DailyReportsQueryVariables
+    >(DailyReportsDocument, variables),
     ...options,
   })
 }
@@ -5453,7 +5563,7 @@ export const useInfiniteDailyReportsQuery = <
             ? ['DailyReports.infinite']
             : ['DailyReports.infinite', variables],
         queryFn: (metaData) =>
-          fetcher<DailyReportsQuery, DailyReportsQueryVariables>(
+          createGraphQLFetcher<DailyReportsQuery, DailyReportsQueryVariables>(
             DailyReportsDocument,
             { ...variables, ...(metaData.pageParam ?? {}) },
           )(),
@@ -5470,10 +5580,14 @@ useInfiniteDailyReportsQuery.getKey = (
     ? ['DailyReports.infinite']
     : ['DailyReports.infinite', variables]
 
-useDailyReportsQuery.fetcher = (variables?: DailyReportsQueryVariables) =>
-  fetcher<DailyReportsQuery, DailyReportsQueryVariables>(
+useDailyReportsQuery.fetcher = (
+  variables?: DailyReportsQueryVariables,
+  options?: RequestInit['headers'],
+) =>
+  createGraphQLFetcher<DailyReportsQuery, DailyReportsQueryVariables>(
     DailyReportsDocument,
     variables,
+    options,
   )
 
 export const GenerateDailyReportDocument = `
@@ -5517,7 +5631,7 @@ export const useGenerateDailyReportMutation = <
   >({
     mutationKey: ['GenerateDailyReport'],
     mutationFn: (variables?: GenerateDailyReportMutationVariables) =>
-      fetcher<
+      createGraphQLFetcher<
         GenerateDailyReportMutation,
         GenerateDailyReportMutationVariables
       >(GenerateDailyReportDocument, variables)(),
@@ -5527,11 +5641,12 @@ export const useGenerateDailyReportMutation = <
 
 useGenerateDailyReportMutation.fetcher = (
   variables: GenerateDailyReportMutationVariables,
+  options?: RequestInit['headers'],
 ) =>
-  fetcher<GenerateDailyReportMutation, GenerateDailyReportMutationVariables>(
-    GenerateDailyReportDocument,
-    variables,
-  )
+  createGraphQLFetcher<
+    GenerateDailyReportMutation,
+    GenerateDailyReportMutationVariables
+  >(GenerateDailyReportDocument, variables, options)
 
 export const SaleDocument = `
     query Sale($id: String!) {
@@ -5574,7 +5689,10 @@ export const useSaleQuery = <TData = SaleQuery, TError = unknown>(
 ) => {
   return useQuery<SaleQuery, TError, TData>({
     queryKey: ['Sale', variables],
-    queryFn: fetcher<SaleQuery, SaleQueryVariables>(SaleDocument, variables),
+    queryFn: createGraphQLFetcher<SaleQuery, SaleQueryVariables>(
+      SaleDocument,
+      variables,
+    ),
     ...options,
   })
 }
@@ -5599,7 +5717,7 @@ export const useInfiniteSaleQuery = <
       return {
         queryKey: optionsQueryKey ?? ['Sale.infinite', variables],
         queryFn: (metaData) =>
-          fetcher<SaleQuery, SaleQueryVariables>(SaleDocument, {
+          createGraphQLFetcher<SaleQuery, SaleQueryVariables>(SaleDocument, {
             ...variables,
             ...(metaData.pageParam ?? {}),
           })(),
@@ -5614,8 +5732,15 @@ useInfiniteSaleQuery.getKey = (variables: SaleQueryVariables) => [
   variables,
 ]
 
-useSaleQuery.fetcher = (variables: SaleQueryVariables) =>
-  fetcher<SaleQuery, SaleQueryVariables>(SaleDocument, variables)
+useSaleQuery.fetcher = (
+  variables: SaleQueryVariables,
+  options?: RequestInit['headers'],
+) =>
+  createGraphQLFetcher<SaleQuery, SaleQueryVariables>(
+    SaleDocument,
+    variables,
+    options,
+  )
 
 export const TodaysCashSalesDocument = `
     query TodaysCashSales($startDate: DateTime!, $endDate: DateTime!) {
@@ -5646,10 +5771,10 @@ export const useTodaysCashSalesQuery = <
 ) => {
   return useQuery<TodaysCashSalesQuery, TError, TData>({
     queryKey: ['TodaysCashSales', variables],
-    queryFn: fetcher<TodaysCashSalesQuery, TodaysCashSalesQueryVariables>(
-      TodaysCashSalesDocument,
-      variables,
-    ),
+    queryFn: createGraphQLFetcher<
+      TodaysCashSalesQuery,
+      TodaysCashSalesQueryVariables
+    >(TodaysCashSalesDocument, variables),
     ...options,
   })
 }
@@ -5681,10 +5806,13 @@ export const useInfiniteTodaysCashSalesQuery = <
       return {
         queryKey: optionsQueryKey ?? ['TodaysCashSales.infinite', variables],
         queryFn: (metaData) =>
-          fetcher<TodaysCashSalesQuery, TodaysCashSalesQueryVariables>(
-            TodaysCashSalesDocument,
-            { ...variables, ...(metaData.pageParam ?? {}) },
-          )(),
+          createGraphQLFetcher<
+            TodaysCashSalesQuery,
+            TodaysCashSalesQueryVariables
+          >(TodaysCashSalesDocument, {
+            ...variables,
+            ...(metaData.pageParam ?? {}),
+          })(),
         ...restOptions,
       }
     })(),
@@ -5695,10 +5823,14 @@ useInfiniteTodaysCashSalesQuery.getKey = (
   variables: TodaysCashSalesQueryVariables,
 ) => ['TodaysCashSales.infinite', variables]
 
-useTodaysCashSalesQuery.fetcher = (variables: TodaysCashSalesQueryVariables) =>
-  fetcher<TodaysCashSalesQuery, TodaysCashSalesQueryVariables>(
+useTodaysCashSalesQuery.fetcher = (
+  variables: TodaysCashSalesQueryVariables,
+  options?: RequestInit['headers'],
+) =>
+  createGraphQLFetcher<TodaysCashSalesQuery, TodaysCashSalesQueryVariables>(
     TodaysCashSalesDocument,
     variables,
+    options,
   )
 
 export const TodaysCardSalesDocument = `
@@ -5730,10 +5862,10 @@ export const useTodaysCardSalesQuery = <
 ) => {
   return useQuery<TodaysCardSalesQuery, TError, TData>({
     queryKey: ['TodaysCardSales', variables],
-    queryFn: fetcher<TodaysCardSalesQuery, TodaysCardSalesQueryVariables>(
-      TodaysCardSalesDocument,
-      variables,
-    ),
+    queryFn: createGraphQLFetcher<
+      TodaysCardSalesQuery,
+      TodaysCardSalesQueryVariables
+    >(TodaysCardSalesDocument, variables),
     ...options,
   })
 }
@@ -5765,10 +5897,13 @@ export const useInfiniteTodaysCardSalesQuery = <
       return {
         queryKey: optionsQueryKey ?? ['TodaysCardSales.infinite', variables],
         queryFn: (metaData) =>
-          fetcher<TodaysCardSalesQuery, TodaysCardSalesQueryVariables>(
-            TodaysCardSalesDocument,
-            { ...variables, ...(metaData.pageParam ?? {}) },
-          )(),
+          createGraphQLFetcher<
+            TodaysCardSalesQuery,
+            TodaysCardSalesQueryVariables
+          >(TodaysCardSalesDocument, {
+            ...variables,
+            ...(metaData.pageParam ?? {}),
+          })(),
         ...restOptions,
       }
     })(),
@@ -5779,10 +5914,14 @@ useInfiniteTodaysCardSalesQuery.getKey = (
   variables: TodaysCardSalesQueryVariables,
 ) => ['TodaysCardSales.infinite', variables]
 
-useTodaysCardSalesQuery.fetcher = (variables: TodaysCardSalesQueryVariables) =>
-  fetcher<TodaysCardSalesQuery, TodaysCardSalesQueryVariables>(
+useTodaysCardSalesQuery.fetcher = (
+  variables: TodaysCardSalesQueryVariables,
+  options?: RequestInit['headers'],
+) =>
+  createGraphQLFetcher<TodaysCardSalesQuery, TodaysCardSalesQueryVariables>(
     TodaysCardSalesDocument,
     variables,
+    options,
   )
 
 export const TodaysRefundsDocument = `
@@ -5810,10 +5949,10 @@ export const useTodaysRefundsQuery = <
 ) => {
   return useQuery<TodaysRefundsQuery, TError, TData>({
     queryKey: ['TodaysRefunds', variables],
-    queryFn: fetcher<TodaysRefundsQuery, TodaysRefundsQueryVariables>(
-      TodaysRefundsDocument,
-      variables,
-    ),
+    queryFn: createGraphQLFetcher<
+      TodaysRefundsQuery,
+      TodaysRefundsQueryVariables
+    >(TodaysRefundsDocument, variables),
     ...options,
   })
 }
@@ -5845,7 +5984,7 @@ export const useInfiniteTodaysRefundsQuery = <
       return {
         queryKey: optionsQueryKey ?? ['TodaysRefunds.infinite', variables],
         queryFn: (metaData) =>
-          fetcher<TodaysRefundsQuery, TodaysRefundsQueryVariables>(
+          createGraphQLFetcher<TodaysRefundsQuery, TodaysRefundsQueryVariables>(
             TodaysRefundsDocument,
             { ...variables, ...(metaData.pageParam ?? {}) },
           )(),
@@ -5859,10 +5998,14 @@ useInfiniteTodaysRefundsQuery.getKey = (
   variables: TodaysRefundsQueryVariables,
 ) => ['TodaysRefunds.infinite', variables]
 
-useTodaysRefundsQuery.fetcher = (variables: TodaysRefundsQueryVariables) =>
-  fetcher<TodaysRefundsQuery, TodaysRefundsQueryVariables>(
+useTodaysRefundsQuery.fetcher = (
+  variables: TodaysRefundsQueryVariables,
+  options?: RequestInit['headers'],
+) =>
+  createGraphQLFetcher<TodaysRefundsQuery, TodaysRefundsQueryVariables>(
     TodaysRefundsDocument,
     variables,
+    options,
   )
 
 export const SalesHistoryDocument = `
@@ -5919,10 +6062,10 @@ export const useSalesHistoryQuery = <
   return useQuery<SalesHistoryQuery, TError, TData>({
     queryKey:
       variables === undefined ? ['SalesHistory'] : ['SalesHistory', variables],
-    queryFn: fetcher<SalesHistoryQuery, SalesHistoryQueryVariables>(
-      SalesHistoryDocument,
-      variables,
-    ),
+    queryFn: createGraphQLFetcher<
+      SalesHistoryQuery,
+      SalesHistoryQueryVariables
+    >(SalesHistoryDocument, variables),
     ...options,
   })
 }
@@ -5955,7 +6098,7 @@ export const useInfiniteSalesHistoryQuery = <
             ? ['SalesHistory.infinite']
             : ['SalesHistory.infinite', variables],
         queryFn: (metaData) =>
-          fetcher<SalesHistoryQuery, SalesHistoryQueryVariables>(
+          createGraphQLFetcher<SalesHistoryQuery, SalesHistoryQueryVariables>(
             SalesHistoryDocument,
             { ...variables, ...(metaData.pageParam ?? {}) },
           )(),
@@ -5972,10 +6115,14 @@ useInfiniteSalesHistoryQuery.getKey = (
     ? ['SalesHistory.infinite']
     : ['SalesHistory.infinite', variables]
 
-useSalesHistoryQuery.fetcher = (variables?: SalesHistoryQueryVariables) =>
-  fetcher<SalesHistoryQuery, SalesHistoryQueryVariables>(
+useSalesHistoryQuery.fetcher = (
+  variables?: SalesHistoryQueryVariables,
+  options?: RequestInit['headers'],
+) =>
+  createGraphQLFetcher<SalesHistoryQuery, SalesHistoryQueryVariables>(
     SalesHistoryDocument,
     variables,
+    options,
   )
 
 export const CreateSaleDocument = `
@@ -6010,7 +6157,7 @@ export const useCreateSaleMutation = <TError = unknown, TContext = unknown>(
   >({
     mutationKey: ['CreateSale'],
     mutationFn: (variables?: CreateSaleMutationVariables) =>
-      fetcher<CreateSaleMutation, CreateSaleMutationVariables>(
+      createGraphQLFetcher<CreateSaleMutation, CreateSaleMutationVariables>(
         CreateSaleDocument,
         variables,
       )(),
@@ -6018,10 +6165,14 @@ export const useCreateSaleMutation = <TError = unknown, TContext = unknown>(
   })
 }
 
-useCreateSaleMutation.fetcher = (variables: CreateSaleMutationVariables) =>
-  fetcher<CreateSaleMutation, CreateSaleMutationVariables>(
+useCreateSaleMutation.fetcher = (
+  variables: CreateSaleMutationVariables,
+  options?: RequestInit['headers'],
+) =>
+  createGraphQLFetcher<CreateSaleMutation, CreateSaleMutationVariables>(
     CreateSaleDocument,
     variables,
+    options,
   )
 
 export const RefundSaleItemDocument = `
@@ -6057,20 +6208,22 @@ export const useRefundSaleItemMutation = <TError = unknown, TContext = unknown>(
   >({
     mutationKey: ['RefundSaleItem'],
     mutationFn: (variables?: RefundSaleItemMutationVariables) =>
-      fetcher<RefundSaleItemMutation, RefundSaleItemMutationVariables>(
-        RefundSaleItemDocument,
-        variables,
-      )(),
+      createGraphQLFetcher<
+        RefundSaleItemMutation,
+        RefundSaleItemMutationVariables
+      >(RefundSaleItemDocument, variables)(),
     ...options,
   })
 }
 
 useRefundSaleItemMutation.fetcher = (
   variables: RefundSaleItemMutationVariables,
+  options?: RequestInit['headers'],
 ) =>
-  fetcher<RefundSaleItemMutation, RefundSaleItemMutationVariables>(
+  createGraphQLFetcher<RefundSaleItemMutation, RefundSaleItemMutationVariables>(
     RefundSaleItemDocument,
     variables,
+    options,
   )
 
 export const ProductStockDocument = `
@@ -6110,10 +6263,10 @@ export const useProductStockQuery = <
 ) => {
   return useQuery<ProductStockQuery, TError, TData>({
     queryKey: ['ProductStock', variables],
-    queryFn: fetcher<ProductStockQuery, ProductStockQueryVariables>(
-      ProductStockDocument,
-      variables,
-    ),
+    queryFn: createGraphQLFetcher<
+      ProductStockQuery,
+      ProductStockQueryVariables
+    >(ProductStockDocument, variables),
     ...options,
   })
 }
@@ -6145,7 +6298,7 @@ export const useInfiniteProductStockQuery = <
       return {
         queryKey: optionsQueryKey ?? ['ProductStock.infinite', variables],
         queryFn: (metaData) =>
-          fetcher<ProductStockQuery, ProductStockQueryVariables>(
+          createGraphQLFetcher<ProductStockQuery, ProductStockQueryVariables>(
             ProductStockDocument,
             { ...variables, ...(metaData.pageParam ?? {}) },
           )(),
@@ -6159,10 +6312,14 @@ useInfiniteProductStockQuery.getKey = (
   variables: ProductStockQueryVariables,
 ) => ['ProductStock.infinite', variables]
 
-useProductStockQuery.fetcher = (variables: ProductStockQueryVariables) =>
-  fetcher<ProductStockQuery, ProductStockQueryVariables>(
+useProductStockQuery.fetcher = (
+  variables: ProductStockQueryVariables,
+  options?: RequestInit['headers'],
+) =>
+  createGraphQLFetcher<ProductStockQuery, ProductStockQueryVariables>(
     ProductStockDocument,
     variables,
+    options,
   )
 
 export const StockLotsDocument = `
@@ -6190,7 +6347,7 @@ export const useStockLotsQuery = <TData = StockLotsQuery, TError = unknown>(
 ) => {
   return useQuery<StockLotsQuery, TError, TData>({
     queryKey: ['StockLots', variables],
-    queryFn: fetcher<StockLotsQuery, StockLotsQueryVariables>(
+    queryFn: createGraphQLFetcher<StockLotsQuery, StockLotsQueryVariables>(
       StockLotsDocument,
       variables,
     ),
@@ -6225,10 +6382,10 @@ export const useInfiniteStockLotsQuery = <
       return {
         queryKey: optionsQueryKey ?? ['StockLots.infinite', variables],
         queryFn: (metaData) =>
-          fetcher<StockLotsQuery, StockLotsQueryVariables>(StockLotsDocument, {
-            ...variables,
-            ...(metaData.pageParam ?? {}),
-          })(),
+          createGraphQLFetcher<StockLotsQuery, StockLotsQueryVariables>(
+            StockLotsDocument,
+            { ...variables, ...(metaData.pageParam ?? {}) },
+          )(),
         ...restOptions,
       }
     })(),
@@ -6240,8 +6397,15 @@ useInfiniteStockLotsQuery.getKey = (variables: StockLotsQueryVariables) => [
   variables,
 ]
 
-useStockLotsQuery.fetcher = (variables: StockLotsQueryVariables) =>
-  fetcher<StockLotsQuery, StockLotsQueryVariables>(StockLotsDocument, variables)
+useStockLotsQuery.fetcher = (
+  variables: StockLotsQueryVariables,
+  options?: RequestInit['headers'],
+) =>
+  createGraphQLFetcher<StockLotsQuery, StockLotsQueryVariables>(
+    StockLotsDocument,
+    variables,
+    options,
+  )
 
 export const AddStockLotDocument = `
     mutation AddStockLot($input: AddStockLotInput!) {
@@ -6276,7 +6440,7 @@ export const useAddStockLotMutation = <TError = unknown, TContext = unknown>(
   >({
     mutationKey: ['AddStockLot'],
     mutationFn: (variables?: AddStockLotMutationVariables) =>
-      fetcher<AddStockLotMutation, AddStockLotMutationVariables>(
+      createGraphQLFetcher<AddStockLotMutation, AddStockLotMutationVariables>(
         AddStockLotDocument,
         variables,
       )(),
@@ -6284,10 +6448,14 @@ export const useAddStockLotMutation = <TError = unknown, TContext = unknown>(
   })
 }
 
-useAddStockLotMutation.fetcher = (variables: AddStockLotMutationVariables) =>
-  fetcher<AddStockLotMutation, AddStockLotMutationVariables>(
+useAddStockLotMutation.fetcher = (
+  variables: AddStockLotMutationVariables,
+  options?: RequestInit['headers'],
+) =>
+  createGraphQLFetcher<AddStockLotMutation, AddStockLotMutationVariables>(
     AddStockLotDocument,
     variables,
+    options,
   )
 
 export const AddStockBulkDocument = `
@@ -6323,7 +6491,7 @@ export const useAddStockBulkMutation = <TError = unknown, TContext = unknown>(
   >({
     mutationKey: ['AddStockBulk'],
     mutationFn: (variables?: AddStockBulkMutationVariables) =>
-      fetcher<AddStockBulkMutation, AddStockBulkMutationVariables>(
+      createGraphQLFetcher<AddStockBulkMutation, AddStockBulkMutationVariables>(
         AddStockBulkDocument,
         variables,
       )(),
@@ -6331,10 +6499,14 @@ export const useAddStockBulkMutation = <TError = unknown, TContext = unknown>(
   })
 }
 
-useAddStockBulkMutation.fetcher = (variables: AddStockBulkMutationVariables) =>
-  fetcher<AddStockBulkMutation, AddStockBulkMutationVariables>(
+useAddStockBulkMutation.fetcher = (
+  variables: AddStockBulkMutationVariables,
+  options?: RequestInit['headers'],
+) =>
+  createGraphQLFetcher<AddStockBulkMutation, AddStockBulkMutationVariables>(
     AddStockBulkDocument,
     variables,
+    options,
   )
 
 export const StockLogsDocument = `
@@ -6375,7 +6547,7 @@ export const useStockLogsQuery = <TData = StockLogsQuery, TError = unknown>(
   return useQuery<StockLogsQuery, TError, TData>({
     queryKey:
       variables === undefined ? ['StockLogs'] : ['StockLogs', variables],
-    queryFn: fetcher<StockLogsQuery, StockLogsQueryVariables>(
+    queryFn: createGraphQLFetcher<StockLogsQuery, StockLogsQueryVariables>(
       StockLogsDocument,
       variables,
     ),
@@ -6411,10 +6583,10 @@ export const useInfiniteStockLogsQuery = <
             ? ['StockLogs.infinite']
             : ['StockLogs.infinite', variables],
         queryFn: (metaData) =>
-          fetcher<StockLogsQuery, StockLogsQueryVariables>(StockLogsDocument, {
-            ...variables,
-            ...(metaData.pageParam ?? {}),
-          })(),
+          createGraphQLFetcher<StockLogsQuery, StockLogsQueryVariables>(
+            StockLogsDocument,
+            { ...variables, ...(metaData.pageParam ?? {}) },
+          )(),
         ...restOptions,
       }
     })(),
@@ -6426,8 +6598,15 @@ useInfiniteStockLogsQuery.getKey = (variables?: StockLogsQueryVariables) =>
     ? ['StockLogs.infinite']
     : ['StockLogs.infinite', variables]
 
-useStockLogsQuery.fetcher = (variables?: StockLogsQueryVariables) =>
-  fetcher<StockLogsQuery, StockLogsQueryVariables>(StockLogsDocument, variables)
+useStockLogsQuery.fetcher = (
+  variables?: StockLogsQueryVariables,
+  options?: RequestInit['headers'],
+) =>
+  createGraphQLFetcher<StockLogsQuery, StockLogsQueryVariables>(
+    StockLogsDocument,
+    variables,
+    options,
+  )
 
 export const SuppliersDocument = `
     query Suppliers {
@@ -6454,7 +6633,7 @@ export const useSuppliersQuery = <TData = SuppliersQuery, TError = unknown>(
   return useQuery<SuppliersQuery, TError, TData>({
     queryKey:
       variables === undefined ? ['Suppliers'] : ['Suppliers', variables],
-    queryFn: fetcher<SuppliersQuery, SuppliersQueryVariables>(
+    queryFn: createGraphQLFetcher<SuppliersQuery, SuppliersQueryVariables>(
       SuppliersDocument,
       variables,
     ),
@@ -6490,10 +6669,10 @@ export const useInfiniteSuppliersQuery = <
             ? ['Suppliers.infinite']
             : ['Suppliers.infinite', variables],
         queryFn: (metaData) =>
-          fetcher<SuppliersQuery, SuppliersQueryVariables>(SuppliersDocument, {
-            ...variables,
-            ...(metaData.pageParam ?? {}),
-          })(),
+          createGraphQLFetcher<SuppliersQuery, SuppliersQueryVariables>(
+            SuppliersDocument,
+            { ...variables, ...(metaData.pageParam ?? {}) },
+          )(),
         ...restOptions,
       }
     })(),
@@ -6505,8 +6684,15 @@ useInfiniteSuppliersQuery.getKey = (variables?: SuppliersQueryVariables) =>
     ? ['Suppliers.infinite']
     : ['Suppliers.infinite', variables]
 
-useSuppliersQuery.fetcher = (variables?: SuppliersQueryVariables) =>
-  fetcher<SuppliersQuery, SuppliersQueryVariables>(SuppliersDocument, variables)
+useSuppliersQuery.fetcher = (
+  variables?: SuppliersQueryVariables,
+  options?: RequestInit['headers'],
+) =>
+  createGraphQLFetcher<SuppliersQuery, SuppliersQueryVariables>(
+    SuppliersDocument,
+    variables,
+    options,
+  )
 
 export const SupplierDocument = `
     query Supplier($id: String!) {
@@ -6532,7 +6718,7 @@ export const useSupplierQuery = <TData = SupplierQuery, TError = unknown>(
 ) => {
   return useQuery<SupplierQuery, TError, TData>({
     queryKey: ['Supplier', variables],
-    queryFn: fetcher<SupplierQuery, SupplierQueryVariables>(
+    queryFn: createGraphQLFetcher<SupplierQuery, SupplierQueryVariables>(
       SupplierDocument,
       variables,
     ),
@@ -6563,10 +6749,10 @@ export const useInfiniteSupplierQuery = <
       return {
         queryKey: optionsQueryKey ?? ['Supplier.infinite', variables],
         queryFn: (metaData) =>
-          fetcher<SupplierQuery, SupplierQueryVariables>(SupplierDocument, {
-            ...variables,
-            ...(metaData.pageParam ?? {}),
-          })(),
+          createGraphQLFetcher<SupplierQuery, SupplierQueryVariables>(
+            SupplierDocument,
+            { ...variables, ...(metaData.pageParam ?? {}) },
+          )(),
         ...restOptions,
       }
     })(),
@@ -6578,8 +6764,15 @@ useInfiniteSupplierQuery.getKey = (variables: SupplierQueryVariables) => [
   variables,
 ]
 
-useSupplierQuery.fetcher = (variables: SupplierQueryVariables) =>
-  fetcher<SupplierQuery, SupplierQueryVariables>(SupplierDocument, variables)
+useSupplierQuery.fetcher = (
+  variables: SupplierQueryVariables,
+  options?: RequestInit['headers'],
+) =>
+  createGraphQLFetcher<SupplierQuery, SupplierQueryVariables>(
+    SupplierDocument,
+    variables,
+    options,
+  )
 
 export const CreateSupplierDocument = `
     mutation CreateSupplier($input: CreateSupplierInput!) {
@@ -6613,20 +6806,22 @@ export const useCreateSupplierMutation = <TError = unknown, TContext = unknown>(
   >({
     mutationKey: ['CreateSupplier'],
     mutationFn: (variables?: CreateSupplierMutationVariables) =>
-      fetcher<CreateSupplierMutation, CreateSupplierMutationVariables>(
-        CreateSupplierDocument,
-        variables,
-      )(),
+      createGraphQLFetcher<
+        CreateSupplierMutation,
+        CreateSupplierMutationVariables
+      >(CreateSupplierDocument, variables)(),
     ...options,
   })
 }
 
 useCreateSupplierMutation.fetcher = (
   variables: CreateSupplierMutationVariables,
+  options?: RequestInit['headers'],
 ) =>
-  fetcher<CreateSupplierMutation, CreateSupplierMutationVariables>(
+  createGraphQLFetcher<CreateSupplierMutation, CreateSupplierMutationVariables>(
     CreateSupplierDocument,
     variables,
+    options,
   )
 
 export const UpdateSupplierDocument = `
@@ -6661,20 +6856,22 @@ export const useUpdateSupplierMutation = <TError = unknown, TContext = unknown>(
   >({
     mutationKey: ['UpdateSupplier'],
     mutationFn: (variables?: UpdateSupplierMutationVariables) =>
-      fetcher<UpdateSupplierMutation, UpdateSupplierMutationVariables>(
-        UpdateSupplierDocument,
-        variables,
-      )(),
+      createGraphQLFetcher<
+        UpdateSupplierMutation,
+        UpdateSupplierMutationVariables
+      >(UpdateSupplierDocument, variables)(),
     ...options,
   })
 }
 
 useUpdateSupplierMutation.fetcher = (
   variables: UpdateSupplierMutationVariables,
+  options?: RequestInit['headers'],
 ) =>
-  fetcher<UpdateSupplierMutation, UpdateSupplierMutationVariables>(
+  createGraphQLFetcher<UpdateSupplierMutation, UpdateSupplierMutationVariables>(
     UpdateSupplierDocument,
     variables,
+    options,
   )
 
 export const DeleteSupplierDocument = `
@@ -6699,20 +6896,22 @@ export const useDeleteSupplierMutation = <TError = unknown, TContext = unknown>(
   >({
     mutationKey: ['DeleteSupplier'],
     mutationFn: (variables?: DeleteSupplierMutationVariables) =>
-      fetcher<DeleteSupplierMutation, DeleteSupplierMutationVariables>(
-        DeleteSupplierDocument,
-        variables,
-      )(),
+      createGraphQLFetcher<
+        DeleteSupplierMutation,
+        DeleteSupplierMutationVariables
+      >(DeleteSupplierDocument, variables)(),
     ...options,
   })
 }
 
 useDeleteSupplierMutation.fetcher = (
   variables: DeleteSupplierMutationVariables,
+  options?: RequestInit['headers'],
 ) =>
-  fetcher<DeleteSupplierMutation, DeleteSupplierMutationVariables>(
+  createGraphQLFetcher<DeleteSupplierMutation, DeleteSupplierMutationVariables>(
     DeleteSupplierDocument,
     variables,
+    options,
   )
 
 export const ListFilesDocument = `
@@ -6742,7 +6941,7 @@ export const useListFilesQuery = <TData = ListFilesQuery, TError = unknown>(
   return useQuery<ListFilesQuery, TError, TData>({
     queryKey:
       variables === undefined ? ['ListFiles'] : ['ListFiles', variables],
-    queryFn: fetcher<ListFilesQuery, ListFilesQueryVariables>(
+    queryFn: createGraphQLFetcher<ListFilesQuery, ListFilesQueryVariables>(
       ListFilesDocument,
       variables,
     ),
@@ -6778,10 +6977,10 @@ export const useInfiniteListFilesQuery = <
             ? ['ListFiles.infinite']
             : ['ListFiles.infinite', variables],
         queryFn: (metaData) =>
-          fetcher<ListFilesQuery, ListFilesQueryVariables>(ListFilesDocument, {
-            ...variables,
-            ...(metaData.pageParam ?? {}),
-          })(),
+          createGraphQLFetcher<ListFilesQuery, ListFilesQueryVariables>(
+            ListFilesDocument,
+            { ...variables, ...(metaData.pageParam ?? {}) },
+          )(),
         ...restOptions,
       }
     })(),
@@ -6793,8 +6992,15 @@ useInfiniteListFilesQuery.getKey = (variables?: ListFilesQueryVariables) =>
     ? ['ListFiles.infinite']
     : ['ListFiles.infinite', variables]
 
-useListFilesQuery.fetcher = (variables?: ListFilesQueryVariables) =>
-  fetcher<ListFilesQuery, ListFilesQueryVariables>(ListFilesDocument, variables)
+useListFilesQuery.fetcher = (
+  variables?: ListFilesQueryVariables,
+  options?: RequestInit['headers'],
+) =>
+  createGraphQLFetcher<ListFilesQuery, ListFilesQueryVariables>(
+    ListFilesDocument,
+    variables,
+    options,
+  )
 
 export const DeleteFileDocument = `
     mutation DeleteFile($input: DeleteFileInput!) {
@@ -6818,7 +7024,7 @@ export const useDeleteFileMutation = <TError = unknown, TContext = unknown>(
   >({
     mutationKey: ['DeleteFile'],
     mutationFn: (variables?: DeleteFileMutationVariables) =>
-      fetcher<DeleteFileMutation, DeleteFileMutationVariables>(
+      createGraphQLFetcher<DeleteFileMutation, DeleteFileMutationVariables>(
         DeleteFileDocument,
         variables,
       )(),
@@ -6826,10 +7032,14 @@ export const useDeleteFileMutation = <TError = unknown, TContext = unknown>(
   })
 }
 
-useDeleteFileMutation.fetcher = (variables: DeleteFileMutationVariables) =>
-  fetcher<DeleteFileMutation, DeleteFileMutationVariables>(
+useDeleteFileMutation.fetcher = (
+  variables: DeleteFileMutationVariables,
+  options?: RequestInit['headers'],
+) =>
+  createGraphQLFetcher<DeleteFileMutation, DeleteFileMutationVariables>(
     DeleteFileDocument,
     variables,
+    options,
   )
 
 export const GenerateUploadUrlDocument = `
@@ -6868,21 +7078,22 @@ export const useGenerateUploadUrlMutation = <
   >({
     mutationKey: ['GenerateUploadUrl'],
     mutationFn: (variables?: GenerateUploadUrlMutationVariables) =>
-      fetcher<GenerateUploadUrlMutation, GenerateUploadUrlMutationVariables>(
-        GenerateUploadUrlDocument,
-        variables,
-      )(),
+      createGraphQLFetcher<
+        GenerateUploadUrlMutation,
+        GenerateUploadUrlMutationVariables
+      >(GenerateUploadUrlDocument, variables)(),
     ...options,
   })
 }
 
 useGenerateUploadUrlMutation.fetcher = (
   variables: GenerateUploadUrlMutationVariables,
+  options?: RequestInit['headers'],
 ) =>
-  fetcher<GenerateUploadUrlMutation, GenerateUploadUrlMutationVariables>(
-    GenerateUploadUrlDocument,
-    variables,
-  )
+  createGraphQLFetcher<
+    GenerateUploadUrlMutation,
+    GenerateUploadUrlMutationVariables
+  >(GenerateUploadUrlDocument, variables, options)
 
 export const ConfirmUploadDocument = `
     mutation ConfirmUpload($input: ConfirmUploadInput!) {
@@ -6914,18 +7125,20 @@ export const useConfirmUploadMutation = <TError = unknown, TContext = unknown>(
   >({
     mutationKey: ['ConfirmUpload'],
     mutationFn: (variables?: ConfirmUploadMutationVariables) =>
-      fetcher<ConfirmUploadMutation, ConfirmUploadMutationVariables>(
-        ConfirmUploadDocument,
-        variables,
-      )(),
+      createGraphQLFetcher<
+        ConfirmUploadMutation,
+        ConfirmUploadMutationVariables
+      >(ConfirmUploadDocument, variables)(),
     ...options,
   })
 }
 
 useConfirmUploadMutation.fetcher = (
   variables: ConfirmUploadMutationVariables,
+  options?: RequestInit['headers'],
 ) =>
-  fetcher<ConfirmUploadMutation, ConfirmUploadMutationVariables>(
+  createGraphQLFetcher<ConfirmUploadMutation, ConfirmUploadMutationVariables>(
     ConfirmUploadDocument,
     variables,
+    options,
   )

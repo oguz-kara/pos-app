@@ -1,10 +1,5 @@
 import type { CodegenConfig } from '@graphql-codegen/cli';
 
-// Use environment variable or fallback to localhost
-const graphqlEndpoint = process.env.NEXT_PUBLIC_APP_URL
-  ? `${process.env.NEXT_PUBLIC_APP_URL}/api/graphql`
-  : 'http://localhost:3000/api/graphql';
-
 const config: CodegenConfig = {
   // Use generated schema file instead of introspection
   schema: './lib/graphql/schema.graphql',
@@ -17,19 +12,9 @@ const config: CodegenConfig = {
         'typescript-operations',
         'typescript-react-query'
       ],
-      skipDocumentsValidation: true,
       config: {
         skipTypename: false,
-        skipDocumentsValidation: true,
-        fetcher: {
-          endpoint: graphqlEndpoint,
-          fetchParams: {
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            credentials: 'include',
-          }
-        },
+        fetcher: '@/lib/graphql/client#createGraphQLFetcher',
         exposeQueryKeys: true,
         exposeFetcher: true,
         addInfiniteQuery: true,
