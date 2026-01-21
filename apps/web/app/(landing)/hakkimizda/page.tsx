@@ -20,20 +20,20 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Hakkımızda | Kara Ticaret - evka 3 Bornova Fidanlık ve Hırdavat",
+  title: "Hakkımızda | Kara Ticaret - Evka 3 Bornova Fidanlık ve Hırdavat",
   description:
-    "2016'dan beri evka 3'ün güvenilir fidanlık ve hırdavatı. Aile işletmemizin hikayesi, değerlerimiz ve neden binlerce müşteri bize güveniyor.",
+    "2016'dan beri Evka 3'ün güvenilir fidanlık ve hırdavatı. Aile işletmemizin hikayesi, değerlerimiz ve neden binlerce müşteri bize güveniyor.",
   keywords: [
     "kara ticaret hakkında",
-    "evka 3 fidanlık",
+    "Evka 3 fidanlık",
     "bornova hırdavat",
     "aile işletmesi",
     "yerel işletme bornova",
   ],
   openGraph: {
-    title: "Hakkımızda | Kara Ticaret - evka 3'ün Köklü İşletmesi",
+    title: "Hakkımızda | Kara Ticaret - Evka 3'ün Köklü İşletmesi",
     description:
-      "9 yıllık deneyim, üç nesil bilgi birikimi. evka 3'te hırdavat ve fidanlık hizmeti veren aile işletmemizi tanıyın.",
+      "9 yıllık deneyim, üç nesil bilgi birikimi. Evka 3'te hırdavat ve fidanlık hizmeti veren aile işletmemizi tanıyın.",
     type: "website",
     locale: "tr_TR",
   },
@@ -65,7 +65,7 @@ export default function AboutPage() {
             </a>
             <div className="flex items-center gap-1 text-muted-foreground">
               <MapPin className="h-4 w-4" />
-              <span className="hidden md:inline">evka 3, Bornova</span>
+              <span className="hidden md:inline">Evka 3, Bornova</span>
             </div>
           </div>
         </div>
@@ -100,7 +100,7 @@ export default function AboutPage() {
             Hakkımızda
           </h1>
           <p className="mt-4 text-xl md:text-2xl text-white/90 max-w-3xl mx-auto drop-shadow-lg">
-            2016&apos;dan beri evka 3&apos;ün kalbi, ailece büyüttüğümüz bir
+            2016&apos;dan beri Evka 3&apos;ün kalbi, ailece büyüttüğümüz bir
             işletme
           </p>
         </div>
@@ -113,7 +113,7 @@ export default function AboutPage() {
             <h2 className="text-3xl font-bold mb-6">Hikayemiz</h2>
             <div className="prose prose-lg max-w-none">
               <p className="text-muted-foreground leading-relaxed">
-                <strong>Kara Ticaret</strong>, 2016 yılında evka 3 Bornova&apos;da
+                <strong>Kara Ticaret</strong>, 2016 yılında Evka 3 Bornova&apos;da
                 faaliyete geçen, aile şirketi bir işletmedir. Üç neslin bilgi
                 birikimi ve dokuz yıllık deneyimimizle, her gün binlerce
                 müşterimize hizmet veriyoruz.
@@ -128,7 +128,7 @@ export default function AboutPage() {
               </p>
 
               <p className="text-muted-foreground leading-relaxed mt-4">
-                Bugün evka 3&apos;ün{" "}
+                Bugün Evka 3&apos;ün{" "}
                 <strong>tek saksılı bitki satıcısı</strong> olmaktan ve her gün
                 09:00&apos;dan 22:00&apos;a kadar kapılarımızı açık tutmaktan
                 gurur duyuyoruz. İş sadece ürün satmak değil; güvenilir olmak,
@@ -200,7 +200,7 @@ export default function AboutPage() {
               </div>
               <div>
                 <h3 className="font-semibold mb-2">
-                  evka 3&apos;ün Tek Saksılı Bitki Satıcısı
+                  Evka 3&apos;ün Tek Saksılı Bitki Satıcısı
                 </h3>
                 <p className="text-sm text-muted-foreground">
                   Balkonunuzu yeşillendirmek için en geniş iç-dış mekan bitki
@@ -218,7 +218,7 @@ export default function AboutPage() {
               <div>
                 <h3 className="font-semibold mb-2">Her Gün 09:00 - 22:00</h3>
                 <p className="text-sm text-muted-foreground">
-                  evka 3&apos;te en geç kapanan hırdavat ve fidanlığız. İşten
+                  Evka 3&apos;te en geç kapanan hırdavat ve fidanlığız. İşten
                   döndükten sonra bile uğrayabilirsiniz.
                 </p>
               </div>
@@ -248,7 +248,7 @@ export default function AboutPage() {
               <div>
                 <h3 className="font-semibold mb-2">Yerel ve Ulaşılabilir</h3>
                 <p className="text-sm text-muted-foreground">
-                  evka 3 Migros karşısında, kolayca ulaşabileceğiniz bir
+                  Evka 3 Migros karşısında, kolayca ulaşabileceğiniz bir
                   konumdayız. Teslimat hizmetimiz de mevcut.
                 </p>
               </div>
@@ -321,7 +321,7 @@ export default function AboutPage() {
               </Button>
             </a>
             <a
-              href="https://maps.google.com/?q=Kara+Ticaret+evka 3+Bornova"
+              href="https://maps.google.com/?q=Kara+Ticaret+Evka 3+Bornova"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -345,7 +345,7 @@ export default function AboutPage() {
             <div>
               <h3 className="font-semibold mb-4">Kara Ticaret</h3>
               <p className="text-sm text-muted-foreground">
-                2016&apos;dan beri evka 3&apos;te hizmetinizdeyiz.
+                2016&apos;dan beri Evka 3&apos;te hizmetinizdeyiz.
               </p>
             </div>
             <div>
@@ -357,7 +357,7 @@ export default function AboutPage() {
                 </div>
                 <div className="flex items-center gap-2">
                   <MapPin className="h-4 w-4" />
-                  <span>Burcu Apt, Cengiz Han Cd No: 14, evka 3, Bornova</span>
+                  <span>Burcu Apt, Cengiz Han Cd No: 14, Evka 3, Bornova</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Clock className="h-4 w-4" />

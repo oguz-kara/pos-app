@@ -74,7 +74,7 @@ export function CTASection({
             </Button>
           </a>
           <a
-            href="https://maps.google.com/?q=Kara+Ticaret+evka 3+Bornova"
+            href="https://maps.google.com/?q=Kara+Ticaret+Evka 3+Bornova"
             target="_blank"
             rel="noopener noreferrer"
           >

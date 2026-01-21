@@ -14,18 +14,18 @@ import type { Metadata } from "next";
 import { CONTACT_INFO } from "@/lib/content/types";
 
 export const metadata: Metadata = {
-  title: "İletişim | Kara Ticaret - evka 3 Bornova",
+  title: "İletişim | Kara Ticaret - Evka 3 Bornova",
   description:
-    "Kara Ticaret ile iletişime geçin. evka 3 Bornova'daki mağazamızı ziyaret edin veya bizi arayın. Telefon: 0545 653 45 99. Her gün 09:00-22:00 açık.",
+    "Kara Ticaret ile iletişime geçin. Evka 3 Bornova'daki mağazamızı ziyaret edin veya bizi arayın. Telefon: 0545 653 45 99. Her gün 09:00-22:00 açık.",
   keywords: [
     "kara ticaret iletişim",
-    "evka 3 hırdavat telefon",
+    "Evka 3 hırdavat telefon",
     "bornova fidanlık adres",
     "kara ticaret nerede",
-    "evka 3 çalışma saatleri",
+    "Evka 3 çalışma saatleri",
   ],
   openGraph: {
-    title: "İletişim | Kara Ticaret - evka 3 Bornova",
+    title: "İletişim | Kara Ticaret - Evka 3 Bornova",
     description:
       "Bizi arayın, mesaj gönderin veya mağazamızı ziyaret edin. Her gün 09:00-22:00 hizmetinizdeyiz.",
     type: "website",
@@ -115,7 +115,7 @@ export default function ContactPage() {
                 Mağazamıza gelin
               </p>
               <a
-                href="https://maps.google.com/?q=Kara+Ticaret+evka 3+Bornova"
+                href="https://maps.google.com/?q=Kara+Ticaret+Evka 3+Bornova"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -154,7 +154,7 @@ export default function ContactPage() {
                       {CONTACT_INFO.address.district}, {CONTACT_INFO.address.city}
                     </p>
                     <p className="text-sm text-muted-foreground mt-2">
-                      📍 evka 3 Migros karşısı
+                      📍 Evka 3 Migros karşısı
                     </p>
                   </div>
                 </div>
@@ -172,7 +172,7 @@ export default function ContactPage() {
                       <strong>Pazartesi - Pazar:</strong> {CONTACT_INFO.hours.weekdays}
                     </p>
                     <p className="text-sm text-green-600 mt-2 font-medium">
-                      ✓ Her gün açığız! evka 3&apos;te en geç kapanan işletme
+                      ✓ Her gün açığız! Evka 3&apos;te en geç kapanan işletme
                     </p>
                   </div>
                 </div>

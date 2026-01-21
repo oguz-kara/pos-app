@@ -25,11 +25,11 @@ export const GBP_SERVICES: GBPService[] = [
     ],
     tags: ["cicek", "mevsimlik", "balkon", "bahce"],
     seo: {
-      title: "Mevsimlik Çiçek Satışı evka 3 | Sardunya, Petunya, Begonya",
+      title: "Mevsimlik Çiçek Satışı Evka 3 | Sardunya, Petunya, Begonya",
       description:
-        "Balkon ve bahçeler için mevsimlik çiçek fideleri. Sardunya, petunya, begonya. Uzman danışmanlık ile doğru çeşidi seçin. evka 3 Bornova.",
+        "Balkon ve bahçeler için mevsimlik çiçek fideleri. Sardunya, petunya, begonya. Uzman danışmanlık ile doğru çeşidi seçin. Evka 3 Bornova.",
       keywords: [
-        "mevsimlik çiçek evka 3",
+        "mevsimlik çiçek Evka 3",
         "sardunya satışı",
         "petunya fide",
         "balkon çiçeği",
@@ -53,9 +53,9 @@ export const GBP_SERVICES: GBPService[] = [
     ],
     tags: ["ofis", "acilis", "kurumsal", "ic-mekan"],
     seo: {
-      title: "Ofis Açılış Çiçeği İzmir | Kurumsal Bitki Hediyesi - evka 3",
+      title: "Ofis Açılış Çiçeği İzmir | Kurumsal Bitki Hediyesi - Evka 3",
       description:
-        "Ofis açılışları için gösterişli saksılı bitkiler. Yucca, Benjamin, Difenbahya. İzmir içi teslimat. evka 3 Bornova. 0545 653 45 99",
+        "Ofis açılışları için gösterişli saksılı bitkiler. Yucca, Benjamin, Difenbahya. İzmir içi teslimat. Evka 3 Bornova. 0545 653 45 99",
       keywords: [
         "ofis açılış çiçeği izmir",
         "kurumsal bitki hediyesi",
@@ -81,9 +81,9 @@ export const GBP_SERVICES: GBPService[] = [
     ],
     tags: ["hediye", "kutlama", "ozel-gun", "saksi"],
     seo: {
-      title: "Kutlama Bitkisi Hediye | Özel Gün Saksılı Çiçek - evka 3",
+      title: "Kutlama Bitkisi Hediye | Özel Gün Saksılı Çiçek - Evka 3",
       description:
-        "Özel günler için yaşayan hediyeler. Saksılı bitkiler, orkide, sukulent. Yıllarca hatıra kalacak çiçekler. evka 3 Bornova.",
+        "Özel günler için yaşayan hediyeler. Saksılı bitkiler, orkide, sukulent. Yıllarca hatıra kalacak çiçekler. Evka 3 Bornova.",
       keywords: [
         "kutlama bitkisi",
         "özel gün çiçeği",
@@ -109,9 +109,9 @@ export const GBP_SERVICES: GBPService[] = [
     ],
     tags: ["hediye", "saksi", "sukulent", "orkide", "ic-mekan"],
     seo: {
-      title: "Saksılı Hediye Bitki evka 3 | Sukulent, Orkide Aranjmanları",
+      title: "Saksılı Hediye Bitki Evka 3 | Sukulent, Orkide Aranjmanları",
       description:
-        "Şık saksılarda hazır hediye bitkileri. Sukulent aranjmanları, orkideler, salon bitkileri. evka 3 Bornova. 0545 653 45 99",
+        "Şık saksılarda hazır hediye bitkileri. Sukulent aranjmanları, orkideler, salon bitkileri. Evka 3 Bornova. 0545 653 45 99",
       keywords: [
         "saksılı hediye bitki",
         "sukulent aranjman",
@@ -137,7 +137,7 @@ export const GBP_SERVICES: GBPService[] = [
     ],
     tags: ["kurumsal", "toptan", "ofis", "otel", "restoran"],
     seo: {
-      title: "Kurumsal Bitki Tedariği İzmir | Ofis, Otel Bitkisi - evka 3",
+      title: "Kurumsal Bitki Tedariği İzmir | Ofis, Otel Bitkisi - Evka 3",
       description:
         "Ofis, otel, restoran için profesyonel bitki tedariği. Mekanınıza uygun bitki seçimi ve düzenli temin. İzmir. 0545 653 45 99",
       keywords: [
@@ -167,10 +167,10 @@ export const GBP_SERVICES: GBPService[] = [
     ],
     tags: ["saksi", "ciceklik", "bahce-gereci"],
     seo: {
-      title: "Saksı Satışı evka 3 | Plastik, Seramik, Toprak Saksı - Bornova",
+      title: "Saksı Satışı Evka 3 | Plastik, Seramik, Toprak Saksı - Bornova",
       description:
-        "Kaliteli saksı ve çiçeklik çeşitleri. Plastik, seramik, toprak saksılar. Balkon ve bahçe için. evka 3 Bornova. 0545 653 45 99",
-      keywords: ["saksı satışı evka 3", "çiçeklik", "seramik saksı", "balkon saksısı"],
+        "Kaliteli saksı ve çiçeklik çeşitleri. Plastik, seramik, toprak saksılar. Balkon ve bahçe için. Evka 3 Bornova. 0545 653 45 99",
+      keywords: ["saksı satışı Evka 3", "çiçeklik", "seramik saksı", "balkon saksısı"],
     },
   },
   {
@@ -190,10 +190,10 @@ export const GBP_SERVICES: GBPService[] = [
     ],
     tags: ["toprak", "torf", "bahce-gereci"],
     seo: {
-      title: "Bitki Toprağı ve Torf Satışı evka 3 | Kaliteli Bahçe Toprağı",
+      title: "Bitki Toprağı ve Torf Satışı Evka 3 | Kaliteli Bahçe Toprağı",
       description:
-        "Sterilize bitki toprağı, torf, perlitli karışımlar. Sinek yapmayan, kaliteli topraklar. evka 3 Bornova. 0545 653 45 99",
-      keywords: ["bitki toprağı evka 3", "torf satışı", "bahçe toprağı", "perlit"],
+        "Sterilize bitki toprağı, torf, perlitli karışımlar. Sinek yapmayan, kaliteli topraklar. Evka 3 Bornova. 0545 653 45 99",
+      keywords: ["bitki toprağı Evka 3", "torf satışı", "bahçe toprağı", "perlit"],
     },
   },
   {
@@ -213,10 +213,10 @@ export const GBP_SERVICES: GBPService[] = [
     ],
     tags: ["gubre", "besin", "bahce-gereci"],
     seo: {
-      title: "Gübre Satışı evka 3 | Bitki Besini ve Gübre Danışmanlığı",
+      title: "Gübre Satışı Evka 3 | Bitki Besini ve Gübre Danışmanlığı",
       description:
-        "Bitkinize uygun gübre ve besin çözümleri. Sıvı gübre, solucan gübresi, uzman danışmanlık. evka 3 Bornova. 0545 653 45 99",
-      keywords: ["gübre satışı evka 3", "bitki besini", "solucan gübresi", "sıvı gübre"],
+        "Bitkinize uygun gübre ve besin çözümleri. Sıvı gübre, solucan gübresi, uzman danışmanlık. Evka 3 Bornova. 0545 653 45 99",
+      keywords: ["gübre satışı Evka 3", "bitki besini", "solucan gübresi", "sıvı gübre"],
     },
   },
   {
@@ -236,10 +236,10 @@ export const GBP_SERVICES: GBPService[] = [
     ],
     tags: ["bahce-aleti", "budama", "bahce-gereci"],
     seo: {
-      title: "Bahçe Aletleri evka 3 | Budama Makası, Kürek, Tırmık - Bornova",
+      title: "Bahçe Aletleri Evka 3 | Budama Makası, Kürek, Tırmık - Bornova",
       description:
-        "Dayanıklı bahçe aletleri. Budama makası, kürek, tırmık, el aletleri. Paslanmaz ve uzun ömürlü. evka 3 Bornova. 0545 653 45 99",
-      keywords: ["bahçe aletleri evka 3", "budama makası", "bahçe küregi", "tırmık"],
+        "Dayanıklı bahçe aletleri. Budama makası, kürek, tırmık, el aletleri. Paslanmaz ve uzun ömürlü. Evka 3 Bornova. 0545 653 45 99",
+      keywords: ["bahçe aletleri Evka 3", "budama makası", "bahçe küregi", "tırmık"],
     },
   },
   {
@@ -259,11 +259,11 @@ export const GBP_SERVICES: GBPService[] = [
     ],
     tags: ["tohum", "fide", "sebze", "bahce-gereci"],
     seo: {
-      title: "Tohum Satışı evka 3 | Sebze, Çiçek ve Çim Tohumu - Bornova",
+      title: "Tohum Satışı Evka 3 | Sebze, Çiçek ve Çim Tohumu - Bornova",
       description:
-        "Taze ve kaliteli tohumlar. Sebze tohumu, çiçek tohumu, çim tohumu. Yüksek çimlenme oranı. evka 3 Bornova. 0545 653 45 99",
+        "Taze ve kaliteli tohumlar. Sebze tohumu, çiçek tohumu, çim tohumu. Yüksek çimlenme oranı. Evka 3 Bornova. 0545 653 45 99",
       keywords: [
-        "tohum satışı evka 3",
+        "tohum satışı Evka 3",
         "sebze tohumu",
         "çiçek tohumu",
         "çim tohumu",
@@ -287,10 +287,10 @@ export const GBP_SERVICES: GBPService[] = [
     ],
     tags: ["bitki-ilaci", "koruma", "bahce-gereci"],
     seo: {
-      title: "Bitki İlacı Satışı evka 3 | Böcek ve Mantar İlacı - Bornova",
+      title: "Bitki İlacı Satışı Evka 3 | Böcek ve Mantar İlacı - Bornova",
       description:
-        "Bitki koruma ürünleri. Unlu bit, yaprak biti, mantar ilacı. Uzman danışmanlık ve doğru dozaj. evka 3 Bornova. 0545 653 45 99",
-      keywords: ["bitki ilacı evka 3", "unlu bit ilacı", "mantar ilacı", "yaprak biti"],
+        "Bitki koruma ürünleri. Unlu bit, yaprak biti, mantar ilacı. Uzman danışmanlık ve doğru dozaj. Evka 3 Bornova. 0545 653 45 99",
+      keywords: ["bitki ilacı Evka 3", "unlu bit ilacı", "mantar ilacı", "yaprak biti"],
     },
   },
 
@@ -340,11 +340,11 @@ export const GBP_SERVICES: GBPService[] = [
     ],
     tags: ["ic-mekan", "saksi", "salon", "ofis"],
     seo: {
-      title: "İç Mekan Bitkisi evka 3 | Monstera, Kauçuk, Salon Bitkileri",
+      title: "İç Mekan Bitkisi Evka 3 | Monstera, Kauçuk, Salon Bitkileri",
       description:
-        "Salon ve ofis için dayanıklı iç mekan bitkileri. Monstera, Kauçuk, Paşa Kılıcı. Işık durumuna göre danışmanlık. evka 3 Bornova.",
+        "Salon ve ofis için dayanıklı iç mekan bitkileri. Monstera, Kauçuk, Paşa Kılıcı. Işık durumuna göre danışmanlık. Evka 3 Bornova.",
       keywords: [
-        "iç mekan bitkisi evka 3",
+        "iç mekan bitkisi Evka 3",
         "monstera satışı",
         "kauçuk bitkisi",
         "salon bitkisi",
@@ -368,12 +368,12 @@ export const GBP_SERVICES: GBPService[] = [
     ],
     tags: ["dis-mekan", "saksi", "balkon", "teras", "bahce"],
     seo: {
-      title: "Dış Mekan Bitkisi evka 3 | Balkon ve Bahçe Bitkileri - Bornova",
+      title: "Dış Mekan Bitkisi Evka 3 | Balkon ve Bahçe Bitkileri - Bornova",
       description:
-        "Balkon, teras ve bahçe için dayanıklı bitkiler. Limon servisi, oya ağacı. İzmir iklimine uygun. evka 3 Bornova. 0545 653 45 99",
+        "Balkon, teras ve bahçe için dayanıklı bitkiler. Limon servisi, oya ağacı. İzmir iklimine uygun. Evka 3 Bornova. 0545 653 45 99",
       keywords: [
         "dış mekan bitkisi",
-        "balkon bitkisi evka 3",
+        "balkon bitkisi Evka 3",
         "teras bitkisi",
         "bahçe bitkisi",
       ],
@@ -396,11 +396,11 @@ export const GBP_SERVICES: GBPService[] = [
     ],
     tags: ["meyve", "fidan", "narenciye", "zeytin"],
     seo: {
-      title: "Meyve Fidanı Satışı evka 3 | Narenciye, Zeytin Fidanı - Bornova",
+      title: "Meyve Fidanı Satışı Evka 3 | Narenciye, Zeytin Fidanı - Bornova",
       description:
-        "Sertifikalı aşılı meyve fidanları. Narenciye, zeytin, ceviz, badem. Bahçe ve balkon için. evka 3 Bornova. 0545 653 45 99",
+        "Sertifikalı aşılı meyve fidanları. Narenciye, zeytin, ceviz, badem. Bahçe ve balkon için. Evka 3 Bornova. 0545 653 45 99",
       keywords: [
-        "meyve fidanı evka 3",
+        "meyve fidanı Evka 3",
         "narenciye fidanı",
         "zeytin fidanı",
         "limon ağacı",
@@ -424,11 +424,11 @@ export const GBP_SERVICES: GBPService[] = [
     ],
     tags: ["sus", "peyzaj", "cit", "ağaç"],
     seo: {
-      title: "Süs Bitkisi ve Peyzaj Bitkileri evka 3 | Çit Bitkisi - Bornova",
+      title: "Süs Bitkisi ve Peyzaj Bitkileri Evka 3 | Çit Bitkisi - Bornova",
       description:
-        "Peyzaj için formlu ağaçlar, çit bitkileri, dekoratif çalılar. Bahçe ve site düzenleme. evka 3 Bornova. 0545 653 45 99",
+        "Peyzaj için formlu ağaçlar, çit bitkileri, dekoratif çalılar. Bahçe ve site düzenleme. Evka 3 Bornova. 0545 653 45 99",
       keywords: [
-        "süs bitkisi evka 3",
+        "süs bitkisi Evka 3",
         "peyzaj bitkisi",
         "çit bitkisi",
         "bahçe düzenleme",
@@ -452,9 +452,9 @@ export const GBP_SERVICES: GBPService[] = [
     ],
     tags: ["danismanlik", "bakim", "destek"],
     seo: {
-      title: "Bitki Bakım Danışmanlığı evka 3 | Uzman Destek - Bornova",
+      title: "Bitki Bakım Danışmanlığı Evka 3 | Uzman Destek - Bornova",
       description:
-        "Bitkileriniz için profesyonel bakım danışmanlığı. Sulama, gübreleme, sorun çözümü. 9 yıllık deneyim. evka 3 Bornova. 0545 653 45 99",
+        "Bitkileriniz için profesyonel bakım danışmanlığı. Sulama, gübreleme, sorun çözümü. 9 yıllık deneyim. Evka 3 Bornova. 0545 653 45 99",
       keywords: [
         "bitki bakımı danışmanlık",
         "bitki sorunu çözüm",
@@ -480,7 +480,7 @@ export const GBP_SERVICES: GBPService[] = [
     ],
     tags: ["teslimat", "nakliye", "kurye"],
     seo: {
-      title: "Fidan Teslimatı İzmir | Bitki Nakliye Hizmeti - evka 3",
+      title: "Fidan Teslimatı İzmir | Bitki Nakliye Hizmeti - Evka 3",
       description:
         "İzmir genelinde güvenli fidan teslimatı. Büyük bitkiler ve toplu alımlar için. 500₺ üzeri ücretsiz. 0545 653 45 99",
       keywords: [
@@ -510,11 +510,11 @@ export const GBP_SERVICES: GBPService[] = [
     ],
     tags: ["hirdavat", "baglanti", "kapi", "aksesuar"],
     seo: {
-      title: "Hırdavat Malzemeleri evka 3 | Kapı Kolu, Menteşe, Kilit - Bornova",
+      title: "Hırdavat Malzemeleri Evka 3 | Kapı Kolu, Menteşe, Kilit - Bornova",
       description:
-        "Hırdavat ve bağlantı malzemeleri. Kapı kolu, menteşe, kilit göbeği, askı aparatı. Kaliteli yedek parça. evka 3 Bornova.",
+        "Hırdavat ve bağlantı malzemeleri. Kapı kolu, menteşe, kilit göbeği, askı aparatı. Kaliteli yedek parça. Evka 3 Bornova.",
       keywords: [
-        "hırdavat evka 3",
+        "hırdavat Evka 3",
         "kapı kolu",
         "menteşe satışı",
         "kilit göbeği",
@@ -538,11 +538,11 @@ export const GBP_SERVICES: GBPService[] = [
     ],
     tags: ["el-aleti", "pense", "tornavida", "takim"],
     seo: {
-      title: "El Aleti Satışı evka 3 | Pense, Tornavida, Alet Takımı - Bornova",
+      title: "El Aleti Satışı Evka 3 | Pense, Tornavida, Alet Takımı - Bornova",
       description:
-        "Dayanıklı el aletleri. Pense, tornavida, şerit metre, kontrol kalemi. Paslanmaz ve uzun ömürlü. evka 3 Bornova. 0545 653 45 99",
+        "Dayanıklı el aletleri. Pense, tornavida, şerit metre, kontrol kalemi. Paslanmaz ve uzun ömürlü. Evka 3 Bornova. 0545 653 45 99",
       keywords: [
-        "el aleti evka 3",
+        "el aleti Evka 3",
         "pense satışı",
         "tornavida seti",
         "alet takımı",
@@ -566,11 +566,11 @@ export const GBP_SERVICES: GBPService[] = [
     ],
     tags: ["yapistirici", "silikon", "montaj"],
     seo: {
-      title: "Silikon ve Yapıştırıcı Satışı evka 3 | Montaj Yapıştırıcı - Bornova",
+      title: "Silikon ve Yapıştırıcı Satışı Evka 3 | Montaj Yapıştırıcı - Bornova",
       description:
-        "Banyo silikonu, montaj yapıştırıcı, hızlı yapıştırıcı. Uygulama danışmanlığı. evka 3 Bornova. 0545 653 45 99",
+        "Banyo silikonu, montaj yapıştırıcı, hızlı yapıştırıcı. Uygulama danışmanlığı. Evka 3 Bornova. 0545 653 45 99",
       keywords: [
-        "silikon satışı evka 3",
+        "silikon satışı Evka 3",
         "banyo silikonu",
         "montaj yapıştırıcı",
         "hızlı yapıştırıcı",
@@ -594,11 +594,11 @@ export const GBP_SERVICES: GBPService[] = [
     ],
     tags: ["kapi", "mobilya", "aksesuar", "yedek-parca"],
     seo: {
-      title: "Kapı ve Mobilya Aksesuarları evka 3 | Yedek Parça - Bornova",
+      title: "Kapı ve Mobilya Aksesuarları Evka 3 | Yedek Parça - Bornova",
       description:
-        "Kapı kolu, menteşe, kilit göbeği, mobilya aksesuarı. Tam uyumlu yedek parçalar. evka 3 Bornova. 0545 653 45 99",
+        "Kapı kolu, menteşe, kilit göbeği, mobilya aksesuarı. Tam uyumlu yedek parçalar. Evka 3 Bornova. 0545 653 45 99",
       keywords: [
-        "kapı aksesuarı evka 3",
+        "kapı aksesuarı Evka 3",
         "mobilya yedek parça",
         "kapı kolu değişim",
         "menteşe",
@@ -622,11 +622,11 @@ export const GBP_SERVICES: GBPService[] = [
     ],
     tags: ["plastik", "ev-urunleri", "kova", "sepet"],
     seo: {
-      title: "Plastik Ev Ürünleri evka 3 | Kova, Leğen, Sepet - Bornova",
+      title: "Plastik Ev Ürünleri Evka 3 | Kova, Leğen, Sepet - Bornova",
       description:
-        "Dayanıklı plastik ev ürünleri. Kova, leğen, çamaşır sepeti, organizer. Çatlamayan kalite. evka 3 Bornova. 0545 653 45 99",
+        "Dayanıklı plastik ev ürünleri. Kova, leğen, çamaşır sepeti, organizer. Çatlamayan kalite. Evka 3 Bornova. 0545 653 45 99",
       keywords: [
-        "plastik ev ürünleri evka 3",
+        "plastik ev ürünleri Evka 3",
         "kova satışı",
         "leğen",
         "çamaşır sepeti",
@@ -652,11 +652,11 @@ export const GBP_SERVICES: GBPService[] = [
     ],
     tags: ["montaj", "avize", "led", "elektrik"],
     seo: {
-      title: "Avize Montajı evka 3 | Aydınlatma Kurulum Hizmeti - Bornova",
+      title: "Avize Montajı Evka 3 | Aydınlatma Kurulum Hizmeti - Bornova",
       description:
-        "Profesyonel avize ve aydınlatma montajı. Spot, şerit LED, sensörlü lamba kurulumu. evka 3 Bornova. 0545 653 45 99",
+        "Profesyonel avize ve aydınlatma montajı. Spot, şerit LED, sensörlü lamba kurulumu. Evka 3 Bornova. 0545 653 45 99",
       keywords: [
-        "avize montajı evka 3",
+        "avize montajı Evka 3",
         "aydınlatma kurulum",
         "şerit led montajı",
         "spot montajı",
@@ -680,10 +680,10 @@ export const GBP_SERVICES: GBPService[] = [
     ],
     tags: ["led", "ampul", "panel", "spot"],
     seo: {
-      title: "LED Ampul ve Aydınlatma evka 3 | LED Panel, Spot - Bornova",
+      title: "LED Ampul ve Aydınlatma Evka 3 | LED Panel, Spot - Bornova",
       description:
-        "LED aydınlatma çözümleri. LED ampul, panel, spot, projektör. Enerji tasarruflu ve garantili. evka 3 Bornova. 0545 653 45 99",
-      keywords: ["led ampul evka 3", "led panel", "led spot", "led projektör"],
+        "LED aydınlatma çözümleri. LED ampul, panel, spot, projektör. Enerji tasarruflu ve garantili. Evka 3 Bornova. 0545 653 45 99",
+      keywords: ["led ampul Evka 3", "led panel", "led spot", "led projektör"],
     },
   },
   {
@@ -703,11 +703,11 @@ export const GBP_SERVICES: GBPService[] = [
     ],
     tags: ["serit-led", "dekoratif", "mutfak", "tavan"],
     seo: {
-      title: "Şerit LED Satışı ve Montajı evka 3 | Dekoratif Aydınlatma - Bornova",
+      title: "Şerit LED Satışı ve Montajı Evka 3 | Dekoratif Aydınlatma - Bornova",
       description:
-        "Şerit LED ve dekoratif aydınlatma. Mutfak, tavan, vitrin için. Montaj ve lehim hizmeti. evka 3 Bornova. 0545 653 45 99",
+        "Şerit LED ve dekoratif aydınlatma. Mutfak, tavan, vitrin için. Montaj ve lehim hizmeti. Evka 3 Bornova. 0545 653 45 99",
       keywords: [
-        "şerit led evka 3",
+        "şerit led Evka 3",
         "mutfak tezgah aydınlatma",
         "tavan led",
         "dekoratif led",
@@ -733,11 +733,11 @@ export const GBP_SERVICES: GBPService[] = [
     ],
     tags: ["dus", "hortum", "banyo"],
     seo: {
-      title: "Duş Başlığı ve Hortum Satışı evka 3 | Kireç Kırıcılı - Bornova",
+      title: "Duş Başlığı ve Hortum Satışı Evka 3 | Kireç Kırıcılı - Bornova",
       description:
-        "Kaliteli duş başlığı ve çelik hortum. Kireç kırıcılı, basınca dayanıklı. Kolay montaj. evka 3 Bornova. 0545 653 45 99",
+        "Kaliteli duş başlığı ve çelik hortum. Kireç kırıcılı, basınca dayanıklı. Kolay montaj. Evka 3 Bornova. 0545 653 45 99",
       keywords: [
-        "duş başlığı evka 3",
+        "duş başlığı Evka 3",
         "duş hortumu",
         "kireç kırıcılı duş",
         "çelik hortum",
@@ -761,11 +761,11 @@ export const GBP_SERVICES: GBPService[] = [
     ],
     tags: ["batarya", "musluk", "banyo"],
     seo: {
-      title: "Banyo Bataryası Satışı evka 3 | Lavabo ve Duş Bataryası - Bornova",
+      title: "Banyo Bataryası Satışı Evka 3 | Lavabo ve Duş Bataryası - Bornova",
       description:
-        "Kaliteli banyo bataryaları. %100 pirinç gövde, garantili markalar. Lavabo, duş, mutfak. evka 3 Bornova. 0545 653 45 99",
+        "Kaliteli banyo bataryaları. %100 pirinç gövde, garantili markalar. Lavabo, duş, mutfak. Evka 3 Bornova. 0545 653 45 99",
       keywords: [
-        "banyo bataryası evka 3",
+        "banyo bataryası Evka 3",
         "lavabo bataryası",
         "duş bataryası",
         "musluk satışı",
@@ -789,11 +789,11 @@ export const GBP_SERVICES: GBPService[] = [
     ],
     tags: ["klozet", "ic-takim", "tesisat"],
     seo: {
-      title: "Klozet İç Takım Satışı evka 3 | Su Kaçırmayan Mekanizma - Bornova",
+      title: "Klozet İç Takım Satışı Evka 3 | Su Kaçırmayan Mekanizma - Bornova",
       description:
-        "Klozet iç takım ve mekanizma. Su kaçırmayan, sessiz çalışan, ayarlanabilir. evka 3 Bornova. 0545 653 45 99",
+        "Klozet iç takım ve mekanizma. Su kaçırmayan, sessiz çalışan, ayarlanabilir. Evka 3 Bornova. 0545 653 45 99",
       keywords: [
-        "klozet iç takım evka 3",
+        "klozet iç takım Evka 3",
         "rezervuar mekanizması",
         "su kaçırma çözümü",
         "klozet tamiri",
@@ -817,11 +817,11 @@ export const GBP_SERVICES: GBPService[] = [
     ],
     tags: ["klozet", "kapak", "banyo"],
     seo: {
-      title: "Klozet Kapağı Satışı evka 3 | Yavaş Kapanan Kapak - Bornova",
+      title: "Klozet Kapağı Satışı Evka 3 | Yavaş Kapanan Kapak - Bornova",
       description:
-        "Klozet kapakları. Yavaş kapanan, sararma yapmayan, paslanmaz. Duroplast kapaklar. evka 3 Bornova. 0545 653 45 99",
+        "Klozet kapakları. Yavaş kapanan, sararma yapmayan, paslanmaz. Duroplast kapaklar. Evka 3 Bornova. 0545 653 45 99",
       keywords: [
-        "klozet kapağı evka 3",
+        "klozet kapağı Evka 3",
         "yavaş kapanan klozet",
         "duroplast kapak",
         "soft close",
@@ -845,11 +845,11 @@ export const GBP_SERVICES: GBPService[] = [
     ],
     tags: ["aksesuar", "havluluk", "banyo"],
     seo: {
-      title: "Banyo Aksesuarları evka 3 | Havluluk, Sabunluk, Raf - Bornova",
+      title: "Banyo Aksesuarları Evka 3 | Havluluk, Sabunluk, Raf - Bornova",
       description:
-        "Paslanmaz banyo aksesuarları. Havluluk, kağıtlık, sabunluk, köşe rafı. Şık ve dayanıklı. evka 3 Bornova. 0545 653 45 99",
+        "Paslanmaz banyo aksesuarları. Havluluk, kağıtlık, sabunluk, köşe rafı. Şık ve dayanıklı. Evka 3 Bornova. 0545 653 45 99",
       keywords: [
-        "banyo aksesuarı evka 3",
+        "banyo aksesuarı Evka 3",
         "havluluk satışı",
         "banyo rafı",
         "sabunluk",
@@ -875,11 +875,11 @@ export const GBP_SERVICES: GBPService[] = [
     ],
     tags: ["tesisat", "hortum", "sifon", "baglanti"],
     seo: {
-      title: "Tesisat Malzemeleri evka 3 | Hortum, Sifon, Bağlantı - Bornova",
+      title: "Tesisat Malzemeleri Evka 3 | Hortum, Sifon, Bağlantı - Bornova",
       description:
-        "Su tesisatı malzemeleri. Fleks hortum, sifon, teflon, bağlantı parçaları. evka 3 Bornova. 0545 653 45 99",
+        "Su tesisatı malzemeleri. Fleks hortum, sifon, teflon, bağlantı parçaları. Evka 3 Bornova. 0545 653 45 99",
       keywords: [
-        "tesisat malzemeleri evka 3",
+        "tesisat malzemeleri Evka 3",
         "fleks hortum",
         "lavabo sifonı",
         "tesisat bağlantı",
@@ -903,11 +903,11 @@ export const GBP_SERVICES: GBPService[] = [
     ],
     tags: ["montaj", "tesisat", "tamir", "servis"],
     seo: {
-      title: "Tesisat Montajı ve Tamiri evka 3 | Batarya Değişimi - Bornova",
+      title: "Tesisat Montajı ve Tamiri Evka 3 | Batarya Değişimi - Bornova",
       description:
-        "Profesyonel tesisat montaj ve tamir hizmeti. Musluk, batarya, sifon değişimi. Acil servis. evka 3 Bornova. 0545 653 45 99",
+        "Profesyonel tesisat montaj ve tamir hizmeti. Musluk, batarya, sifon değişimi. Acil servis. Evka 3 Bornova. 0545 653 45 99",
       keywords: [
-        "tesisat montajı evka 3",
+        "tesisat montajı Evka 3",
         "batarya değişimi bornova",
         "musluk tamiri",
         "sifon tamiri",
@@ -933,11 +933,11 @@ export const GBP_SERVICES: GBPService[] = [
     ],
     tags: ["elektrik", "montaj", "avize", "priz"],
     seo: {
-      title: "Elektrik Montajı evka 3 | Avize, Priz, Anahtar Montaj - Bornova",
+      title: "Elektrik Montajı Evka 3 | Avize, Priz, Anahtar Montaj - Bornova",
       description:
-        "Profesyonel elektrik montajı. Avize kurulum, priz/anahtar değişimi, sigorta montajı. Ehliyetli usta. evka 3 Bornova. 0545 653 45 99",
+        "Profesyonel elektrik montajı. Avize kurulum, priz/anahtar değişimi, sigorta montajı. Ehliyetli usta. Evka 3 Bornova. 0545 653 45 99",
       keywords: [
-        "elektrik montajı evka 3",
+        "elektrik montajı Evka 3",
         "avize montajı bornova",
         "priz değişimi",
         "elektrikçi",
@@ -961,11 +961,11 @@ export const GBP_SERVICES: GBPService[] = [
     ],
     tags: ["kablo", "elektrik", "baglanti"],
     seo: {
-      title: "Elektrik Kablosu Satışı evka 3 | TTR, NYA Kablo - Bornova",
+      title: "Elektrik Kablosu Satışı Evka 3 | TTR, NYA Kablo - Bornova",
       description:
-        "TSE standartında elektrik kablosu. Tam bakır TTR, NYA kablo. Metreyle kesim. evka 3 Bornova. 0545 653 45 99",
+        "TSE standartında elektrik kablosu. Tam bakır TTR, NYA kablo. Metreyle kesim. Evka 3 Bornova. 0545 653 45 99",
       keywords: [
-        "elektrik kablosu evka 3",
+        "elektrik kablosu Evka 3",
         "ttr kablo",
         "nya kablo",
         "bakır kablo",
@@ -989,11 +989,11 @@ export const GBP_SERVICES: GBPService[] = [
     ],
     tags: ["priz", "anahtar", "sigorta", "elektrik"],
     seo: {
-      title: "Priz ve Anahtar Satışı evka 3 | Elektrik Malzemeleri - Bornova",
+      title: "Priz ve Anahtar Satışı Evka 3 | Elektrik Malzemeleri - Bornova",
       description:
-        "Kaliteli priz, anahtar ve sigorta. Çocuk korumalı, ark yapmayan. Modern tasarımlar. evka 3 Bornova. 0545 653 45 99",
+        "Kaliteli priz, anahtar ve sigorta. Çocuk korumalı, ark yapmayan. Modern tasarımlar. Evka 3 Bornova. 0545 653 45 99",
       keywords: [
-        "priz satışı evka 3",
+        "priz satışı Evka 3",
         "anahtar satışı",
         "elektrik prizı",
         "sigorta",
@@ -1017,10 +1017,10 @@ export const GBP_SERVICES: GBPService[] = [
     ],
     tags: ["pil", "batarya", "elektrik"],
     seo: {
-      title: "Pil Satışı evka 3 | Alkalin ve Şarjlı Piller - Bornova",
+      title: "Pil Satışı Evka 3 | Alkalin ve Şarjlı Piller - Bornova",
       description:
-        "Taze ve kaliteli piller. Alkalin, şarjlı, çeşitli ebatlar. Akma yapmayan. evka 3 Bornova. 0545 653 45 99",
-      keywords: ["pil satışı evka 3", "alkalin pil", "şarjlı pil", "batarya"],
+        "Taze ve kaliteli piller. Alkalin, şarjlı, çeşitli ebatlar. Akma yapmayan. Evka 3 Bornova. 0545 653 45 99",
+      keywords: ["pil satışı Evka 3", "alkalin pil", "şarjlı pil", "batarya"],
     },
   },
 
@@ -1042,7 +1042,7 @@ export const GBP_SERVICES: GBPService[] = [
     ],
     tags: ["toptan", "teslimat", "nakliye", "peyzaj"],
     seo: {
-      title: "Toptan Fidan Teslimatı İzmir | Peyzaj Projesi Lojistik - evka 3",
+      title: "Toptan Fidan Teslimatı İzmir | Peyzaj Projesi Lojistik - Evka 3",
       description:
         "İzmir genelinde toptan fidan teslimatı. Peyzaj, site, işletme projeleri için. Güvenli nakliye. 0545 653 45 99",
       keywords: [
@@ -1070,7 +1070,7 @@ export const GBP_SERVICES: GBPService[] = [
     ],
     tags: ["kurumsal", "restoran", "kafe", "toptan"],
     seo: {
-      title: "Restoran ve Kafe Bitki Tedariği İzmir | Yeşil Mekan - evka 3",
+      title: "Restoran ve Kafe Bitki Tedariği İzmir | Yeşil Mekan - Evka 3",
       description:
         "Restoran ve kafeler için özel bitki tedariği. Atmosfer yaratma, dekoratif çözümler. İzmir. 0545 653 45 99",
       keywords: [
@@ -1098,7 +1098,7 @@ export const GBP_SERVICES: GBPService[] = [
     ],
     tags: ["kurumsal", "otel", "konaklama", "toptan"],
     seo: {
-      title: "Otel Bitki Tedariği İzmir | Konaklama Peyzajı - evka 3",
+      title: "Otel Bitki Tedariği İzmir | Konaklama Peyzajı - Evka 3",
       description:
         "Oteller için profesyonel bitki tedariği. Lobi, havuz, oda bitkileri. Prestijli çözümler. İzmir. 0545 653 45 99",
       keywords: [
@@ -1126,7 +1126,7 @@ export const GBP_SERVICES: GBPService[] = [
     ],
     tags: ["kurumsal", "ofis", "isyeri", "toptan"],
     seo: {
-      title: "Ofis Bitki Tedariği İzmir | Yeşil Ofis Çözümleri - evka 3",
+      title: "Ofis Bitki Tedariği İzmir | Yeşil Ofis Çözümleri - Evka 3",
       description:
         "Ofis ve iş yerleri için bitki tedariği. Çalışan verimliliğini artıran yeşil çözümler. İzmir. 0545 653 45 99",
       keywords: [
@@ -1154,7 +1154,7 @@ export const GBP_SERVICES: GBPService[] = [
     ],
     tags: ["kurumsal", "magaza", "showroom", "toptan"],
     seo: {
-      title: "Mağaza Bitki Tedariği İzmir | Showroom Dekorasyon - evka 3",
+      title: "Mağaza Bitki Tedariği İzmir | Showroom Dekorasyon - Evka 3",
       description:
         "Mağaza ve showroom için bitki tedariği. Müşteri deneyimini artıran dekoratif çözümler. İzmir. 0545 653 45 99",
       keywords: [
@@ -1182,7 +1182,7 @@ export const GBP_SERVICES: GBPService[] = [
     ],
     tags: ["kurumsal", "kuafor", "guzellik", "toptan"],
     seo: {
-      title: "Kuaför ve Güzellik Salonu Bitki Tedariği İzmir - evka 3",
+      title: "Kuaför ve Güzellik Salonu Bitki Tedariği İzmir - Evka 3",
       description:
         "Kuaför ve güzellik salonları için özel bitki tedariği. Dinlendirici atmosfer. İzmir. 0545 653 45 99",
       keywords: [
@@ -1210,7 +1210,7 @@ export const GBP_SERVICES: GBPService[] = [
     ],
     tags: ["toptan", "apartman", "site", "peyzaj"],
     seo: {
-      title: "Apartman ve Site Fidan Satışı İzmir | Toplu Konut Peyzaj - evka 3",
+      title: "Apartman ve Site Fidan Satışı İzmir | Toplu Konut Peyzaj - Evka 3",
       description:
         "Apartman ve siteler için toptan fidan. Bütçe dostu, düşük bakım. Peyzaj çözümleri. İzmir. 0545 653 45 99",
       keywords: [
@@ -1238,7 +1238,7 @@ export const GBP_SERVICES: GBPService[] = [
     ],
     tags: ["toptan", "peyzaj", "firma", "proje"],
     seo: {
-      title: "Peyzaj Firmaları Fidan Tedariği İzmir | Proje Desteği - evka 3",
+      title: "Peyzaj Firmaları Fidan Tedariği İzmir | Proje Desteği - Evka 3",
       description:
         "Peyzaj firmaları için profesyonel fidan tedariği. Proje standartlarına uygun, zamanında teslimat. İzmir. 0545 653 45 99",
       keywords: [
@@ -1266,7 +1266,7 @@ export const GBP_SERVICES: GBPService[] = [
     ],
     tags: ["toptan", "belediye", "kamu", "sertifikali"],
     seo: {
-      title: "Belediye ve Kamu Fidan Tedariği İzmir | Sertifikalı - evka 3",
+      title: "Belediye ve Kamu Fidan Tedariği İzmir | Sertifikalı - Evka 3",
       description:
         "Belediye ve kamu kurumları için sertifikalı fidan tedariği. Park, okul, hastane projeleri. İzmir. 0545 653 45 99",
       keywords: [
@@ -1296,10 +1296,10 @@ export const GBP_SERVICES: GBPService[] = [
     ],
     tags: ["cimento", "yapi", "insaat"],
     seo: {
-      title: "Çimento Satışı evka 3 | Taze Torba ve Açık Çimento - Bornova",
+      title: "Çimento Satışı Evka 3 | Taze Torba ve Açık Çimento - Bornova",
       description:
-        "Taze çimento satışı. Torba ve açık çimento, gri ve beyaz. İnşaat ve tamirat için. evka 3 Bornova. 0545 653 45 99",
-      keywords: ["çimento satışı evka 3", "torba çimento", "açık çimento", "beyaz çimento"],
+        "Taze çimento satışı. Torba ve açık çimento, gri ve beyaz. İnşaat ve tamirat için. Evka 3 Bornova. 0545 653 45 99",
+      keywords: ["çimento satışı Evka 3", "torba çimento", "açık çimento", "beyaz çimento"],
     },
   },
   {
@@ -1319,11 +1319,11 @@ export const GBP_SERVICES: GBPService[] = [
     ],
     tags: ["alci", "siva", "yapi", "tamirat"],
     seo: {
-      title: "Alçı ve Sıva Satışı evka 3 | Kartonpiyer, Saten Alçı - Bornova",
+      title: "Alçı ve Sıva Satışı Evka 3 | Kartonpiyer, Saten Alçı - Bornova",
       description:
-        "Alçı ve sıva malzemeleri. Kartonpiyer alçı, saten alçı, duvar sıva. evka 3 Bornova. 0545 653 45 99",
+        "Alçı ve sıva malzemeleri. Kartonpiyer alçı, saten alçı, duvar sıva. Evka 3 Bornova. 0545 653 45 99",
       keywords: [
-        "alçı satışı evka 3",
+        "alçı satışı Evka 3",
         "kartonpiyer alçı",
         "saten alçı",
         "sıva malzemesi",
@@ -1347,11 +1347,11 @@ export const GBP_SERVICES: GBPService[] = [
     ],
     tags: ["fayans", "seramik", "harç", "yapi"],
     seo: {
-      title: "Fayans Harçı ve Derz Dolgu Satışı evka 3 | Seramik - Bornova",
+      title: "Fayans Harçı ve Derz Dolgu Satışı Evka 3 | Seramik - Bornova",
       description:
-        "Fayans yapıştırma malzemeleri. Fayans harçı, derz dolgu, seramik yapıştırıcı. evka 3 Bornova. 0545 653 45 99",
+        "Fayans yapıştırma malzemeleri. Fayans harçı, derz dolgu, seramik yapıştırıcı. Evka 3 Bornova. 0545 653 45 99",
       keywords: [
-        "fayans harçı evka 3",
+        "fayans harçı Evka 3",
         "derz dolgu",
         "seramik yapıştırıcı",
         "kalekim",
@@ -1375,11 +1375,11 @@ export const GBP_SERVICES: GBPService[] = [
     ],
     tags: ["civi", "tel", "baglanti", "insaat"],
     seo: {
-      title: "İnşaat Çivisi ve Bağlantı Malzemesi evka 3 | Beton Çivi - Bornova",
+      title: "İnşaat Çivisi ve Bağlantı Malzemesi Evka 3 | Beton Çivi - Bornova",
       description:
-        "İnşaat bağlantı malzemeleri. Çelik çivi, ahşap çivi, bağlama teli. Tartılı satış. evka 3 Bornova. 0545 653 45 99",
+        "İnşaat bağlantı malzemeleri. Çelik çivi, ahşap çivi, bağlama teli. Tartılı satış. Evka 3 Bornova. 0545 653 45 99",
       keywords: [
-        "inşaat çivisi evka 3",
+        "inşaat çivisi Evka 3",
         "beton çivisi",
         "ahşap çivisi",
         "bağlama teli",
@@ -1403,11 +1403,11 @@ export const GBP_SERVICES: GBPService[] = [
     ],
     tags: ["boya", "firca", "rulo", "ekipman"],
     seo: {
-      title: "Boya Ekipmanları Satışı evka 3 | Fırça, Rulo, Bant - Bornova",
+      title: "Boya Ekipmanları Satışı Evka 3 | Fırça, Rulo, Bant - Bornova",
       description:
-        "Boya fırçası, rulo, maskeleme bantı, hışır örtü. Temiz işçilik için kaliteli ekipman. evka 3 Bornova. 0545 653 45 99",
+        "Boya fırçası, rulo, maskeleme bantı, hışır örtü. Temiz işçilik için kaliteli ekipman. Evka 3 Bornova. 0545 653 45 99",
       keywords: [
-        "boya fırçası evka 3",
+        "boya fırçası Evka 3",
         "boya rulosu",
         "maskeleme bantı",
         "hışır örtü",
@@ -1431,11 +1431,11 @@ export const GBP_SERVICES: GBPService[] = [
     ],
     tags: ["boya", "macun", "astar", "yardimci"],
     seo: {
-      title: "Boya Yardımcı Malzemeleri evka 3 | Macun, Astar, Zımpara - Bornova",
+      title: "Boya Yardımcı Malzemeleri Evka 3 | Macun, Astar, Zımpara - Bornova",
       description:
-        "Boya hazırlık malzemeleri. Duvar macunu, astar, zımpara, spatula. Zemin hazırlık danışmanlığı. evka 3 Bornova.",
+        "Boya hazırlık malzemeleri. Duvar macunu, astar, zımpara, spatula. Zemin hazırlık danışmanlığı. Evka 3 Bornova.",
       keywords: [
-        "duvar macunu evka 3",
+        "duvar macunu Evka 3",
         "boya astarı",
         "zımpara kağıdı",
         "spatula",

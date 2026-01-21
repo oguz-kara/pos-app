@@ -30,11 +30,11 @@ export function PageHeader() {
         <div className="container max-w-[1400px] flex h-20 items-center justify-between py-3">
           <Link href="/" className="flex items-center gap-3">
             <Image
-              src="/images/logos/logo-black.png"
+              src="/images/logos/logo-black-line.png"
               alt="Kara Ticaret Logo"
               width={280}
               height={64}
-              className="h-16 w-auto object-contain"
+              className="h-12 w-auto object-contain"
               priority
             />
           </Link>
@@ -56,7 +56,7 @@ export function PageHeader() {
               </a>
               <div className="flex items-center gap-2 text-muted-foreground">
                 <MapPin className="h-4 w-4" />
-                <span className="hidden xl:inline">evka 3, Bornova</span>
+                <span className="hidden xl:inline">Evka 3, Bornova</span>
               </div>
             </div>
 

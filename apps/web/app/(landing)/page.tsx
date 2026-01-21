@@ -54,8 +54,8 @@ export default function LandingPage() {
         {/* Background Image */}
         <div className="absolute inset-0 z-0">
           <Image
-            src="https://images.unsplash.com/photo-1416879595882-3373a0480b5b?q=80&w=2070&auto=format&fit=crop"
-            alt="Kara Ticaret evka 3 Fidanlık ve Hırdavat"
+            src="/images/kara-ticaret-hero.jpg"
+            alt="Kara Ticaret Evka 3 Fidanlık ve Hırdavat"
             fill
             className="object-cover"
             priority
@@ -67,7 +67,7 @@ export default function LandingPage() {
         {/* Content */}
         <div className="relative z-10 container flex flex-col items-center justify-center gap-6 px-4 text-center mt-10">
           <Badge variant="secondary" className="mb-2 px-4 py-1 text-sm bg-yellow-400 text-black hover:bg-yellow-500 border-none">
-            📍 evka 3&apos;ün 9 Yıllık Güvenilir Komşusu
+            📍 Evka 3&apos;ün 9 Yıllık Güvenilir Komşusu
           </Badge>
 
           <h1 className="text-4xl font-extrabold tracking-tight sm:text-6xl lg:text-7xl max-w-5xl text-white drop-shadow-xl">
@@ -138,7 +138,7 @@ export default function LandingPage() {
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">Neden Bizi Tercih Etmelisiniz?</h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              evka 3&apos;ün güvenilir adresi olarak, kaliteli ürün ve hizmetimizle yanınızdayız.
+              Evka 3&apos;ün güvenilir adresi olarak, kaliteli ürün ve hizmetimizle yanınızdayız.
             </p>
           </div>
 
@@ -183,7 +183,7 @@ export default function LandingPage() {
               <div>
                 <h3 className="font-semibold text-lg mb-2">2016&apos;dan Beri Güvenle</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  evka 3 bölgesinde yıllardır aynı adresteyiz. Bornova&apos;nın güvenilir aile işletmesi olarak, yüksek müşteri memnuniyeti ve 5.0 Google puanımızla hizmet veriyoruz.
+                  Evka 3 bölgesinde yıllardır aynı adresteyiz. Bornova&apos;nın güvenilir aile işletmesi olarak, yüksek müşteri memnuniyeti ve 5.0 Google puanımızla hizmet veriyoruz.
                 </p>
               </div>
             </div>
@@ -211,7 +211,7 @@ export default function LandingPage() {
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">Neye İhtiyacınız Var?</h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            evka 3&apos;teki mağazamızda 1000+ çeşit ürün ile hizmetinizdeyiz.
+            Evka 3&apos;teki mağazamızda 1000+ çeşit ürün ile hizmetinizdeyiz.
             İster saksı değiştirin, ister musluk tamir edin.
           </p>
         </div>
@@ -284,7 +284,7 @@ export default function LandingPage() {
           </div>
 
           <div className="space-y-1 mb-12">
-            {popularServices.map((service, index) => (
+            {popularServices.map((service) => (
               <Link
                 key={service.id}
                 href={`/kategoriler/${service.categoryId}/hizmetler/${service.slug}`}
@@ -341,10 +341,10 @@ export default function LandingPage() {
                 <div>
                   <h3 className="font-semibold mb-2">Konum</h3>
                   <p className="text-sm text-muted-foreground mb-2">
-                    evka 3 Migros&apos;un hemen karşısında, ulaşımı kolay merkezi konumdayız.
+                    Evka 3 Migros&apos;un hemen karşısında, ulaşımı kolay merkezi konumdayız.
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    Burcu Apt, Cengiz Han Cd No:14, evka 3, Bornova, İzmir 35050
+                    Burcu Apt, Cengiz Han Cd No:14, Evka 3, Bornova, İzmir 35050
                   </p>
                 </div>
               </div>
@@ -387,11 +387,10 @@ export default function LandingPage() {
                   {[1, 2, 3, 4, 5].map((star) => (
                     <Star
                       key={star}
-                      className={`h-4 w-4 ${
-                        star <= review.rating
-                          ? "fill-yellow-400 text-yellow-400"
-                          : "text-gray-300"
-                      }`}
+                      className={`h-4 w-4 ${star <= review.rating
+                        ? "fill-yellow-400 text-yellow-400"
+                        : "text-gray-300"
+                        }`}
                     />
                   ))}
                 </div>
@@ -428,7 +427,7 @@ export default function LandingPage() {
                     <h3 className="font-semibold">Adres</h3>
                   </div>
                   <p className="text-sm text-muted-foreground ml-7">
-                    Burcu Apt, Cengiz Han Cd No:14, evka 3<br />
+                    Burcu Apt, Cengiz Han Cd No:14, Evka 3<br />
                     Bornova, İzmir 35050
                   </p>
                 </div>
@@ -472,7 +471,7 @@ export default function LandingPage() {
                     <Navigation className="h-5 w-5 text-primary" />
                     <h3 className="font-semibold">Google Maps</h3>
                   </div>
-                  <a href="https://maps.google.com/?q=Burcu+Apt+Cengiz+Han+Cd+No:14+evka 3+Bornova+İzmir" className="text-sm text-primary ml-7 hover:underline" target="_blank" rel="noopener noreferrer">
+                  <a href="https://maps.google.com/?q=Burcu+Apt+Cengiz+Han+Cd+No:14+Evka 3+Bornova+İzmir" className="text-sm text-primary ml-7 hover:underline" target="_blank" rel="noopener noreferrer">
                     Yol Tarifi Al
                   </a>
                 </div>

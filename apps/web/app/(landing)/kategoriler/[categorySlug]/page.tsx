@@ -161,12 +161,12 @@ export default async function CategoryPage({ params }: { params: Promise<{ categ
               Hizmetlerimiz
             </h2>
             <p className="text-lg text-slate-500 leading-relaxed max-w-2xl mx-auto">
-              evka 3 ve Bornova bölgesinde sunduğumuz profesyonel {category.name.toLowerCase()} çözümleri
+              Evka 3 ve Bornova bölgesinde sunduğumuz profesyonel {category.name.toLowerCase()} çözümleri
             </p>
           </div>
 
           <div className="space-y-0">
-            {services.map((service, index) => (
+            {services.map((service) => (
               <Link
                 key={service.id}
                 href={`/kategoriler/${category.slug}/hizmetler/${service.slug}`}
@@ -230,7 +230,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ categ
                   Bornova içine teslimat yapıyor musunuz?
                 </AccordionTrigger>
                 <AccordionContent className="text-slate-600 leading-relaxed">
-                  Evet. Özellikle hacimli ürünlerde ve toplu alımlarda Bornova, Bayraklı ve Karşıyaka bölgelerine kendi aracımızla teslimat yapıyoruz. 500₺ üzeri siparişlerde evka 3 ve çevresine ücretsiz teslimatımız mevcuttur.
+                  Evet. Özellikle hacimli ürünlerde ve toplu alımlarda Bornova, Bayraklı ve Karşıyaka bölgelerine kendi aracımızla teslimat yapıyoruz. 500₺ üzeri siparişlerde Evka 3 ve çevresine ücretsiz teslimatımız mevcuttur.
                 </AccordionContent>
               </AccordionItem>
 

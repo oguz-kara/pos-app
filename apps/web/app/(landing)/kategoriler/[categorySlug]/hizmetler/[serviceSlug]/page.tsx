@@ -235,7 +235,7 @@ export default async function ServicePage({
                     </div>
                     <div>
                       <p className="text-xs text-slate-500">Adres</p>
-                      <p className="text-sm font-medium text-slate-900">evka 3, Bornova</p>
+                      <p className="text-sm font-medium text-slate-900">Evka 3, Bornova</p>
                     </div>
                   </div>
 
@@ -271,7 +271,7 @@ export default async function ServicePage({
                   </li>
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className={`h-4 w-4 mt-0.5 ${theme.primary} shrink-0`} />
-                    <span>evka 3'ün güvenilir adresi</span>
+                    <span>Evka 3'ün güvenilir adresi</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className={`h-4 w-4 mt-0.5 ${theme.primary} shrink-0`} />

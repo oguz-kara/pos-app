@@ -64,7 +64,7 @@ export const CONTACT_INFO: ContactInfo = {
   email: "info@karaticaret.com.tr",
   address: {
     street: "Burcu Apt, Cengiz Han Cd No: 14",
-    district: "evka 3, Bornova",
+    district: "Evka 3, Bornova",
     city: "İzmir",
     postalCode: "35050",
   },
