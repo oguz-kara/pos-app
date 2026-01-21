@@ -181,6 +181,7 @@ export async function getProducts(
     categoryId?: string
     search?: string
     isActive?: boolean
+    tags?: string[]
   },
 ): Promise<Product[]> {
   const conditions = [eq(products.organizationId, organizationId)]
@@ -195,13 +196,22 @@ export async function getProducts(
 
   // If no search query, return all products matching filters
   if (!options?.search) {
-    return db.query.products.findMany({
+    let results = await db.query.products.findMany({
       where: and(...conditions),
       orderBy: [asc(products.name)],
       with: {
         category: true,
       },
-    }) as unknown as Promise<Product[]>
+    }) as unknown as Product[]
+
+    // Filter by tags if provided (client-side filtering since Drizzle doesn't support array overlap easily)
+    if (options?.tags && options.tags.length > 0) {
+      results = results.filter((product) =>
+        options.tags!.some((tag) => product.tags.includes(tag))
+      )
+    }
+
+    return results
   }
 
   // Turkish-aware fuzzy search with multi-strategy relevance scoring
@@ -334,12 +344,14 @@ export async function getProductsWithStock(
     search?: string
     lowStockOnly?: boolean
     threshold?: number
+    tags?: string[]
   },
 ): Promise<ProductWithStock[]> {
   const productsList = await getProducts(organizationId, {
     categoryId: options?.categoryId,
     search: options?.search,
     isActive: true,
+    tags: options?.tags,
   })
 
   const productsWithStock = await Promise.all(

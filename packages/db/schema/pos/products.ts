@@ -6,6 +6,7 @@ import {
   uuid,
   varchar,
   decimal,
+  text,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { organizations } from "../auth";
@@ -34,6 +35,10 @@ export const products = pgTable(
       precision: 10,
       scale: 2,
     }).notNull(),
+    tags: text("tags")
+      .array()
+      .default([])
+      .notNull(), // GBP category tags for public website filtering
     isActive: boolean("is_active").default(true).notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),

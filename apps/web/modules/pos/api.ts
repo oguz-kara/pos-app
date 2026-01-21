@@ -95,6 +95,7 @@ export const ProductType = builder
     brand: string | null
     description: string | null
     sellingPrice: string
+    tags: string[]
     isActive: boolean
     categoryId: string | null
     organizationId: string
@@ -117,6 +118,7 @@ export const ProductType = builder
       brand: t.exposeString('brand', { nullable: true }),
       description: t.exposeString('description', { nullable: true }),
       sellingPrice: t.exposeString('sellingPrice'),
+      tags: t.exposeStringList('tags'),
       isActive: t.exposeBoolean('isActive'),
       categoryId: t.exposeString('categoryId', { nullable: true }),
       organizationId: t.exposeString('organizationId'),
@@ -140,6 +142,7 @@ export const ProductWithStockType = builder
     brand: string | null
     description: string | null
     sellingPrice: string
+    tags: string[]
     isActive: boolean
     categoryId: string | null
     organizationId: string
@@ -164,6 +167,7 @@ export const ProductWithStockType = builder
       brand: t.exposeString('brand', { nullable: true }),
       description: t.exposeString('description', { nullable: true }),
       sellingPrice: t.exposeString('sellingPrice'),
+      tags: t.exposeStringList('tags'),
       isActive: t.exposeBoolean('isActive'),
       categoryId: t.exposeString('categoryId', { nullable: true }),
       organizationId: t.exposeString('organizationId'),
@@ -902,6 +906,7 @@ builder.queryField('products', (t) =>
       categoryId: t.arg.string({ required: false }),
       search: t.arg.string({ required: false }),
       isActive: t.arg.boolean({ required: false }),
+      tags: t.arg.stringList({ required: false }),
     },
     resolve: async (_parent, args, ctx: Context) => {
       if (!ctx.session) throw new Error('Not authenticated')
@@ -909,6 +914,7 @@ builder.queryField('products', (t) =>
         categoryId: args.categoryId ?? undefined,
         search: args.search ?? undefined,
         isActive: args.isActive ?? undefined,
+        tags: args.tags ?? undefined,
       })
     },
   }),
@@ -933,6 +939,7 @@ builder.queryField('productsWithStock', (t) =>
       search: t.arg.string({ required: false }),
       lowStockOnly: t.arg.boolean({ required: false }),
       threshold: t.arg.int({ required: false }),
+      tags: t.arg.stringList({ required: false }),
     },
     resolve: async (_parent, args, ctx: Context) => {
       if (!ctx.session) throw new Error('Not authenticated')
@@ -941,6 +948,7 @@ builder.queryField('productsWithStock', (t) =>
         search: args.search ?? undefined,
         lowStockOnly: args.lowStockOnly ?? undefined,
         threshold: args.threshold ?? undefined,
+        tags: args.tags ?? undefined,
       })
     },
   }),
