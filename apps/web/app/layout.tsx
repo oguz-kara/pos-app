@@ -4,6 +4,7 @@ import "./globals.css";
 import { ReactQueryProvider } from "@/lib/query-client";
 import { PostHogProvider } from "@/modules/analytics/provider";
 import Script from "next/script";
+import { getAllLocations } from "@/lib/content/locations";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -17,20 +18,20 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Kara Ticaret - evka 3 Bornova Fidanlık, Çiçekçi ve Hırdavat",
-  description: "evka 3'ün köklü fidanlığı ve hırdavatı. Saksılı bitkiler, meyve fidanları, hırdavat, elektrik ve tesisat malzemeleri. İzmir geneli teslimat. 2016'dan beri hizmetinizdeyiz.",
-  keywords: "fidanlık evka 3, çiçekçi bornova, hırdavat evka 3, saksılı bitki izmir, meyve fidanı, elektrik malzemeleri, tesisat malzemeleri, nalbur bornova",
+  title: "Kara Ticaret - Evka 3 Bornova Fidanlık, Çiçekçi ve Hırdavat",
+  description: "Evka 3'ün köklü fidanlığı ve hırdavatı. Saksılı bitkiler, meyve fidanları, hırdavat, elektrik ve tesisat malzemeleri. İzmir geneli teslimat. 2016'dan beri hizmetinizdeyiz.",
+  keywords: "fidanlık Evka 3, çiçekçi bornova, hırdavat Evka 3, saksılı bitki izmir, meyve fidanı, elektrik malzemeleri, tesisat malzemeleri, nalbur bornova",
   openGraph: {
-    title: "Kara Ticaret - evka 3 Fidanlık ve Hırdavat",
-    description: "evka 3'ün köklü fidanlığı. Saksılı bitkiler, fidan, hırdavat malzemeleri. İzmir geneli teslimat.",
+    title: "Kara Ticaret - Evka 3 Fidanlık ve Hırdavat",
+    description: "Evka 3'ün köklü fidanlığı. Saksılı bitkiler, fidan, hırdavat malzemeleri. İzmir geneli teslimat.",
     type: "website",
     locale: "tr_TR",
     siteName: "Kara Ticaret",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Kara Ticaret - evka 3 Fidanlık ve Hırdavat",
-    description: "evka 3'ün köklü fidanlığı ve hırdavatı. İzmir geneli teslimat.",
+    title: "Kara Ticaret - Evka 3 Fidanlık ve Hırdavat",
+    description: "Evka 3'ün köklü fidanlığı ve hırdavatı. İzmir geneli teslimat.",
   },
   robots: {
     index: true,
@@ -53,19 +54,42 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Get all locations for Schema.org
+  const allLocations = getAllLocations();
+
+  // Build areaServed array with districts and neighborhoods
+  const areaServed = allLocations.map(location => {
+    if (location.type === "district") {
+      return {
+        "@type": "City",
+        "name": location.name
+      };
+    } else {
+      // Neighborhood
+      return {
+        "@type": "Place",
+        "name": location.name,
+        "containedInPlace": {
+          "@type": "City",
+          "name": location.district || "Bornova"
+        }
+      };
+    }
+  });
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
     "@id": "https://karaticaret.com.tr",
     "name": "Kara Ticaret",
-    "description": "evka 3'ün köklü fidanlığı ve hırdavatı. Saksılı bitkiler, fidan, hırdavat, elektrik ve tesisat malzemeleri.",
+    "description": "Evka 3'ün köklü fidanlığı ve hırdavatı. Saksılı bitkiler, fidan, hırdavat, elektrik ve tesisat malzemeleri.",
     "url": "https://karaticaret.com.tr",
     "telephone": "+905456534599",
     "priceRange": "$$",
     "image": "https://karaticaret.com.tr/og-image.jpg",
     "address": {
       "@type": "PostalAddress",
-      "streetAddress": "Burcu Apt, Cengiz Han Cd No:14, evka 3",
+      "streetAddress": "Burcu Apt, Cengiz Han Cd No:14, Evka 3",
       "addressLocality": "Bornova",
       "addressRegion": "İzmir",
       "postalCode": "35050",
@@ -99,40 +123,7 @@ export default function RootLayout({
       "bestRating": "5",
       "worstRating": "1"
     },
-    "areaServed": [
-      {
-        "@type": "City",
-        "name": "Bornova"
-      },
-      {
-        "@type": "City",
-        "name": "Bayraklı"
-      },
-      {
-        "@type": "City",
-        "name": "Karşıyaka"
-      },
-      {
-        "@type": "City",
-        "name": "Buca"
-      },
-      {
-        "@type": "City",
-        "name": "Konak"
-      },
-      {
-        "@type": "City",
-        "name": "Balçova"
-      },
-      {
-        "@type": "City",
-        "name": "Narlıdere"
-      },
-      {
-        "@type": "City",
-        "name": "Karabağlar"
-      }
-    ],
+    "areaServed": areaServed,
     "hasOfferCatalog": {
       "@type": "OfferCatalog",
       "name": "Ürün ve Hizmetler",
